@@ -21,6 +21,14 @@ def create_app():
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+    # MySQL bağlantısı uzun süre boşta kalınca kopuyor ("MySQL server has gone away").
+    # pool_pre_ping: her sorgu öncesi bağlantıyı test eder, ölmüşse otomatik yeniler.
+    # pool_recycle: 280 saniyeden eski bağlantıları proaktif olarak yeniler.
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+        "pool_recycle": 280,
+        "pool_pre_ping": True,
+    }
+
     db.init_app(app)
 
     # --- İŞTE EKSİK OLAN VE HATAYI ÇÖZEN BLOK BURASI ---

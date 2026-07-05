@@ -12,4 +12,4 @@ COPY . .
 
 # --preload: uygulamayı worker'lar çoğaltılmadan ÖNCE tek sefer yükler,
 # böylece db.create_all() 4 worker tarafından aynı anda çalıştırılıp çakışmaz
-CMD ["gunicorn", "--preload", "--workers", "4", "--bind", "0.0.0.0:5000", "run:app"]
+CMD ["gunicorn", "--workers", "4", "--bind", "0.0.0.0:5000", "run:app"]
