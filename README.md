@@ -7,7 +7,7 @@ ile aynı mantıkla kurulmuştur.
 ## Resetlemek için önce 
 
 ```bash
-docker compose up down
+docker compose down
 ```
 
 ## Çalıştırmak için
