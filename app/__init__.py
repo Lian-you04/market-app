@@ -8,7 +8,6 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__, template_folder="../templates", static_folder="../static")
 
-    # Session / Çerez güvenliği için zorunlu anahtar
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "gizli-ve-guvenli-anahtar-12345")
 
     db_user = os.environ.get("DB_USER", "root")
@@ -21,22 +20,12 @@ def create_app():
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    # MySQL bağlantısı uzun süre boşta kalınca kopuyor ("MySQL server has gone away").
-    # pool_pre_ping: her sorgu öncesi bağlantıyı test eder, ölmüşse otomatik yeniler.
-    # pool_recycle: 280 saniyeden eski bağlantıları proaktif olarak yeniler.
     app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
         "pool_recycle": 280,
         "pool_pre_ping": True,
     }
 
     db.init_app(app)
-
-    # --- İŞTE EKSİK OLAN VE HATAYI ÇÖZEN BLOK BURASI ---
-    # Uygulama başlarken tüm modelleri tanı ve veritabanında eksik tabloları yarat!
-    with app.app_context():
-        from app import models
-        db.create_all()
-    # ----------------------------------------------------
 
     from app.routes.market import market_bp
     from app.routes.musteri import musteri_bp

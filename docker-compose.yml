@@ -7,22 +7,21 @@ services:
       MYSQL_DATABASE: market_siparis
       TZ: Europe/Istanbul
     ports:
-      - "3307:3306"
+      - "3309:3306"
     volumes:
       - db_data:/var/lib/mysql
-    # MySQL tamamen ayağa kalkana kadar kontrol et
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 5
 
   web:
     build: .
     restart: always
     depends_on:
       db:
-        condition: service_healthy  # DB bağlantı kabul edene kadar web'i başlatma!
+        condition: service_healthy
     environment:
       DB_USER: root
       DB_PASSWORD: root
@@ -30,7 +29,7 @@ services:
       DB_NAME: market_siparis
       TZ: Europe/Istanbul
     ports:
-      - "5001:5000"
+      - "5002:5000" # Dairysense ile çakışmasın diye 5002'ye aldık
     volumes:
       - .:/app
 

@@ -3,114 +3,231 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Köşebaşı Market — Mahallenin Hızlısı</title>
+<title>Köşebaşı Market — Mahallenin Dijital Bakkalı</title>
 <link rel="stylesheet" href="/static/css/style.css">
 <style>
-  .content { max-width: 960px; margin: 0 auto; padding: 20px; padding-bottom: 110px; }
-  .loc-header { background: var(--paper-raised); border: 1px solid var(--line); padding: 14px 18px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  /* Premium E-Ticaret Arayüz Stilleri */
+  body { background-color: #faf9f5; color: #2b2d42; margin: 0; padding: 0; font-family: var(--font-body); }
+  .content { max-width: 1020px; margin: 0 auto; padding: 20px; padding-bottom: 120px; }
+  
+  /* Konum Paneli */
+  .loc-header { background: var(--paper-raised); border: 1px solid var(--line); padding: 16px 20px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
   
   /* Market Seçim Grid */
-  .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 24px; }
-  .market-card { background: var(--paper-raised); border: 2px solid var(--line); border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.2s; }
-  .market-card.selected { border-color: var(--market-green); box-shadow: 0 4px 12px rgba(47,82,51,0.15); }
-  .market-card img { width: 100%; height: 130px; object-fit: cover; }
-  .market-card .body { padding: 12px; }
+  .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .market-card { background: var(--paper-raised); border: 2px solid var(--line); border-radius: 10px; overflow: hidden; cursor: pointer; transition: all 0.25s ease; position: relative; }
+  .market-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
+  .market-card.selected { border-color: var(--market-green); box-shadow: 0 4px 14px rgba(47,82,51,0.18); background: #fdfdfb; }
+  .market-card img { width: 100%; height: 140px; object-fit: cover; }
+  .market-card .body { padding: 14px; }
+  .market-card .badge-selected { position: absolute; top: 10px; left: 10px; background: var(--market-green); color: white; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
   
-  /* Resimdeki Gibi Kategoriler Grid */
-  .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 24px; }
-  .cat-card { background: #FFF; border: 1px solid var(--line); border-radius: 6px; padding: 10px 6px; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; }
-  .cat-card:hover, .cat-card.active { border-color: var(--market-green); background: #F8F9F4; transform: translateY(-2px); }
-  .cat-card img { width: 56px; height: 56px; object-fit: contain; margin-bottom: 6px; }
-  .cat-card span { font-size: 12px; font-weight: 700; line-height: 1.2; color: var(--ink); }
+  /* Şok / Migros Tipi Kategori Yapısı */
+  .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 28px; }
+  .cat-card { background: #FFF; border: 1px solid var(--line); border-radius: 8px; padding: 12px 8px; text-align: center; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .cat-card:hover, .cat-card.active { border-color: var(--market-green); background: #F4F6F0; transform: scale(1.03); box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+  .cat-card.active span { color: var(--market-green-dark); font-weight: 800; }
+  .cat-card img { width: 64px; height: 64px; object-fit: contain; margin-bottom: 8px; }
+  .cat-card span { font-size: 12px; font-weight: 700; line-height: 1.2; color: var(--ink); text-align: center; }
 
-  /* Ürün Grid */
-  .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
-  .product-card { background: var(--paper-raised); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; position: relative; }
-  .product-card img { width: 100%; height: 140px; object-fit: cover; }
+  /* Ürün Vitrini Grid */
+  .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+  .product-card { background: var(--paper-raised); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; position: relative; transition: all 0.2s ease; }
+  .product-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+  .product-card img { width: 100%; height: 150px; object-fit: cover; transition: opacity 0.2s; }
   .product-card .p-body { padding: 12px; display: flex; flex-direction: column; flex: 1; }
-  .product-card .name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
-  .product-card .desc { font-size: 12px; color: var(--ink-soft); margin-bottom: 12px; flex: 1; }
-  .badge-stok { position: absolute; top: 8px; right: 8px; font-size: 11px; font-weight: 700; padding: 3px 6px; border-radius: 3px; background: var(--crate-amber); color: var(--market-green-dark); }
+  .product-card .name { font-weight: 700; font-size: 14px; margin-bottom: 4px; color: var(--ink); line-height: 1.3; }
+  .product-card .desc { font-size: 12px; color: var(--ink-soft); margin-bottom: 12px; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .badge-stok { position: absolute; top: 10px; right: 10px; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 4px; background: var(--crate-amber); color: var(--market-green-dark); z-index: 10; }
   
-  .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--market-green); color: #FFF; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 100; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); }
+  /* Sabit Alt Sepet Barı */
+  .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--market-green); color: #FFF; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; z-index: 100; box-shadow: 0 -4px 16px rgba(0,0,0,0.12); border-top: 1px solid var(--market-green-dark); }
+  .cart-bar .btn-amber { font-family: var(--font-display); font-weight: 800; font-size: 15px; padding: 12px 28px; box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
+  
+  /* Modal Overlay ve Pencereler */
+  .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; backdrop-filter: blur(2px); }
+  .modal-box { background: var(--paper); width: 100%; max-width: 520px; border-radius: 12px; box-shadow: 0 12px 36px rgba(0,0,0,0.25); overflow: hidden; display: flex; flex-direction: column; max-height: 88vh; animation: modalAnim 0.2s ease-out; }
+  @keyframes modalAnim { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  
+  .modal-header { background: #f8f9f4; padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+  .modal-header h3 { margin: 0; font-size: 18px; font-family: var(--font-display); color: var(--market-green-dark); }
+  .modal-close { background: none; border: none; font-size: 22px; font-weight: 700; cursor: pointer; color: var(--ink-soft); line-height: 1; }
+  .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+  
+  /* Sepet Satırları */
+  .cart-item-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px dashed var(--line-strong); }
+  .cart-item-row:last-child { border-bottom: none; }
+  
+  /* Form Alanları */
+  .checkout-section { margin-top: 20px; background: #f8f9f4; padding: 16px; border-radius: 8px; border: 1px solid var(--line); }
+  .checkout-section label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 6px; letter-spacing: 0.03em; }
+  .form-select, .form-input { width: 100%; padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 5px; font-family: var(--font-body); font-size: 14px; background: #FFF; outline: none; box-sizing: border-box; color: var(--ink); }
+  .form-select:focus, .form-input:focus { border-color: var(--market-green); }
+
+  /* Ürün Detay Galeri Alanı */
+  .gallery-main-frame { width: 100%; height: 250px; border-radius: 8px; overflow: hidden; background: #FFF; margin-bottom: 12px; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; }
+  .gallery-main-frame img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .gallery-thumbs-reel { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 16px; }
+  .gallery-thumb-node { width: 54px; height: 54px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid var(--line-strong); background: white; flex-shrink: 0; transition: border 0.15s; }
+  .gallery-thumb-node.active { border-color: var(--market-green); }
+
   .hidden { display: none !important; }
+  .quantity-ctrl { display: flex; align-items: center; gap: 6px; }
+  .quantity-ctrl button { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; cursor: pointer; }
 </style>
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">Köşe<span>başı</span> Market</div>
-  <div class="mono" id="user-info">Konum Bekleniyor...</div>
+  <div class="mono" id="user-info">📍 Antakya Merkez Şubesi</div>
 </div>
 
 <div class="content">
   <div class="loc-header">
     <div>
-      <div style="font-weight:700;">📍 Teslimat Adresi & Konumunuz</div>
-      <div class="muted" style="font-size:13px;" id="loc-text">Antakya Merkez (36.1950, 36.1450) — 5 km içindeki marketler listeleniyor.</div>
+      <div style="font-weight:700; font-size:15px; display:flex; align-items:center; gap:6px;">📍 Teslimat Adresiniz & Konum Katmanı</div>
+      <div class="muted" style="font-size:13px; margin-top:2px;" id="loc-text">Sümerler Mahallesi, Antakya (36.1950, 36.1450)</div>
     </div>
-    <button class="btn btn-outline" onclick="konumuYenile()">Konumu Değiştir</button>
+    <button class="btn btn-outline" style="padding:6px 14px; font-size:13px;" onclick="konumuYenile()">Konumu Değiştir</button>
   </div>
 
-  <h3 style="margin-bottom:12px;">🏪 Konumunuza Hizmet Veren Marketler</h3>
+  <h3 style="margin-bottom:14px; font-family: var(--font-display);">🏪 Kapsama Alanınızdaki Mahalle Marketleri</h3>
   <div class="market-grid" id="market-list"></div>
 
   <div id="market-icerik" class="hidden">
-    <h3 style="margin-bottom:12px;">Kategoriler</h3>
+    <h3 style="margin-bottom:14px; font-family: var(--font-display);">🗂️ Reyonlar & Kategoriler</h3>
     <div class="cat-grid" id="category-list"></div>
 
-    <h3 style="margin-bottom:12px;" id="secili-kat-baslik">Tüm Ürünler</h3>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid var(--line-strong); padding-bottom:8px;">
+      <h3 style="margin:0; font-family: var(--font-display);" id="secili-kat-baslik">Tüm Ürünler</h3>
+      <button class="btn btn-outline" style="font-size:12px; padding:4px 10px;" onclick="urunleriYukle('')">Tümünü Listele</button>
+    </div>
+    
     <div class="product-grid" id="product-list"></div>
   </div>
 </div>
 
 <div class="cart-bar hidden" id="cart-bar">
-  <div><span id="cart-count">0</span> ürün · <span id="cart-total" style="font-size:20px; font-weight:900;">₺0</span></div>
-  <button class="btn btn-amber" onclick="siparişiOnayla()">Siparişi Tamamla (Nakit)</button>
+  <div>
+    <span style="opacity:0.9; font-size:13px;">Sepetinizdeki Toplam Ürün:</span>
+    <div style="margin-top:2px;"><b id="cart-count">0</b> Adet · <span id="cart-total" style="font-size:22px; font-weight:900; color:var(--crate-amber);">Encoding...</span></div>
+  </div>
+  <button class="btn btn-amber" onclick="sepetiAc()">Sepeti Gör & Sipariş Ver ➔</button>
+</div>
+
+<div class="modal-overlay hidden" id="product-detail-modal">
+  <div class="modal-box" style="max-width: 560px;">
+    <div class="modal-header">
+      <h3 id="detail-title">Ürün İnceleme</h3>
+      <button class="modal-close" onclick="document.getElementById('product-detail-modal').classList.add('hidden')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="gallery-main-frame">
+        <img id="detail-main-img" src="" alt="Büyük Görsel">
+      </div>
+      <div id="detail-gallery" class="gallery-thumbs-reel"></div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; background:#fdfdfd; padding:10px 14px; border-radius:6px; border:1px solid var(--line);">
+        <span id="detail-price" style="font-size:28px; font-weight:900; color:var(--market-green-dark);">₺0.00</span>
+        <span id="detail-stock-badge" class="tag">Yükleniyor</span>
+      </div>
+
+      <div style="font-weight:700; font-size:14px; color:var(--ink); margin-bottom:6px;">📋 Ürün Açıklaması & Detayları:</div>
+      <p id="detail-desc" style="font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0; margin-bottom:24px; background:white; padding:12px; border-radius:6px; border:1px solid var(--line); white-space: pre-wrap;"></p>
+
+      <div id="detail-action-area" style="background:#f4a26120; border:1px solid #f4a26150; padding:14px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:14px; font-weight:700; color:var(--market-green-dark);">Bu Üründen Sepete Ekle:</span>
+        <div id="modal-qty-container"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="checkout-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>🛒 Sipariş Kapıda Ödeme Özeti</h3>
+      <button class="modal-close" onclick="sepetiKapat()">✕</button>
+    </div>
+    <div class="modal-body" style="padding-top:10px;">
+      
+      <div style="font-weight:700; font-size:13px; text-transform:uppercase; color:var(--ink-soft); margin-bottom:6px; margin-top:10px;">Sepetinizdeki Ürünler</div>
+      <div id="modal-cart-items" style="max-height:220px; overflow-y:auto; background:white; padding:0 14px; border-radius:6px; border:1px solid var(--line);"></div>
+
+      <div class="checkout-section">
+        <label>💵 Kapıda Ödeme Seçeneği</label>
+        <select id="odeme-yontemi" class="form-select" style="margin-bottom:14px;">
+          <option value="nakit">💵 Kapıda Nakit ile Öde</option>
+          <option value="kart">💳 Kapıda Kredi / Banka Kartı ile Öde</option>
+        </select>
+
+        <label>✍️ Kuryeye / Markete Sipariş Notu</label>
+        <input type="text" id="siparis-notu" class="form-input" placeholder="Örn: Temassız teslimat, poşeti kapıya bırakabilirsiniz.">
+      </div>
+
+      <div style="margin-top:24px; display:flex; justify-content:space-between; align-items:center; background:#2f523310; padding:16px; border-radius:8px; border:1px solid var(--market-green);">
+        <div>
+          <div style="font-size:11px; color:var(--ink-soft); font-weight:700; letter-spacing:0.04em;">TOPLAM ÖDENECEK</div>
+          <div id="modal-total-price" style="font-size:26px; font-weight:900; color:var(--market-green-dark);">₺0.00</div>
+        </div>
+        <button class="btn btn-amber" style="padding:14px 28px; font-size:16px;" onclick="siparisiKesinlesir()">Siparişi Tamamla ➔</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
 let musterLat = 36.1950, musteriLon = 36.1450;
 let seciliMarketId = null;
-let sepet = {};
-let urunler = [];
+let sepet = {}; // urun_id -> adet ilişkisi
+let urunler = []; // Mevcut marketin çekilen tüm ürün listesi hafızası
 
 async function marketleriYukle() {
   const res = await fetch(`/api/musteri/yakindaki-marketler?lat=${musterLat}&lon=${musteriLon}`);
   const marketler = await res.json();
   const mList = document.getElementById('market-list');
 
-  if (marketler.length === 0) {
-    mList.innerHTML = '<div class="muted">Konumunuzun teslimat yarıçapında aktif market bulunamadı.</div>';
+  if (!marketler || marketler.length === 0) {
+    mList.innerHTML = '<div class="muted" style="grid-column:1/-1; padding:20px; text-align:center;">Konum yarıçapınız dahilinde aktif servis sunan market bulunamadı.</div>';
     return;
   }
 
   mList.innerHTML = marketler.map(m => `
     <div class="market-card ${seciliMarketId === m.id ? 'selected' : ''}" onclick="marketSec(${m.id}, '${m.ad}')">
-      <img src="${m.resim_url}" alt="${m.ad}">
+      ${seciliMarketId === m.id ? '<span class="badge-selected">✓ Aktif Seçili</span>' : ''}
+      <img src="${m.resim_url.split(',')[0]}" alt="${m.ad}">
       <div class="body">
-        <div style="font-weight:700; font-size:15px;">${m.ad}</div>
-        <div class="muted" style="font-size:12px;">🛵 ${m.mesafe_km} km uzakta · Min. ₺${m.min_siparis_tutari}</div>
+        <div style="font-weight:700; font-size:16px; color:var(--market-green-dark);">${m.ad}</div>
+        <div class="muted" style="font-size:12px; margin-top:4px; font-weight:600;">🛵 Servis Mesafesi: ${m.mesafe_km} km · Alt Limit: ₺${m.min_siparis_tutari}</div>
       </div>
     </div>
   `).join('');
 
-  if (!seciliMarketId && marketler[0]) marketSec(marketler[0].id, marketler[0].ad);
+  // Sayfa ilk defa açılıyorsa en yakın marketi otomatik olarak reyonlarıyla seçtir
+  if (!seciliMarketId && marketler.length > 0) {
+    marketSec(marketler[0].id, marketler[0].ad);
+  }
 }
 
 async function marketSec(id, ad) {
+  if(seciliMarketId !== id) {
+    sepet = {}; // Market değiştiğinde sepet kuralları gereği sepet sıfırlanır
+    sepetGuncelle();
+  }
   seciliMarketId = id;
   document.getElementById('market-icerik').classList.remove('hidden');
-  marketleriYukle(); // Seçili çerçeveyi güncelle
+  
+  marketleriYukle(); // Seçim çerçevesini güncellemek için grid'i yenile
   await kategorileriYukle();
-  await urunleriYukle();
+  await urunleriYukle(''); // İlk başta reyon fark etmeksizin tüm kataloğu listele
 }
 
 async function kategorileriYukle() {
   const res = await fetch('/api/musteri/kategoriler');
   const kategoriler = await res.json();
   document.getElementById('category-list').innerHTML = kategoriler.map(k => `
-    <div class="cat-card" onclick="kategoriFiltrele('${k.id}', '${k.ad}')">
+    <div class="cat-card" data-id="${k.id}" onclick="kategoriFiltrele('${k.id}', '${k.ad}', this)">
       <img src="${k.resim}" alt="${k.ad}">
       <span>${k.ad}</span>
     </div>
@@ -125,33 +242,75 @@ async function urunleriYukle(katId = '') {
   urunler = await res.json();
   const pList = document.getElementById('product-list');
 
-  pList.innerHTML = urunler.map(u => `
-    <div class="product-card" style="${u.stok_durumu === 'tukendi' ? 'opacity:0.5' : ''}">
-      ${u.etiket ? `<span class="badge-stok">${u.etiket}</span>` : ''}
-      <img src="${u.resim_url}" alt="${u.ad}">
-      <div class="p-body">
-        <div class="name">${u.ad}</div>
-        <div class="desc">${u.aciklama || 'Taze ve kaliteli mahalle ürünü.'}</div>
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <span class="tag price">₺${u.fiyat}</span>
-          <button class="btn btn-primary" style="padding:4px 10px;" onclick="sepeteEkle(${u.id})" ${u.stok_durumu === 'tukendi' ? 'disabled' : ''}>+ Ekle</button>
+  if (!urunler || urunler.length === 0) {
+    pList.innerHTML = '<div class="muted" style="grid-column: 1/-1; padding:40px; text-align:center;">Bu reyonda satışta olan ürün kalmamıştır.</div>';
+    return;
+  }
+
+  pList.innerHTML = urunler.map(u => {
+    const sepettekiAdet = sepet[u.id] || 0;
+    const butonDisabled = u.stok_durumu === 'tukendi' || sepettekiAdet >= u.max_alinabilir_adet;
+    const ilkResim = u.resim_url.split(',')[0]; // Virgüllü çoklu resimden ilkini kapak resmi yap
+
+    return `
+      <div class="product-card" style="${u.stok_durumu === 'tukendi' ? 'opacity:0.56' : ''}">
+        ${u.etiket ? `<span class="badge-stok">${u.etiket}</span>` : ''}
+        <img src="${ilkResim}" alt="${u.ad}" style="cursor:pointer;" onclick="urunDetayiGoster(${u.id})">
+        <div class="p-body">
+          <div class="name" style="cursor:pointer;" onclick="urunDetayiGoster(${u.id})">${u.ad}</div>
+          <div class="desc">${u.aciklama || 'Taze mahalle esnafı ürünü.'}</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:auto; pt:6px;">
+            <span class="tag price" style="font-weight:700; font-size:15px;">₺${Number(u.fiyat).toFixed(2)}</span>
+            ${sepettekiAdet > 0 ? `
+              <div class="quantity-ctrl">
+                <button class="btn btn-outline" onclick="sepetteDegistir(${u.id}, -1)">-</button>
+                <span style="font-weight:700; min-width:14px; text-align:center;">${sepettekiAdet}</span>
+                <button class="btn btn-primary" onclick="sepetteDegistir(${u.id}, 1)" ${butonDisabled ? 'disabled' : ''}>+</button>
+              </div>
+            ` : `
+              <button class="btn btn-primary" style="padding:6px 14px; font-size:13px;" onclick="sepetteDegistir(${u.id}, 1)" ${u.stok_durumu === 'tukendi' ? 'disabled' : ''}>+ Ekle</button>
+            `}
+          </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
-function kategoriFiltrele(id, ad) {
+function kategoriFiltrele(id, ad, el) {
   document.getElementById('secili-kat-baslik').textContent = ad;
+  document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
+  if (el) el.classList.add('active');
   urunleriYukle(id);
 }
 
-function sepeteEkle(id) {
+function sepetteDegistir(id, delta) {
   const u = urunler.find(x => x.id === id);
   if (!u) return;
-  sepet[id] = (sepet[id] || 0) + 1;
-  if (sepet[id] > u.max_alinabilir_adet) { alert("Maksimum stok limitine ulaştınız."); sepet[id]--; return; }
+  
+  const mevcut = sepet[id] || 0;
+  const yeni = mevcut + delta;
+  
+  if (yeni > u.max_alinabilir_adet) {
+    alert(`Üzgünüz, marketin elinde şu an sadece ${u.max_alinabilir_adet} adet var.`);
+    return;
+  }
+  
+  if (yeni <= 0) delete sepet[id];
+  else sepet[id] = yeni;
+  
   sepetGuncelle();
+  
+  // Eğer modallar (Sepet veya Detay) o an ekranda açıksa içeriklerini anlık tazele (UX/UI Akıcılığı)
+  if (!document.getElementById('checkout-modal').classList.contains('hidden')) {
+    if (Object.keys(sepet).length === 0) sepetiKapat();
+    else sepetModalIceriginiOlustur();
+  }
+  
+  // Ana vitrini anlık güncelle
+  const aktifKatEl = document.querySelector('.cat-card.active');
+  const aktifKatId = aktifKatEl ? aktifKatEl.dataset.id : '';
+  urunleriYukle(aktifKatId);
 }
 
 function sepetGuncelle() {
@@ -165,24 +324,148 @@ function sepetGuncelle() {
   document.getElementById('cart-bar').classList.toggle('hidden', cnt === 0);
 }
 
-async function siparişiOnayla() {
+// --- ÜRÜN DETAY MODALI VE ÇOKLU RESİM GALERİ REEL YAPISI ---
+function urunDetayiGoster(urunId) {
+  const u = urunler.find(x => x.id === urunId);
+  if (!u) return;
+
+  const resimler = u.resim_url.split(',');
+  document.getElementById('detail-title').textContent = u.ad;
+  document.getElementById('detail-main-img').src = resimler[0];
+  document.getElementById('detail-price').textContent = `₺${Number(u.fiyat).toFixed(2)}`;
+  document.getElementById('detail-desc').textContent = u.aciklama || 'Bu kaliteli mahalle ürünü için uzun açıklama girilmemiştir.';
+
+  // Üst Stok Bilgisi Rozeti
+  const badge = document.getElementById('detail-stock-badge');
+  badge.textContent = u.max_alinabilir_adet > 0 ? `Kalan Stok: ${u.max_alinabilir_adet} Adet` : 'Tükendi';
+  badge.className = `tag ${u.max_alinabilir_adet > 0 ? '' : 'status-iptal'}`;
+
+  // Çoklu Thumbnail Galerisini İnşa Et
+  const galeriKutusu = document.getElementById('detail-gallery');
+  if (resimler.length > 1) {
+    galeriKutusu.classList.remove('hidden');
+    galeriKutusu.innerHTML = resimler.map((r, idx) => `
+      <img src="${r}" class="gallery-thumb-node ${idx === 0 ? 'active' : ''}" onclick="galeriResimDegistir('${r}', this)">
+    `).join('');
+  } else {
+    galeriKutusu.classList.add('hidden');
+  }
+
+  // Alt Canlı Sepet Miktar Paneli
+  detayModalAksiyonAlaniYenile(u);
+  document.getElementById('product-detail-modal').classList.remove('hidden');
+}
+
+function galeriResimDegistir(link, el) {
+  document.getElementById('detail-main-img').src = link;
+  document.querySelectorAll('.gallery-thumb-node').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function detayModalAksiyonAlaniYenile(u) {
+  const sepetteki = sepet[u.id] || 0;
+  const container = document.getElementById('modal-qty-container');
+  const butonDisabled = sepetteki >= u.max_alinabilir_adet;
+
+  if (sepetteki > 0) {
+    container.innerHTML = `
+      <div class="quantity-ctrl">
+        <button class="btn btn-outline" onclick="sepetteDegistir(${u.id}, -1); detayModalAksiyonAlaniYenile(urunler.find(x=>x.id===${u.id}));">-</button>
+        <span style="font-size:16px; font-weight:700; min-width:16px; text-align:center;">${sepetteki}</span>
+        <button class="btn btn-primary" onclick="sepetteDegistir(${u.id}, 1); detayModalAksiyonAlaniYenile(urunler.find(x=>x.id===${u.id}));" ${butonDisabled ? 'disabled' : ''}>+</button>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `
+      <button class="btn btn-primary" style="padding:6px 16px; font-size:13px;" onclick="sepetteDegistir(${u.id}, 1); detayModalAksiyonAlaniYenile(urunler.find(x=>x.id===${u.id}));" ${u.max_alinabilir_adet <= 0 ? 'disabled' : ''}>+ Sepete Ekle</button>
+    `;
+  }
+}
+
+// --- GELİŞMİŞ SİPARİŞ VERME (CHECKOUT) MODAL YÖNETİMİ ---
+function sepetiAc() {
+  if (Object.keys(sepet).length === 0) return;
+  sepetModalIceriginiOlustur();
+  document.getElementById('checkout-modal').classList.remove('hidden');
+}
+
+function sepetiKapat() {
+  document.getElementById('checkout-modal').classList.add('hidden');
+}
+
+function sepetModalIceriginiOlustur() {
+  const container = document.getElementById('modal-cart-items');
+  let tot = 0;
+  
+  container.innerHTML = Object.entries(sepet).map(([id, adet]) => {
+    const u = urunler.find(x => x.id == id);
+    if (!u) return '';
+    const satirToplam = u.fiyat * adet;
+    tot += satirToplam;
+    const butonDisabled = adet >= u.max_alinabilir_adet;
+
+    return `
+      <div class="cart-item-row">
+        <div>
+          <div style="font-weight:700; font-size:14px; color:var(--ink);">${u.ad}</div>
+          <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">Adet Fiyatı: ₺${Number(u.fiyat).toFixed(2)}</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="quantity-ctrl">
+            <button class="btn btn-outline" style="padding:1px 7px;" onclick="sepetteDegistir(${u.id}, -1)">-</button>
+            <span style="font-weight:700; min-width:14px; text-align:center;">${adet}</span>
+            <button class="btn btn-outline" style="padding:1px 7px;" onclick="sepetteDegistir(${u.id}, 1)" ${butonDisabled ? 'disabled' : ''}>+</button>
+          </div>
+          <div style="font-weight:700; min-width:65px; text-align:right; color:var(--market-green-dark);">₺${satirToplam.toFixed(2)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  document.getElementById('modal-total-price').textContent = `₺${tot.toFixed(2)}`;
+}
+
+async function siparisiKesinlesir() {
   const aktifUser = JSON.parse(localStorage.getItem('aktif_kullanici') || '{"profil_id":1}');
+  const odemeYontemi = document.getElementById('odeme-yontemi').value;
+  const not = document.getElementById('siparis-notu').value.trim();
   const kalemler = Object.entries(sepet).filter(([,a])=>a>0).map(([id,adet])=>({urun_id:parseInt(id), adet}));
   
   const res = await fetch('/api/musteri/siparis', {
     method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ market_id: seciliMarketId, musteri_id: aktifUser.profil_id || 1, urunler: kalemler })
+    body: JSON.stringify({ 
+      market_id: seciliMarketId, 
+      musteri_id: aktifUser.profil_id || 1, 
+      odeme_yontemi: odemeYontemi,
+      not: not,
+      urunler: kalemler 
+    })
   });
-  if (res.ok) { alert("Siparişiniz alındı! Market hazırlamaya başladı."); sepet = {}; sepetGuncelle(); urunleriYukle(); }
-  else { const err = await res.json(); alert(err.hata); }
+  
+  if (res.ok) {
+    sepetiKapat();
+    alert("🎉 Harika! Siparişiniz başarıyla mahalle marketine iletildi. Esnaf poşetinizi hazırlıyor!");
+    sepet = {};
+    sepetGuncelle();
+    urunleriYukle('');
+  } else {
+    const err = await res.json();
+    alert((err.hata || 'Sipariş oluşturulamadı.') + (err.detay ? "\nHata Kodu: " + err.detay : ""));
+  }
 }
 
 function konumuYenile() {
-  const yeniLat = prompt("Yeni Enlem (Lat):", musterLat);
-  const yeniLon = prompt("Yeni Boylam (Lon):", musteriLon);
-  if (yeniLat && yeniLon) { musterLat = parseFloat(yeniLat); musteriLon = parseFloat(yeniLon); document.getElementById('loc-text').textContent = `Antakya Konum (${musterLat}, ${musteriLon})`; marketleriYukle(); }
+  const yeniLat = prompt("Yeni Teslimat Enlemi (Lat):", musterLat);
+  const yeniLon = prompt("Yeni Teslimat Boylamı (Lon):", musteriLon);
+  if (yeniLat && yeniLon) {
+    musterLat = parseFloat(yeniLat);
+    marginLon = parseFloat(yeniLon);
+    document.getElementById('loc-text').textContent = `Antakya Manuel Konum Yapılandırması (${musterLat}, ${musteriLon})`;
+    marketleriYukle();
+  }
 }
 
+// Sayfa ilk yüklendiğinde lokasyon koordinatlarına göre marketleri çek
 marketleriYukle();
 </script>
 </body>

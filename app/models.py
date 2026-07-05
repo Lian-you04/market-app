@@ -51,11 +51,12 @@ class Urun(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     market_id = db.Column(db.Integer, db.ForeignKey("market.id"), nullable=False)
     ad = db.Column(db.String(120), nullable=False)
-    aciklama = db.Column(db.String(255), default="")
+    aciklama = db.Column(db.Text, default="")  # Uzun açıklamalar için Text yaptık
     fiyat = db.Column(db.Numeric(10, 2), nullable=False)
     stok_adet = db.Column(db.Integer, default=0)
     kategori = db.Column(db.String(60), nullable=False)
-    resim_url = db.Column(db.String(255), default="https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?auto=format&fit=crop&w=300&q=80")
+    # Çoklu fotoğrafları virgülle ayırarak saklamak için Text yaptık:
+    resim_url = db.Column(db.Text, default="https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?auto=format&fit=crop&w=300&q=80")
     aktif = db.Column(db.Boolean, default=True)
 
 
