@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kurye Paneli</title>
+<link rel="stylesheet" href="/static/css/style.css">
+<style>
+  .content { max-width: 480px; padding-bottom: 90px; }
+  .delivery-card { padding: 16px; margin-bottom: 12px; }
+  .delivery-card .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .delivery-card .id { font-family: var(--font-mono); font-size: 13px; color: var(--ink-soft); }
+  .big-btn {
+    width: 100%; padding: 14px; font-size: 16px; font-weight: 700;
+    border-radius: 4px; border: none; cursor: pointer; margin-top: 10px;
+    transition: all 0.15s ease;
+  }
+  .big-btn.yolda { background: var(--crate-amber); color: var(--market-green-dark); }
+  .big-btn.yolda:active { background: var(--crate-amber-dark); color: #FFF; }
+  .big-btn.teslim { background: var(--market-green); color: #F2F4EE; }
+  .big-btn.teslim:active { background: var(--market-green-dark); }
+  .big-btn:disabled { opacity: 0.4; }
+
+  .footer-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--paper-raised); border-top: 1px solid var(--line);
+    padding: 12px 18px; display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+  }
+  .footer-bar .amount { font-family: var(--font-display); font-weight: 900; font-size: 18px; color: var(--market-green-dark); }
+  
+  /* Kurye Seçici Basit Tasarım */
+  .kurye-secici {
+    background: transparent; border: 1px solid rgba(255,255,255,0.3);
+    color: #FFF; font-family: var(--font-mono); font-size: 13px;
+    padding: 4px 8px; border-radius: 3px; outline: none;
+  }
+  .kurye-secici option { background: var(--market-green-dark); color: #FFF; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">Kurye <span>Paneli</span></div>
+  <div>
+    <select id="kurye-select" class="kurye-secici" onchange="kuryeDegisti()">
+      <option value="1">Kurye #1</option>
+      <option value="2">Kurye #2</option>
+    </select>
+  </div>
+</div>
+
+<div class="content">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+    <h2>Atanan teslimatlar</h2>
+    <span class="mono muted" style="font-size:12px;" id="durum-bilgi">Canlı</span>
+  </div>
+  <div id="delivery-list">
+    <div class="muted">Teslimatlar yükleniyor...</div>
+  </div>
+</div>
+
+<div class="footer-bar">
+  <span class="muted" style="font-size:13px;">Bugün toplanan nakit</span>
+  <span class="amount" id="gun-sonu-toplam">₺0</span>
+</div>
+
+<script>
+// Aktif kurye ID'sini localStorage'da tutalım veya varsayılan 1 yapalım
+let KURYE_ID = localStorage.getItem('aktif_kurye_id') || 1;
+document.getElementById('kurye-select').value = KURYE_ID;
+
+const ADIM_ISIM = {
+  hazirlaniyor: 'Marketten alınacak',
+  yolda: 'Yolda',
+  teslim_edildi: 'Teslim edildi',
+};
+
+function kuryeDegisti() {
+  KURYE_ID = document.getElementById('kurye-select').value;
+  localStorage.setItem('aktif_kurye_id', KURYE_ID);
+  teslimatlariYukle();
+  gunSonuYukle();
+}
+
+async function teslimatlariYukle() {
+  try {
+    const res = await fetch(`/api/kurye/atanan-siparisler?kurye_id=${KURYE_ID}`);
+    const siparisler = await res.json();
+
+    const list = document.getElementById('delivery-list');
+    if (!siparisler || siparisler.length === 0) {
+      list.innerHTML = `
+        <div class="panel" style="padding: 24px; text-align: center;">
+          <div class="muted" style="margin-bottom:8px;">Şu anda üzerinize atanan teslimat bulunmuyor.</div>
+          <span class="tag">Beklemede kalın</span>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = siparisler.map(s => `
+      <div class="panel delivery-card" id="card-${s.id}">
+        <div class="top-row">
+          <span class="id">Sipariş #${s.id}</span>
+          <span class="tag status-${s.durum}">${ADIM_ISIM[s.durum] || s.durum}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span class="muted" style="font-size:13px;">Müşteri #${s.musteri_id}</span>
+          <span class="mono" style="font-weight:700; font-size:16px;">₺${s.toplam_tutar.toFixed(2)}</span>
+        </div>
+        <span class="tag ${s.odeme_yontemi === 'nakit' ? '' : 'price'}">
+          ${s.odeme_yontemi === 'nakit' ? '💵 Kapıda nakit — POS gerekmiyor' : '💳 Kapıda kart — POS getir'}
+        </span>
+
+        ${s.durum === 'hazirlaniyor' ? `
+          <button class="big-btn yolda" onclick="durumGuncelle(${s.id}, 'yolda')">Yola çıktım</button>
+        ` : ''}
+
+        ${s.durum === 'yolda' ? `
+          <button class="big-btn teslim" onclick="teslimEt(${s.id})">Teslim ettim</button>
+        ` : ''}
+      </div>
+    `).join('');
+  } catch (error) {
+    console.error("Teslimatlar yüklenemedi:", error);
+  }
+}
+
+async function durumGuncelle(siparisId, durum) {
+  try {
+    const res = await fetch(`/api/kurye/siparis/${siparisId}/durum`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ durum }),
+    });
+    
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.hata || 'Durum güncellenemedi');
+      return;
+    }
+
+    await teslimatlariYukle();
+    await gunSonuYukle(); // Durum güncellemesi (teslimat) nakti etkileyebileceği için gün sonunu da yeniliyoruz
+  } catch (error) {
+    alert('İşlem sırasında bir hata oluştu.');
+  }
+}
+
+async function teslimEt(siparisId) {
+  // Sadece durumu teslim_edildi yapıyoruz. Nakit ödemeyse Backend otomatik tahsilat kaydını açıyor!
+  await durumGuncelle(siparisId, 'teslim_edildi');
+}
+
+async function gunSonuYukle() {
+  try {
+    const res = await fetch(`/api/kurye/gun-sonu-ozet?kurye_id=${KURYE_ID}`);
+    const data = await res.json();
+    document.getElementById('gun-sonu-toplam').textContent = `₺${data.toplam_toplanan.toFixed(2)}`;
+  } catch (error) {
+    console.error("Gün sonu yüklenemedi:", error);
+  }
+}
+
+// İlk yüklemeler
+teslimatlariYukle();
+gunSonuYukle();
+
+// 8 saniyede bir otomatik yenileme (Periyodik Polling)
+setInterval(() => {
+  teslimatlariYukle();
+  gunSonuYukle();
+}, 8000);
+</script>
+</body>
+</html>

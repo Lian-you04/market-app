@@ -1,0 +1,38 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: market_siparis
+      TZ: Europe/Istanbul
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    # MySQL tamamen ayağa kalkana kadar kontrol et
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy  # DB bağlantı kabul edene kadar web'i başlatma!
+    environment:
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_HOST: db
+      DB_NAME: market_siparis
+      TZ: Europe/Istanbul
+    ports:
+      - "5001:5000"
+    volumes:
+      - .:/app
+
+volumes:
+  db_data:

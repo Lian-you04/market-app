@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Paneli</title>
+<link rel="stylesheet" href="/static/css/style.css">
+<style>
+  .layout { display: grid; grid-template-columns: 200px 1fr; gap: 20px; }
+  .nav { display: flex; flex-direction: column; gap: 2px; }
+  .nav a {
+    padding: 10px 12px; text-decoration: none; color: var(--ink-soft);
+    font-weight: 600; font-size: 14px; border-radius: 3px;
+    transition: background 0.15s ease;
+  }
+  .nav a:hover { background: var(--paper-raised); color: var(--ink); }
+  .nav a.active { background: var(--market-green); color: #F2F4EE; }
+  
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+  .stat { padding: 14px 16px; }
+  .stat .num { font-family: var(--font-display); font-size: 26px; font-weight: 900; color: var(--market-green-dark); }
+  .stat .label { font-size: 12px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.04em; }
+  
+  .order-row {
+    display: grid; grid-template-columns: 60px 1.2fr 90px 120px 130px 150px;
+    align-items: center; gap: 10px; padding: 12px 18px; border-bottom: 1px solid var(--line);
+  }
+  .order-row:last-child { border-bottom: none; }
+  .order-row .order-id { font-family: var(--font-mono); color: var(--ink-soft); font-weight: 600; }
+  
+  table.product-table { width: 100%; border-collapse: collapse; }
+  table.product-table th {
+    text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--ink-soft); padding: 8px 18px; border-bottom: 1px solid var(--line-strong);
+  }
+  table.product-table td { padding: 10px 18px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  
+  input.stok-input {
+    width: 60px; padding: 4px 6px; border: 1px solid var(--line-strong);
+    border-radius: 3px; font-family: var(--font-mono); font-size: 13px; text-align: center;
+  }
+  
+  .panel + .panel { margin-top: 20px; }
+  .hidden-form { display: none; }
+  
+  select.durum-select {
+    font-family: var(--font-body); font-size: 13px; padding: 5px 8px;
+    border: 1px solid var(--line-strong); border-radius: 3px; background: var(--paper-raised);
+    outline: none; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">Köşe<span>başı</span> Market</div>
+  <div class="mono" style="font-size:13px;">Market #1</div>
+</div>
+
+<div class="content">
+  <div class="layout">
+    <nav class="nav">
+      <a href="#" class="active" onclick="sekmeDegistir('siparisler', this)">Siparişler</a>
+      <a href="#" onclick="sekmeDegistir('urunler', this)">Ürünler</a>
+    </nav>
+
+    <div>
+      <div class="stats-row">
+        <div class="panel stat">
+          <div class="num" id="stat-bekleyen">–</div>
+          <div class="label">Bekleyen sipariş</div>
+        </div>
+        <div class="panel stat">
+          <div class="num" id="stat-yolda">–</div>
+          <div class="label">Yolda</div>
+        </div>
+        <div class="panel stat">
+          <div class="num" id="stat-ciro">–</div>
+          <div class="label">Geçerli Ciro (₺)</div>
+        </div>
+      </div>
+
+      <!-- SİPARİŞLER SEKME İÇERİĞİ -->
+      <div class="panel" id="panel-siparisler">
+        <div class="panel-header">
+          <h2>Gelen siparişler</h2>
+          <span class="tag">Canlı Akış</span>
+        </div>
+        <div id="order-list">
+          <div class="order-row muted">Siparişler yükleniyor...</div>
+        </div>
+      </div>
+
+      <!-- ÜRÜNLER SEKME İÇERİĞİ -->
+      <div class="panel" id="panel-urunler" style="display: none;">
+        <div class="panel-header">
+          <h2>Ürün kataloğu</h2>
+          <button class="btn btn-outline" onclick="document.getElementById('yeni-urun-form').classList.toggle('hidden-form')">+ Ürün ekle</button>
+        </div>
+        <div id="yeni-urun-form" class="hidden-form" style="padding:14px 18px; border-bottom:1px solid var(--line); background: var(--paper);">
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+            <input id="f-ad" placeholder="Ürün adı" style="flex:1; min-width:140px; padding:6px 8px; border:1px solid var(--line-strong); border-radius:3px;">
+            <input id="f-fiyat" placeholder="Fiyat (₺)" type="number" style="width:90px; padding:6px 8px; border:1px solid var(--line-strong); border-radius:3px;">
+            <input id="f-stok" placeholder="Stok" type="number" style="width:70px; padding:6px 8px; border:1px solid var(--line-strong); border-radius:3px;">
+            <select id="f-kategori" style="width:140px; padding:6px 8px; border:1px solid var(--line-strong); border-radius:3px;">
+              <option value="yeni_urunler">🔔 Yeni Ürünler</option>
+              <option value="et_tavuk">🥩 Et & Tavuk</option>
+              <option value="meyve_sebze">🍅 Meyve & Sebze</option>
+              <option value="sut_kahvaltilik">🧀 Süt & Kahvaltı</option>
+              <option value="atistirmalik">🍟 Atıştırmalık</option>
+              <option value="icecek">🥤 İçecekler</option>
+              <option value="ekmek_pastane">🍞 Ekmek & Fırın</option>
+              <option value="temizlik">🧼 Temizlik</option>
+            </select>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <input id="f-resim" placeholder="Resim URL (https://...)" style="flex:2; padding:6px 8px; border:1px solid var(--line-strong); border-radius:3px;">
+            <input id="f-aciklama" placeholder="Kısa açıklama..." style="flex:2; padding:6px 8px; border:1px solid var(--line-strong); border-radius:3px;">
+            <button class="btn btn-primary" onclick="urunEkle()">Kaydet</button>
+          </div>
+        </div>
+        <table class="product-table">
+          <thead>
+            <tr><th>Ürün</th><th>Kategori</th><th>Fiyat</th><th>Stok</th><th>Durum</th></tr>
+          </thead>
+          <tbody id="product-rows">
+            <tr><td colspan="5" class="muted">Ürünler yükleniyor...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const MARKET_ID = 1;
+let kuryeler = [];
+
+function sekmeDegistir(hedef, eleman) {
+  document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+  eleman.classList.add('active');
+  
+  if (hedef === 'siparisler') {
+    document.getElementById('panel-siparisler').style.display = 'block';
+    document.getElementById('panel-urunler').style.display = 'none';
+  } else {
+    document.getElementById('panel-siparisler').style.display = 'none';
+    document.getElementById('panel-urunler').style.display = 'block';
+  }
+}
+
+async function kuryeleriYukle() {
+  try {
+    const res = await fetch('/api/market/kuryeler');
+    kuryeler = await res.json();
+  } catch (err) { console.error("Kuryeler yüklenemedi:", err); }
+}
+
+function kuryeAtaSelect(siparis) {
+  if (siparis.kurye_id) {
+    const k = kuryeler.find(x => x.id === siparis.kurye_id);
+    return `<span class="muted" style="font-size:12px;">🛵 ${k ? k.ad_soyad : '#' + siparis.kurye_id}</span>`;
+  }
+  // Hem onaylandi hem de hazirlaniyor durumundayken kurye atanabilsin
+  if (siparis.durum !== 'onaylandi' && siparis.durum !== 'hazirlaniyor') return '<span class="muted" style="font-size:12px;">—</span>';
+  
+  const secenekler = kuryeler.map(k =>
+    `<option value="${k.id}">${k.ad_soyad}${k.durum === 'musait' ? '' : ' (meşgul)'}</option>`
+  ).join('');
+  return `
+    <select class="durum-select" onchange="kuryeAta(${siparis.id}, this.value)">
+      <option value="">Kurye ata</option>
+      ${secenekler}
+    </select>
+  `;
+}
+
+async function kuryeAta(siparisId, kuryeId) {
+  if (!kuryeId) return;
+  const res = await fetch(`/api/market/siparisler/${siparisId}/kurye-ata`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ kurye_id: parseInt(kuryeId, 10) }),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    alert(err.hata || "Kurye atanamadı");
+  }
+  siparisleriYukle();
+}
+
+function durumEtiket(durum) {
+  const isimler = {
+    bekliyor: 'Bekliyor', onaylandi: 'Onaylandı', hazirlaniyor: 'Hazırlanıyor',
+    yolda: 'Yolda', teslim_edildi: 'Teslim edildi', iptal: 'İptal',
+  };
+  return `<span class="tag status-${durum}">${isimler[durum] || durum}</span>`;
+}
+
+function islemSecenekleri(siparis) {
+  if (siparis.durum === 'iptal' || siparis.durum === 'teslim_edildi') {
+    return `<span class="muted" style="font-size:12px;">Tamamlandı</span>`;
+  }
+  
+  let opsiyonlar = `<option value="">İşlem seç</option>`;
+  if (siparis.durum === 'bekliyor') opsiyonlar += `<option value="onaylandi">Onayla</option>`;
+  if (siparis.durum === 'onaylandi') opsiyonlar += `<option value="hazirlaniyor">Hazırlamaya başla</option>`;
+  
+  // Yolda değilse iptal etme yetkisi verelim (stok iadesi tetiklenecek)
+  if (siparis.durum !== 'yolda') opsiyonlar += `<option value="iptal">İptal et</option>`;
+
+  return `
+    <select class="durum-select" onchange="durumGuncelle(${siparis.id}, this.value)">
+      ${opsiyonlar}
+    </select>
+  `;
+}
+
+async function siparisleriYukle() {
+  try {
+    const res = await fetch(`/api/market/siparisler?market_id=${MARKET_ID}`);
+    const siparisler = await res.json();
+
+    const bekleyen = siparisler.filter(s => s.durum === 'bekliyor').length;
+    const yolda = siparisler.filter(s => s.durum === 'yolda').length;
+    
+    // CİRO DÜZELTMESİ: İptal ve Bekleyen siparişleri ciroya saymıyoruz!
+    const ciro = siparisler
+      .filter(s => s.durum !== 'iptal' && s.durum !== 'bekliyor')
+      .reduce((t, s) => t + s.toplam_tutar, 0);
+
+    document.getElementById('stat-bekleyen').textContent = bekleyen;
+    document.getElementById('stat-yolda').textContent = yolda;
+    document.getElementById('stat-ciro').textContent = ciro.toFixed(0);
+
+    const list = document.getElementById('order-list');
+    if (siparisler.length === 0) {
+      list.innerHTML = '<div class="order-row muted">Henüz sipariş yok.</div>';
+      return;
+    }
+
+    list.innerHTML = siparisler.map(s => `
+      <div class="order-row">
+        <span class="order-id">#${s.id}</span>
+        <span>Müşteri #${s.musteri_id} · ${s.odeme_yontemi === 'nakit' ? '💵 Nakit' : '💳 Kart'}</span>
+        <span class="mono" style="font-weight:700;">₺${s.toplam_tutar.toFixed(2)}</span>
+        ${durumEtiket(s.durum)}
+        ${islemSecenekleri(s)}
+        ${kuryeAtaSelect(s)}
+      </div>
+    `).join('');
+  } catch (err) { console.error("Siparişler yüklenemedi:", err); }
+}
+
+async function durumGuncelle(siparisId, durum) {
+  if (!durum) return;
+  const res = await fetch(`/api/market/siparisler/${siparisId}/durum`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ durum }),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    alert(err.hata || "Durum güncellenemedi");
+  }
+  siparisleriYukle();
+  urunleriYukle(); // İptal edildiyse stoklar iade olacağı için ürünleri de yenile!
+}
+
+async function urunleriYukle() {
+  try {
+    const res = await fetch(`/api/market/urunler?market_id=${MARKET_ID}`);
+    const urunler = await res.json();
+
+    const rows = document.getElementById('product-rows');
+    if (urunler.length === 0) {
+      rows.innerHTML = '<tr><td colspan="5" class="muted">Henüz ürün eklenmedi.</td></tr>';
+      return;
+    }
+
+    rows.innerHTML = urunler.map(u => `
+      <tr>
+        <td style="font-weight:600;">${u.ad}</td>
+        <td class="muted">${u.kategori || '—'}</td>
+        <td><span class="tag price">₺${Number(u.fiyat).toFixed(2)}</span></td>
+        <td><input class="stok-input" type="number" value="${u.stok_adet}" onchange="stokGuncelle(${u.id}, this.value)"></td>
+        <td>
+          <span class="tag ${u.stok_adet > 0 ? '' : 'status-iptal'}" style="font-size:11px; padding:3px 8px;">
+            ${u.stok_adet > 0 ? 'Satışta' : 'Tükendi'}
+          </span>
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) { console.error("Ürünler yüklenemedi:", err); }
+}
+
+async function stokGuncelle(urunId, stok) {
+  await fetch(`/api/market/urunler/${urunId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ stok_adet: parseInt(stok, 10) }),
+  });
+}
+
+async function urunEkle() {
+  const ad = document.getElementById('f-ad').value.trim();
+  const fiyat = parseFloat(document.getElementById('f-fiyat').value);
+  const stok = parseInt(document.getElementById('f-stok').value || '0', 10);
+  const kategori = document.getElementById('f-kategori').value;
+  const resim_url = document.getElementById('f-resim').value.trim();
+  const aciklama = document.getElementById('f-aciklama').value.trim();
+
+  if (!ad || isNaN(fiyat)) return alert('Ürün adı ve fiyat zorunlu.');
+
+  const res = await fetch('/api/market/urunler', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ market_id: MARKET_ID, ad, fiyat, stok_adet: stok, kategori, resim_url, aciklama })
+  });
+
+  if (res.ok) {
+    document.getElementById('yeni-urun-form').classList.add('hidden-form');
+    urunleriYukle();
+  } else alert("Eklenemedi.");
+}
+
+// Sekmelerin basılabilir olması için ufak bir arayüz mantığı eklendi
+kuryeleriYukle().then(() => {
+  siparisleriYukle();
+  urunleriYukle();
+});
+setInterval(() => { kuryeleriYukle(); siparisleriYukle(); }, 8000);
+</script>
+</body>
+</html>

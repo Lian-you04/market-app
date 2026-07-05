@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Köşebaşı Market — Mahallenin Hızlısı</title>
+<link rel="stylesheet" href="/static/css/style.css">
+<style>
+  .content { max-width: 960px; margin: 0 auto; padding: 20px; padding-bottom: 110px; }
+  .loc-header { background: var(--paper-raised); border: 1px solid var(--line); padding: 14px 18px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  
+  /* Market Seçim Grid */
+  .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .market-card { background: var(--paper-raised); border: 2px solid var(--line); border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.2s; }
+  .market-card.selected { border-color: var(--market-green); box-shadow: 0 4px 12px rgba(47,82,51,0.15); }
+  .market-card img { width: 100%; height: 130px; object-fit: cover; }
+  .market-card .body { padding: 12px; }
+  
+  /* Resimdeki Gibi Kategoriler Grid */
+  .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 24px; }
+  .cat-card { background: #FFF; border: 1px solid var(--line); border-radius: 6px; padding: 10px 6px; text-align: center; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; }
+  .cat-card:hover, .cat-card.active { border-color: var(--market-green); background: #F8F9F4; transform: translateY(-2px); }
+  .cat-card img { width: 56px; height: 56px; object-fit: contain; margin-bottom: 6px; }
+  .cat-card span { font-size: 12px; font-weight: 700; line-height: 1.2; color: var(--ink); }
+
+  /* Ürün Grid */
+  .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
+  .product-card { background: var(--paper-raised); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+  .product-card img { width: 100%; height: 140px; object-fit: cover; }
+  .product-card .p-body { padding: 12px; display: flex; flex-direction: column; flex: 1; }
+  .product-card .name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .product-card .desc { font-size: 12px; color: var(--ink-soft); margin-bottom: 12px; flex: 1; }
+  .badge-stok { position: absolute; top: 8px; right: 8px; font-size: 11px; font-weight: 700; padding: 3px 6px; border-radius: 3px; background: var(--crate-amber); color: var(--market-green-dark); }
+  
+  .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--market-green); color: #FFF; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 100; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">Köşe<span>başı</span> Market</div>
+  <div class="mono" id="user-info">Konum Bekleniyor...</div>
+</div>
+
+<div class="content">
+  <div class="loc-header">
+    <div>
+      <div style="font-weight:700;">📍 Teslimat Adresi & Konumunuz</div>
+      <div class="muted" style="font-size:13px;" id="loc-text">Antakya Merkez (36.1950, 36.1450) — 5 km içindeki marketler listeleniyor.</div>
+    </div>
+    <button class="btn btn-outline" onclick="konumuYenile()">Konumu Değiştir</button>
+  </div>
+
+  <h3 style="margin-bottom:12px;">🏪 Konumunuza Hizmet Veren Marketler</h3>
+  <div class="market-grid" id="market-list"></div>
+
+  <div id="market-icerik" class="hidden">
+    <h3 style="margin-bottom:12px;">Kategoriler</h3>
+    <div class="cat-grid" id="category-list"></div>
+
+    <h3 style="margin-bottom:12px;" id="secili-kat-baslik">Tüm Ürünler</h3>
+    <div class="product-grid" id="product-list"></div>
+  </div>
+</div>
+
+<div class="cart-bar hidden" id="cart-bar">
+  <div><span id="cart-count">0</span> ürün · <span id="cart-total" style="font-size:20px; font-weight:900;">₺0</span></div>
+  <button class="btn btn-amber" onclick="siparişiOnayla()">Siparişi Tamamla (Nakit)</button>
+</div>
+
+<script>
+let musterLat = 36.1950, musteriLon = 36.1450;
+let seciliMarketId = null;
+let sepet = {};
+let urunler = [];
+
+async function marketleriYukle() {
+  const res = await fetch(`/api/musteri/yakindaki-marketler?lat=${musterLat}&lon=${musteriLon}`);
+  const marketler = await res.json();
+  const mList = document.getElementById('market-list');
+
+  if (marketler.length === 0) {
+    mList.innerHTML = '<div class="muted">Konumunuzun teslimat yarıçapında aktif market bulunamadı.</div>';
+    return;
+  }
+
+  mList.innerHTML = marketler.map(m => `
+    <div class="market-card ${seciliMarketId === m.id ? 'selected' : ''}" onclick="marketSec(${m.id}, '${m.ad}')">
+      <img src="${m.resim_url}" alt="${m.ad}">
+      <div class="body">
+        <div style="font-weight:700; font-size:15px;">${m.ad}</div>
+        <div class="muted" style="font-size:12px;">🛵 ${m.mesafe_km} km uzakta · Min. ₺${m.min_siparis_tutari}</div>
+      </div>
+    </div>
+  `).join('');
+
+  if (!seciliMarketId && marketler[0]) marketSec(marketler[0].id, marketler[0].ad);
+}
+
+async function marketSec(id, ad) {
+  seciliMarketId = id;
+  document.getElementById('market-icerik').classList.remove('hidden');
+  marketleriYukle(); // Seçili çerçeveyi güncelle
+  await kategorileriYukle();
+  await urunleriYukle();
+}
+
+async function kategorileriYukle() {
+  const res = await fetch('/api/musteri/kategoriler');
+  const kategoriler = await res.json();
+  document.getElementById('category-list').innerHTML = kategoriler.map(k => `
+    <div class="cat-card" onclick="kategoriFiltrele('${k.id}', '${k.ad}')">
+      <img src="${k.resim}" alt="${k.ad}">
+      <span>${k.ad}</span>
+    </div>
+  `).join('');
+}
+
+async function urunleriYukle(katId = '') {
+  let url = `/api/musteri/urunler?market_id=${seciliMarketId}`;
+  if (katId) url += `&kategori=${katId}`;
+  
+  const res = await fetch(url);
+  urunler = await res.json();
+  const pList = document.getElementById('product-list');
+
+  pList.innerHTML = urunler.map(u => `
+    <div class="product-card" style="${u.stok_durumu === 'tukendi' ? 'opacity:0.5' : ''}">
+      ${u.etiket ? `<span class="badge-stok">${u.etiket}</span>` : ''}
+      <img src="${u.resim_url}" alt="${u.ad}">
+      <div class="p-body">
+        <div class="name">${u.ad}</div>
+        <div class="desc">${u.aciklama || 'Taze ve kaliteli mahalle ürünü.'}</div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="tag price">₺${u.fiyat}</span>
+          <button class="btn btn-primary" style="padding:4px 10px;" onclick="sepeteEkle(${u.id})" ${u.stok_durumu === 'tukendi' ? 'disabled' : ''}>+ Ekle</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function kategoriFiltrele(id, ad) {
+  document.getElementById('secili-kat-baslik').textContent = ad;
+  urunleriYukle(id);
+}
+
+function sepeteEkle(id) {
+  const u = urunler.find(x => x.id === id);
+  if (!u) return;
+  sepet[id] = (sepet[id] || 0) + 1;
+  if (sepet[id] > u.max_alinabilir_adet) { alert("Maksimum stok limitine ulaştınız."); sepet[id]--; return; }
+  sepetGuncelle();
+}
+
+function sepetGuncelle() {
+  let cnt = 0, tot = 0;
+  for (const [id, adet] of Object.entries(sepet)) {
+    const u = urunler.find(x => x.id == id);
+    if (u && adet > 0) { cnt += adet; tot += u.fiyat * adet; }
+  }
+  document.getElementById('cart-count').textContent = cnt;
+  document.getElementById('cart-total').textContent = `₺${tot.toFixed(2)}`;
+  document.getElementById('cart-bar').classList.toggle('hidden', cnt === 0);
+}
+
+async function siparişiOnayla() {
+  const aktifUser = JSON.parse(localStorage.getItem('aktif_kullanici') || '{"profil_id":1}');
+  const kalemler = Object.entries(sepet).filter(([,a])=>a>0).map(([id,adet])=>({urun_id:parseInt(id), adet}));
+  
+  const res = await fetch('/api/musteri/siparis', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ market_id: seciliMarketId, musteri_id: aktifUser.profil_id || 1, urunler: kalemler })
+  });
+  if (res.ok) { alert("Siparişiniz alındı! Market hazırlamaya başladı."); sepet = {}; sepetGuncelle(); urunleriYukle(); }
+  else { const err = await res.json(); alert(err.hata); }
+}
+
+function konumuYenile() {
+  const yeniLat = prompt("Yeni Enlem (Lat):", musterLat);
+  const yeniLon = prompt("Yeni Boylam (Lon):", musteriLon);
+  if (yeniLat && yeniLon) { musterLat = parseFloat(yeniLat); musteriLon = parseFloat(yeniLon); document.getElementById('loc-text').textContent = `Antakya Konum (${musterLat}, ${musteriLon})`; marketleriYukle(); }
+}
+
+marketleriYukle();
+</script>
+</body>
+</html>
