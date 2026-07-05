@@ -76,3 +76,4 @@ market_siparis/
 - Gerçek zamanlı bildirim (Flask-SocketIO ya da polling)
 - Market/müşteri/kurye arayüzleri (bu sadece backend API)
 - Kurye başına Banabikurye gibi harici bir platform entegrasyonu (opsiyonel)
+
