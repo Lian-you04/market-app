@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yeni Hesap Kaydı — Köşebaşı Platformu</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --migros-orange: #FF7B00;
+    --migros-dark: #0F172A;
+    --bg-page: #F8FAFC;
+    --border-color: #E2E8F0;
+    --text-main: #1E293B;
+    --text-muted: #64748B;
+  }
+  * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+  body {
+    background-color: var(--bg-page); color: var(--text-main);
+    margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; padding: 30px 20px;
+  }
+  .brand-header { text-align: center; margin-bottom: 24px; }
+  .brand-logo { font-size: 26px; font-weight: 800; color: var(--migros-orange); text-decoration: none; letter-spacing: -0.5px; }
+  .brand-logo span { color: var(--migros-dark); }
+  .brand-subtitle { font-size: 14px; color: var(--text-muted); font-weight: 500; margin-top: 4px; }
+  .register-card {
+    background: #FFFFFF; width: 100%; max-width: 480px;
+    border: 1px solid var(--border-color); border-radius: 16px;
+    padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+  }
+  .form-title { font-size: 20px; font-weight: 800; margin: 0 0 6px 0; color: var(--migros-dark); }
+  .form-desc { font-size: 13px; color: var(--text-muted); margin: 0 0 24px 0; line-height: 1.4; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .full-width { grid-column: 1 / -1; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-main); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.3px; }
+  .form-control {
+    width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color);
+    border-radius: 8px; font-size: 14px; outline: none; transition: 0.2s; background: #FAFCFF;
+  }
+  .form-control:focus { border-color: var(--migros-orange); background: #FFF; box-shadow: 0 0 0 3px rgba(255,123,0,0.1); }
+  textarea.form-control { resize: vertical; min-height: 70px; }
+  .btn-submit {
+    width: 100%; background: var(--migros-orange); color: #FFF; font-weight: 700;
+    font-size: 15px; padding: 14px; border: none; border-radius: 8px; cursor: pointer;
+    transition: 0.2s; margin-top: 10px;
+  }
+  .btn-submit:hover { background: #E66E00; transform: translateY(-1px); }
+  .btn-submit:disabled { background: #CBD5E1; cursor: not-allowed; transform: none; }
+  .alert-box {
+    padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    margin-bottom: 18px; display: none; text-align: center;
+  }
+  .alert-error { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+  .alert-success { background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; }
+  .footer-links { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color); text-align: center; font-size: 13px; }
+  .footer-links a { color: var(--migros-orange); font-weight: 700; text-decoration: none; }
+  .footer-links a:hover { text-decoration: underline; }
+  .security-badge {
+    margin-top: 20px; font-size: 11px; color: var(--text-muted); text-align: center;
+    background: #F1F5F9; padding: 8px 12px; border-radius: 6px; font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<div class="brand-header">
+  <div class="brand-logo">Köşebaşı<span>Market</span></div>
+  <div class="brand-subtitle">Mahallenizin Dijital Bakkal & Kasa Platformu</div>
+</div>
+
+<div class="register-card">
+  <h1 class="form-title">Yeni Hesap Oluştur</h1>
+  <p class="form-desc">Saniyeler içinde kayıt olun, platformu kullanmaya hemen başlayın.</p>
+
+  <div id="bildirim-kutu" class="alert-box"></div>
+
+  <form id="register-form" onsubmit="kayitOl(event)">
+    <div class="form-grid">
+      
+      <input type="hidden" id="rol" value="musteri">
+
+      <div class="form-group full-width">
+        <label for="ad_soyad" id="ad-label">AD SOYAD / VEYA MARKET ADI</label>
+        <input type="text" id="ad_soyad" class="form-control" placeholder="Örn: Ahmet Yılmaz veya Köşebaşı Bakkalı" required autocomplete="name">
+      </div>
+
+      <div class="form-group">
+        <label for="email">E-POSTA ADRESİ</label>
+        <input type="email" id="email" class="form-control" placeholder="örnek@mail.com" required autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label for="telefon">TELEFON NUMARASI</label>
+        <input type="tel" id="telefon" class="form-control" placeholder="05XX XXX XX XX" required autocomplete="tel">
+      </div>
+
+      <div class="form-group">
+        <label for="sifre">ŞİFRE BELİRLEYİN</label>
+        <input type="password" id="sifre" class="form-control" placeholder="En az 6 karakter" required minlength="6">
+      </div>
+
+      <div class="form-group">
+        <label for="sifre_tekrar">ŞİFREYİ TEKRARLAYIN</label>
+        <input type="password" id="sifre_tekrar" class="form-control" placeholder="Şifrenizi doğrulayın" required minlength="6">
+      </div>
+
+      <div class="form-group full-width">
+        <label for="adres">ADRES BİLGİSİ</label>
+        <textarea id="adres" class="form-control" placeholder="Mahalle, sokak, bina ve kapı numarası bilgileriniz..."></textarea>
+      </div>
+
+    </div>
+
+    <button type="submit" class="btn-submit" id="submit-btn">Hesabı Oluştur ve Başla ➔</button>
+  </form>
+
+  <div class="security-badge">
+    🛡️ Bilgileriniz 256-bit SSL şifreleme standartları ile korunmaktadır.
+  </div>
+
+  <div class="footer-links">
+    Zaten bir hesabınız var mı? <br>
+    <a href="/login" style="display:inline-block; margin-top:6px;">🔑 Giriş Ekranına Dön</a>
+  </div>
+</div>
+
+<script>
+async function kayitOl(event) {
+  event.preventDefault();
+
+  const rolInput = document.getElementById('rol');
+  const adSoyadInput = document.getElementById('ad_soyad');
+  const emailInput = document.getElementById('email');
+  const telefonInput = document.getElementById('telefon');
+  const sifreInput = document.getElementById('sifre');
+  const sifreTekrarInput = document.getElementById('sifre_tekrar');
+  const adresInput = document.getElementById('adres');
+  
+  const submitBtn = document.getElementById('submit-btn');
+  const bildirimKutu = document.getElementById('bildirim-kutu');
+
+  bildirimKutu.style.display = 'none';
+  bildirimKutu.className = 'alert-box';
+
+  if (sifreInput.value !== sifreTekrarInput.value) {
+    bildirimKutu.textContent = 'Girdiğiniz şifreler birbirisiyle uyuşmuyor!';
+    bildirimKutu.classList.add('alert-error');
+    bildirimKutu.style.display = 'block';
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Hesabınız Oluşturuluyor...';
+
+  try {
+    const secilenRol = rolInput.value;
+
+    // 1. ADIM: Kayıt İşlemi (Seçilen rol tam isabetle gönderilir)
+    const registerRes = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        rol: secilenRol,
+        email: emailInput.value.trim(),
+        sifre: sifreInput.value,
+        ad_soyad: adSoyadInput.value.trim(),
+        market_adi: adSoyadInput.value.trim(), // Bakkal seçilirse market adı olarak gider
+        telefon: telefonInput.value.trim(),
+        adres: adresInput.value.trim()
+      })
+    });
+
+    const registerData = await registerRes.json();
+
+    if (registerRes.ok) {
+      bildirimKutu.textContent = '🎉 Kayıt başarılı! Yönlendiriliyorsunuz...';
+      bildirimKutu.classList.add('alert-success');
+      bildirimKutu.style.display = 'block';
+      submitBtn.style.background = '#10B981';
+
+      // 2. ADIM: Arka planda anında giriş yap
+      const loginRes = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: emailInput.value.trim(),
+          sifre: sifreInput.value
+        })
+      });
+      
+      const loginData = await loginRes.json();
+
+      setTimeout(() => {
+        // Doğru roldeyse direkt kendi ekranına uçur!
+        window.location.href = loginData.yonlendir || (secilenRol === 'market' ? '/market' : '/musteri');
+      }, 800);
+
+    } else {
+      bildirimKutu.textContent = registerData.hata || 'Kayıt işlemi sırasında bir sorun oluştu.';
+      bildirimKutu.classList.add('alert-error');
+      bildirimKutu.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Hesabı Oluştur ve Başla ➔';
+    }
+
+  } catch (error) {
+    bildirimKutu.textContent = 'Sunucu bağlantısı kurulamadı. Lütfen tekrar deneyin.';
+    bildirimKutu.classList.add('alert-error');
+    bildirimKutu.style.display = 'block';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Hesabı Oluştur ve Başla ➔';
+  }
+}
+</script>
+</body>
+</html>

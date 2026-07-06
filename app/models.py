@@ -1,131 +1,101 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 
-
+# 1. EN ÜST HİYERARŞİ: KULLANICILAR TABLOSU
 class Kullanici(db.Model):
-    __tablename__ = "kullanici"
-
+    __tablename__ = "kullanicilar"
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     sifre_hash = db.Column(db.String(256), nullable=False)
-    rol = db.Column(db.String(20), nullable=False)  # 'musteri', 'market', 'kurye'
-    olusturma_tarihi = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    rol = db.Column(db.String(20), nullable=False)  # 'market' veya 'musteri'
+    olusturma_tarihi = db.Column(db.DateTime, default=datetime.utcnow)
     aktif = db.Column(db.Boolean, default=True)
-
-    market = db.relationship("Market", backref="kullanici", uselist=False, cascade="all, delete-orphan")
-    musteri = db.relationship("Musteri", backref="kullanici", uselist=False, cascade="all, delete-orphan")
-    kurye = db.relationship("Kurye", backref="kullanici", uselist=False, cascade="all, delete-orphan")
 
     def sifre_belirle(self, sifre):
         self.sifre_hash = generate_password_hash(sifre)
 
+    def sifre_dogrula(self, sifre):
+        return check_password_hash(self.sifre_hash, sifre)
+
+    # 🚀 ÇÖZÜM BURADA: auth.py dosyası hata vermesin diye ikinci bir isim (alias) ekliyoruz!
     def sifre_kontrol(self, sifre):
         return check_password_hash(self.sifre_hash, sifre)
 
 
+# 2. HİYERARŞİ: MARKETLER TABLOSU (kullanicilar tablosuna bağlı)
 class Market(db.Model):
-    __tablename__ = "market"
-
+    __tablename__ = "marketler"
     id = db.Column(db.Integer, primary_key=True)
-    kullanici_id = db.Column(db.Integer, db.ForeignKey("kullanici.id"), unique=True, nullable=True)
-    ad = db.Column(db.String(120), nullable=False)
-    adres = db.Column(db.String(255))
-    telefon = db.Column(db.String(20))
-    resim_url = db.Column(db.String(255), default="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=400&q=80")
+    kullanici_id = db.Column(db.Integer, db.ForeignKey("kullanicilar.id"), nullable=True)
+    ad = db.Column(db.String(100), nullable=False)
+    adres = db.Column(db.Text, nullable=False)
+    telefon = db.Column(db.String(20), nullable=False)
     
+    # Harita Koordinatları ve Servis Sınırları (Antakya/Hatay Merkezli)
     konum_lat = db.Column(db.Float, default=36.2000)
     konum_lon = db.Column(db.Float, default=36.1500)
-    maks_teslimat_km = db.Column(db.Float, default=5.0)  # Marketin maksimum servis yarıçapı
-    
+    maks_teslimat_km = db.Column(db.Float, default=3.0)
     min_siparis_tutari = db.Column(db.Numeric(10, 2), default=50.00)
     aktif = db.Column(db.Boolean, default=True)
 
-    urunler = db.relationship("Urun", backref="market", lazy=True, cascade="all, delete-orphan")
-    siparisler = db.relationship("Siparis", backref="market", lazy=True)
+    kullanici = db.relationship("Kullanici", backref="market")
+    urunler = db.relationship("Urun", backref="market", cascade="all, delete-orphan")
 
 
-class Urun(db.Model):
-    __tablename__ = "urun"
-
-    id = db.Column(db.Integer, primary_key=True)
-    market_id = db.Column(db.Integer, db.ForeignKey("market.id"), nullable=False)
-    ad = db.Column(db.String(120), nullable=False)
-    aciklama = db.Column(db.Text, default="")  # Uzun açıklamalar için Text yaptık
-    fiyat = db.Column(db.Numeric(10, 2), nullable=False)
-    stok_adet = db.Column(db.Integer, default=0)
-    kategori = db.Column(db.String(60), nullable=False)
-    # Çoklu fotoğrafları virgülle ayırarak saklamak için Text yaptık:
-    resim_url = db.Column(db.Text, default="https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?auto=format&fit=crop&w=300&q=80")
-    aktif = db.Column(db.Boolean, default=True)
-
-
+# 3. HİYERARŞİ: MÜŞTERİLER TABLOSU (kullanicilar tablosuna bağlı)
 class Musteri(db.Model):
-    __tablename__ = "musteri"
-
+    __tablename__ = "musteriler"
     id = db.Column(db.Integer, primary_key=True)
-    kullanici_id = db.Column(db.Integer, db.ForeignKey("kullanici.id"), unique=True, nullable=True)
-    ad_soyad = db.Column(db.String(120), nullable=False)
+    kullanici_id = db.Column(db.Integer, db.ForeignKey("kullanicilar.id"), nullable=True)
+    ad_soyad = db.Column(db.String(100), nullable=False)
     telefon = db.Column(db.String(20), nullable=False)
-    adres = db.Column(db.String(255))
+    adres = db.Column(db.Text, nullable=False)
     konum_lat = db.Column(db.Float, default=36.1950)
     konum_lon = db.Column(db.Float, default=36.1450)
 
-    siparisler = db.relationship("Siparis", backref="musteri", lazy=True)
+    kullanici = db.relationship("Kullanici", backref="musteri")
 
 
-class Kurye(db.Model):
-    __tablename__ = "kurye"
-
+# 4. HİYERARŞİ: ÜRÜNLER TABLOSU (marketler tablosuna bağlı)
+class Urun(db.Model):
+    __tablename__ = "urunler"
     id = db.Column(db.Integer, primary_key=True)
-    kullanici_id = db.Column(db.Integer, db.ForeignKey("kullanici.id"), unique=True, nullable=True)
-    ad_soyad = db.Column(db.String(120), nullable=False)
-    telefon = db.Column(db.String(20), nullable=False)
-    durum = db.Column(db.String(20), default="musait")  # musait / mesgul
-    
-    # Kuryenin anlık konumu ve hizmet yarıçapı
-    konum_lat = db.Column(db.Float, default=36.1980)
-    konum_lon = db.Column(db.Float, default=36.1480)
-    calisma_yaricap_km = db.Column(db.Float, default=7.0)
-
-    siparisler = db.relationship("Siparis", backref="kurye", lazy=True)
+    market_id = db.Column(db.Integer, db.ForeignKey("marketler.id"), nullable=False)
+    ad = db.Column(db.String(100), nullable=False)
+    aciklama = db.Column(db.Text, nullable=True)
+    fiyat = db.Column(db.Numeric(10, 2), nullable=False)
+    stok_adet = db.Column(db.Integer, default=0)
+    kategori = db.Column(db.String(50), nullable=False)
+    resim_url = db.Column(db.Text, nullable=True)
+    aktif = db.Column(db.Boolean, default=True)
 
 
+# 5. HİYERARŞİ: SİPARİŞLER TABLOSU (marketler ve musteriler tablosuna bağlı)
 class Siparis(db.Model):
-    __tablename__ = "siparis"
-
+    __tablename__ = "siparisler"
     id = db.Column(db.Integer, primary_key=True)
-    market_id = db.Column(db.Integer, db.ForeignKey("market.id"), nullable=False)
-    musteri_id = db.Column(db.Integer, db.ForeignKey("musteri.id"), nullable=False)
-    kurye_id = db.Column(db.Integer, db.ForeignKey("kurye.id"), nullable=True)
+    market_id = db.Column(db.Integer, db.ForeignKey("marketler.id"), nullable=False)
+    musteri_id = db.Column(db.Integer, db.ForeignKey("musteriler.id"), nullable=False)
+    durum = db.Column(db.String(20), default="bekliyor")  # bekliyor, hazirlaniyor, yolda, teslim_edildi, iptal
+    odeme_yontemi = db.Column(db.String(20), nullable=False)  # nakit, kart
+    teslimat_yontemi = db.Column(db.String(20), nullable=False)  # adrese_teslim, gel_al
+    siparis_notu = db.Column(db.Text, nullable=True)
+    toplam_tutar = db.Column(db.Numeric(10, 2), nullable=False)
+    olusturma_tarihi = db.Column(db.DateTime, default=datetime.utcnow)
 
-    durum = db.Column(db.String(20), default="bekliyor")
-    odeme_yontemi = db.Column(db.String(10), nullable=False)
-    toplam_tutar = db.Column(db.Numeric(10, 2), default=0)
-    olusturma_tarihi = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-
-    detaylar = db.relationship("SiparisDetay", backref="siparis", lazy=True, cascade="all, delete-orphan")
-    nakit_tahsilatlar = db.relationship("NakitTahsilat", backref="siparis", lazy=True, cascade="all, delete-orphan")
+    market = db.relationship("Market", backref="siparisler")
+    musteri = db.relationship("Musteri", backref="siparisler")
+    detaylar = db.relationship("SiparisDetay", backref="siparis", cascade="all, delete-orphan")
 
 
+# 6. EN ALT HİYERARŞİ: SİPARİŞ DETAYLARI TABLOSU (siparisler ve urunler tablosuna bağlı)
 class SiparisDetay(db.Model):
-    __tablename__ = "siparis_detay"
-
+    __tablename__ = "siparis_detaylari"
     id = db.Column(db.Integer, primary_key=True)
-    siparis_id = db.Column(db.Integer, db.ForeignKey("siparis.id"), nullable=False)
-    urun_id = db.Column(db.Integer, db.ForeignKey("urun.id"), nullable=False)
+    siparis_id = db.Column(db.Integer, db.ForeignKey("siparisler.id"), nullable=False)
+    urun_id = db.Column(db.Integer, db.ForeignKey("urunler.id"), nullable=False)
     adet = db.Column(db.Integer, nullable=False)
     birim_fiyat = db.Column(db.Numeric(10, 2), nullable=False)
 
     urun = db.relationship("Urun")
-
-
-class NakitTahsilat(db.Model):
-    __tablename__ = "nakit_tahsilat"
-
-    id = db.Column(db.Integer, primary_key=True)
-    kurye_id = db.Column(db.Integer, db.ForeignKey("kurye.id"), nullable=False)
-    siparis_id = db.Column(db.Integer, db.ForeignKey("siparis.id"), nullable=False)
-    tutar = db.Column(db.Numeric(10, 2), nullable=False)
-    tarih = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-    markete_teslim_edildi = db.Column(db.Boolean, default=False)

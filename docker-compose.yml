@@ -7,7 +7,7 @@ services:
       MYSQL_DATABASE: market_siparis
       TZ: Europe/Istanbul
     ports:
-      - "3309:3306"
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:

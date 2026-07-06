@@ -1,12 +1,17 @@
 import os
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
+from flask_socketio import SocketIO
 
 db = SQLAlchemy()
+socketio = SocketIO()
 
 
 def create_app():
     app = Flask(__name__, template_folder="../templates", static_folder="../static")
+
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+    app.config["SESSION_COOKIE_SECURE"] = False
 
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "gizli-ve-guvenli-anahtar-12345")
 
@@ -26,15 +31,17 @@ def create_app():
     }
 
     db.init_app(app)
+    
+    # YENİ EKLEME: Canlı Socket motorumuzu Flask uygulamasına bağlıyoruz
+    socketio.init_app(app, cors_allowed_origins="*", async_mode="eventlet")
 
+    # API Blueprints
     from app.routes.market import market_bp
     from app.routes.musteri import musteri_bp
-    from app.routes.kurye import kurye_bp
     from app.routes.auth import auth_bp
 
     app.register_blueprint(market_bp, url_prefix="/api/market")
     app.register_blueprint(musteri_bp, url_prefix="/api/musteri")
-    app.register_blueprint(kurye_bp, url_prefix="/api/kurye")
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
 
     @app.route("/health")
@@ -45,6 +52,10 @@ def create_app():
     def login_sayfasi():
         return render_template("login.html")
 
+    @app.route("/register")
+    def register_sayfasi():
+        return render_template("register.html")
+
     @app.route("/market")
     def market_sayfasi():
         return render_template("market.html")
@@ -53,9 +64,5 @@ def create_app():
     @app.route("/musteri")
     def musteri_sayfasi():
         return render_template("musteri.html")
-
-    @app.route("/kurye")
-    def kurye_sayfasi():
-        return render_template("kurye.html")
 
     return app

@@ -3,153 +3,163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Köşebaşı Market — Platform Girişi</title>
-<link rel="stylesheet" href="/static/css/style.css">
+<title>Giriş Yap — Köşebaşı Market Platformu</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-  .auth-card { width: 100%; max-width: 440px; background: var(--paper-raised); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); overflow: hidden; }
-  .auth-header { background: var(--market-green); color: #F2F4EE; padding: 24px 20px; text-align: center; }
-  .auth-header .brand { font-family: var(--font-display); font-weight: 900; font-size: 24px; }
-  .auth-header .brand span { color: var(--crate-amber); }
-  .tabs { display: flex; border-bottom: 1px solid var(--line); background: var(--paper); }
-  .tab-btn { flex: 1; padding: 12px; font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--ink-soft); cursor: pointer; border: none; background: transparent; }
-  .tab-btn.active { background: var(--paper-raised); color: var(--market-green-dark); border-bottom: 2px solid var(--crate-amber); }
-  .form-content { padding: 24px 20px; }
-  .form-group { margin-bottom: 14px; }
-  .form-group label { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 5px; }
-  .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 4px; font-family: var(--font-body); font-size: 14px; background: var(--paper); color: var(--ink); }
-  .role-selector { display: flex; gap: 8px; margin-top: 5px; }
-  .role-option { flex: 1; padding: 8px; border: 1px solid var(--line-strong); border-radius: 4px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 600; }
-  .role-option.selected { background: var(--market-green); color: #F2F4EE; border-color: var(--market-green-dark); }
-  .hidden { display: none; }
+  :root {
+    --migros-orange: #FF7B00;
+    --migros-dark: #0F172A;
+    --bg-page: #F8FAFC;
+    --border-color: #E2E8F0;
+    --text-main: #1E293B;
+    --text-muted: #64748B;
+  }
+
+  * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+  body {
+    background-color: var(--bg-page); color: var(--text-main);
+    margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; padding: 20px;
+  }
+
+  /* LOGO ALANI */
+  .brand-header { text-align: center; margin-bottom: 24px; }
+  .brand-logo { font-size: 26px; font-weight: 800; color: var(--migros-orange); text-decoration: none; letter-spacing: -0.5px; }
+  .brand-logo span { color: var(--migros-dark); }
+  .brand-subtitle { font-size: 14px; color: var(--text-muted); font-weight: 500; margin-top: 4px; }
+
+  /* KART TASARIMI */
+  .login-card {
+    background: #FFFFFF; width: 100%; max-width: 420px;
+    border: 1px solid var(--border-color); border-radius: 16px;
+    padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+  }
+
+  .form-title { font-size: 20px; font-weight: 800; margin: 0 0 6px 0; color: var(--migros-dark); }
+  .form-desc { font-size: 13px; color: var(--text-muted); margin: 0 0 24px 0; line-height: 1.4; }
+
+  /* FORM İÇERİĞİ */
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-main); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.3px; }
+  .form-control {
+    width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color);
+    border-radius: 8px; font-size: 14px; outline: none; transition: 0.2s; background: #FAFCFF;
+  }
+  .form-control:focus { border-color: var(--migros-orange); background: #FFF; box-shadow: 0 0 0 3px rgba(255,123,0,0.1); }
+
+  /* BUTONLAR */
+  .btn-submit {
+    width: 100%; background: var(--migros-orange); color: #FFF; font-weight: 700;
+    font-size: 15px; padding: 14px; border: none; border-radius: 8px; cursor: pointer;
+    transition: 0.2s; margin-top: 8px;
+  }
+  .btn-submit:hover { background: #E66E00; transform: translateY(-1px); }
+  .btn-submit:disabled { background: #CBD5E1; cursor: not-allowed; transform: none; }
+
+  /* HATA VE BİLGİ KUTULARI */
+  .alert-box {
+    padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    margin-bottom: 18px; display: none; text-align: center;
+  }
+  .alert-error { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+
+  /* ALT YÖNLENDİRME ALANI */
+  .footer-links { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color); text-align: center; font-size: 13px; }
+  .footer-links a { color: var(--migros-orange); font-weight: 700; text-decoration: none; }
+  .footer-links a:hover { text-decoration: underline; }
+
+  .merchant-note {
+    margin-top: 24px; font-size: 11px; color: var(--text-muted); text-align: center;
+    max-width: 380px; line-height: 1.5; background: #F1F5F9; padding: 10px 14px; border-radius: 8px;
+  }
 </style>
 </head>
 <body>
 
-<div class="auth-card">
-  <div class="auth-header">
-    <div class="brand">Köşe<span>başı</span></div>
-    <div class="mono" style="font-size: 12px; opacity: 0.8; margin-top: 4px;">Antakya Mahalle Marketleri Platformu</div>
-  </div>
+<div class="brand-header">
+  <div class="brand-logo">Köşebaşı<span>Market</span></div>
+  <div class="brand-subtitle">Mahallenizin Dijital Bakkal & Kasa Platformu</div>
+</div>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="sekmeDegistir('login')">Giriş Yap</button>
-    <button class="tab-btn" onclick="sekmeDegistir('register')">Yeni Hesap</button>
-  </div>
+<div class="login-card">
+  <h1 class="form-title">Sisteme Giriş Yap</h1>
+  <p class="form-desc">E-posta adresiniz ve şifrenizle devam edin.</p>
 
-  <div class="form-content">
-    <div id="form-login">
-      <div class="form-group"><label>E-Posta Adresi</label><input type="email" id="login-email" class="form-control" placeholder="sumerler@kosebasi.com"></div>
-      <div class="form-group"><label>Şifre</label><input type="password" id="login-sifre" class="form-control" placeholder="••••••••"></div>
-      <button class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px; margin-top: 10px;" onclick="girisYap()">Giriş Yap</button>
+  <div id="hata-kutu" class="alert-box alert-error"></div>
+
+  <form id="login-form" onsubmit="girisYap(event)">
+    <div class="form-group">
+      <label for="email">E-POSTA ADRESİ</label>
+      <input type="email" id="email" class="form-control" placeholder="örnek@mail.com" required autocomplete="email">
     </div>
 
-    <div id="form-register" class="hidden">
-      <div class="form-group">
-        <label>Hesap Tipi</label>
-        <div class="role-selector">
-          <div class="role-option selected" data-rol="musteri" onclick="rolSec('musteri')">🛒 Müşteri</div>
-          <div class="role-option" data-rol="market" onclick="rolSec('market')">🏪 Market</div>
-          <div class="role-option" data-rol="kurye" onclick="rolSec('kurye')">🛵 Kurye</div>
-        </div>
-      </div>
-
-      <div class="form-group"><label>E-Posta Adresi</label><input type="email" id="reg-email" class="form-control" placeholder="ornek@kosebasi.com"></div>
-      <div class="form-group"><label>Şifre</label><input type="password" id="reg-sifre" class="form-control" placeholder="••••••••"></div>
-      <div class="form-group"><label id="lbl-ad">Ad Soyad / Market Adı</label><input type="text" id="reg-ad" class="form-control" placeholder="Örn: Köşebaşı Sümerler Şubesi"></div>
-      <div class="form-group"><label>Telefon</label><input type="tel" id="reg-telefon" class="form-control" placeholder="05XX XXX XX XX"></div>
-
-      <div class="form-group" id="grp-adres"><label>Adres</label><input type="text" id="reg-adres" class="form-control" placeholder="Sümerler Mah. Harbiye Cad. Antakya"></div>
-
-      <!-- Konum & Yarıçap -->
-      <div id="grp-konum">
-        <div style="display:flex; gap:8px;">
-          <div class="form-group" style="flex:1;"><label>Enlem (Lat)</label><input type="number" step="0.0001" id="reg-lat" class="form-control" value="36.1950"></div>
-          <div class="form-group" style="flex:1;"><label>Boylam (Lon)</label><input type="number" step="0.0001" id="reg-lon" class="form-control" value="36.1450"></div>
-        </div>
-      </div>
-
-      <div class="form-group hidden" id="grp-yaricap">
-        <label id="lbl-yaricap">Servis Teslimat Yarıçapı (km)</label>
-        <input type="number" step="0.5" id="reg-yaricap" class="form-control" value="5.0">
-      </div>
-
-      <button class="btn btn-amber" style="width: 100%; padding: 12px; font-size: 15px; margin-top: 6px;" onclick="kayitOl()">Hesabı Oluştur</button>
+    <div class="form-group">
+      <label for="sifre">ŞİFRE</label>
+      <input type="password" id="sifre" class="form-control" placeholder="••••••••" required autocomplete="current-password">
     </div>
+
+    <button type="submit" class="btn-submit" id="submit-btn">Giriş Yap ➔</button>
+  </form>
+
+  <div class="footer-links">
+    Mahallemizde yeni misiniz? <br>
+    <a href="/register" style="display:inline-block; margin-top:6px;">🛍️ Müşteri Olarak Kayıt Olun</a>
   </div>
 </div>
 
+<div class="merchant-note">
+  🔒 <b>Esnaf / Bakkal Güvenlik Notu:</b> Dükkân yetkili hesapları siber güvenlik kuralları gereği sistem yöneticisi tarafından açılmaktadır. Yetkili şifrenizle direkt giriş yapabilirsiniz.
+</div>
+
 <script>
-let secilenRol = 'musteri';
+async function girisYap(event) {
+  event.preventDefault();
 
-function sekmeDegistir(sekme) {
-  document.querySelectorAll('.tab-btn')[0].classList.toggle('active', sekme === 'login');
-  document.querySelectorAll('.tab-btn')[1].classList.toggle('active', sekme === 'register');
-  document.getElementById('form-login').classList.toggle('hidden', sekme !== 'login');
-  document.getElementById('form-register').classList.toggle('hidden', sekme !== 'register');
-}
+  const emailInput = document.getElementById('email');
+  const sifreInput = document.getElementById('sifre');
+  const submitBtn = document.getElementById('submit-btn');
+  const hataKutu = document.getElementById('hata-kutu');
 
-function rolSec(rol) {
-  secilenRol = rol;
-  document.querySelectorAll('.role-option').forEach(el => el.classList.toggle('selected', el.dataset.rol === rol));
-  const lblYaricap = document.getElementById('lbl-yaricap');
-  const grpYaricap = document.getElementById('grp-yaricap');
+  // Hata kutusunu gizle ve butonu kilitle
+  hataKutu.style.display = 'none';
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Doğrulanıyor...';
 
-  if (rol === 'market') {
-    document.getElementById('lbl-ad').textContent = 'Market Şube Adı';
-    document.getElementById('grp-adres').classList.remove('hidden');
-    grpYaricap.classList.remove('hidden');
-    lblYaricap.textContent = 'Maksimum Teslimat Yarıçapı (km)';
-  } else if (rol === 'kurye') {
-    document.getElementById('lbl-ad').textContent = 'Ad Soyad';
-    document.getElementById('grp-adres').classList.add('hidden');
-    grpYaricap.classList.remove('hidden');
-    lblYaricap.textContent = 'Çalışma/Hizmet Yarıçapı (km)';
-  } else {
-    document.getElementById('lbl-ad').textContent = 'Ad Soyad';
-    document.getElementById('grp-adres').classList.remove('hidden');
-    grpYaricap.classList.add('hidden');
+  try {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: emailInput.value.trim(),
+        sifre: sifreInput.value
+      })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      submitBtn.textContent = 'Giriş Başarılı! Yönlendiriliyorsunuz...';
+      submitBtn.style.background = '#10B981'; // Başarılı yeşili
+
+      // AKILLI YÖNLENDİRME: Rol neyse o ekrana fırlat!
+      setTimeout(() => {
+        window.location.href = data.yonlendir || '/musteri';
+      }, 700);
+
+    } else {
+      // Hata durumunda uyar
+      hataKutu.textContent = data.hata || 'Giriş yapılamadı. Bilgilerinizi kontrol edin.';
+      hataKutu.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Giriş Yap ➔';
+    }
+
+  } catch (error) {
+    hataKutu.textContent = 'Sunucuyla bağlantı kurulamadı. Lütfen tekrar deneyin.';
+    hataKutu.style.display = 'block';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Giriş Yap ➔';
   }
-}
-
-async function girisYap() {
-  const email = document.getElementById('login-email').value.trim();
-  const sifre = document.getElementById('login-sifre').value.trim();
-  if (!email || !sifre) return alert("E-posta ve şifre giriniz.");
-
-  const res = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, sifre })
-  });
-  const data = await res.json();
-  if (!res.ok) return alert(data.hata);
-
-  localStorage.setItem('aktif_kullanici', JSON.stringify(data.kullanici));
-  window.location.href = data.kullanici.rol === 'market' ? '/market' : data.kullanici.rol === 'kurye' ? '/kurye' : '/musteri';
-}
-
-async function kayitOl() {
-  const payload = {
-    email: document.getElementById('reg-email').value.trim(),
-    sifre: document.getElementById('reg-sifre').value.trim(),
-    rol: secilenRol,
-    ad: document.getElementById('reg-ad').value.trim(),
-    telefon: document.getElementById('reg-telefon').value.trim(),
-    adres: document.getElementById('reg-adres').value.trim(),
-    konum_lat: parseFloat(document.getElementById('reg-lat').value),
-    konum_lon: parseFloat(document.getElementById('reg-lon').value),
-    yaricap_km: parseFloat(document.getElementById('reg-yaricap').value || '5.0')
-  };
-
-  const res = await fetch('/api/auth/register', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
-  });
-  const data = await res.json();
-  if (!res.ok) return alert(data.hata);
-
-  alert("Kayıt başarılı! Giriş yapabilirsiniz.");
-  sekmeDegistir('login');
 }
 </script>
 </body>
