@@ -24,17 +24,25 @@ Sağlık kontrolü: `GET /health`
 ```
 market_siparis/
 ├── app/
-│   ├── __init__.py        # Flask app factory, blueprint kaydı
-│   ├── models.py           # 7 tablo: Market, Urun, Musteri, Kurye,
-│   │                        Siparis, SiparisDetay, NakitTahsilat
+│   ├── __init__.py      
+│   ├── models.py         
+│   │                       
 │   └── routes/
-│       ├── market.py        # market paneli endpoint'leri
-│       ├── musteri.py        # müşteri uygulaması endpoint'leri
-│       └── kurye.py          # kurye uygulaması endpoint'leri
-├── run.py                   # başlangıç noktası, tabloları oluşturur
-├── requirements.txt
+│       ├── auth.py        
+│       ├── market.py        
+│       └── musteri.py         
+├── templates/
+│   ├── login.html 
+    ├── market.html
+    ├── musteri.html
+    ├── register.html                     
+├── gitignore                  
+├── bakkal_ekle.py
 ├── docker-compose.yml
-└── Dockerfile
+├── Dockerfile
+├── readme
+├── requirements.txt
+└── run.py
 ```
 
 ## Örnek akış (uçtan uca test)
