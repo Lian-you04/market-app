@@ -31,11 +31,13 @@ market_siparis/
 │       ├── auth.py        
 │       ├── market.py        
 │       └── musteri.py         
+│
 ├── templates/
 │   ├── login.html 
-    ├── market.html
-    ├── musteri.html
-    ├── register.html                     
+│   ├── market.html
+│   ├── musteri.html
+│   └── register.html                     
+│
 ├── gitignore                  
 ├── bakkal_ekle.py
 ├── docker-compose.yml
