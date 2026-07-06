@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Köşebaşı Market — Kasa & Operasyon Paneli</title>
+<title>Nihat Market</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<!-- LEAFLET HARİTA KÜTÜPHANESİ CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <style>
@@ -26,7 +25,6 @@
   * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
   body { background-color: var(--bg-main); color: var(--text-dark); margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
 
-  /* 1. ÜST HEADER */
   .header {
     background: var(--navy-header); color: #FFFFFF; height: 72px; padding: 0 24px;
     display: flex; align-items: center; justify-content: space-between;
@@ -36,7 +34,6 @@
   .logo { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; color: #FFF; display: flex; align-items: center; gap: 8px; }
   .logo span { color: var(--emerald); }
 
-  /* OPERASYON ŞALTERİ VE LİMİT KUTUSU */
   .shop-controls { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.06); padding: 6px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
   
   .status-toggle {
@@ -53,7 +50,6 @@
   .btn-logout { background: rgba(255,255,255,0.08); color: #FFF; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
   .btn-logout:hover { background: var(--rose); }
 
-  /* 2. ANA LAYOUT */
   .layout { display: flex; flex: 1; }
   .sidebar {
     width: 240px; background: var(--navy-sidebar); padding: 20px 12px;
@@ -73,7 +69,6 @@
   .panel-header { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #FFF; }
   .panel-header h2 { margin: 0; font-size: 18px; font-weight: 800; color: var(--text-dark); }
   
-  /* SİPARİŞ KARTLARI */
   .order-card { padding: 20px 24px; border-bottom: 1px solid var(--border); transition: background 0.15s; }
   .order-card:hover { background: #FCFDFE; }
   .order-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
@@ -85,7 +80,6 @@
   .order-customer { font-size: 14px; color: var(--text-dark); margin-top: 8px; }
   .order-customer b { font-size: 15px; }
 
-  /* İLETİŞİM BUTONLARI (WHATSAPP & ARAMA) */
   .contact-bar { display: inline-flex; align-items: center; gap: 8px; margin-left: 10px; }
   .btn-wp { background: #25D366; color: white; padding: 3px 8px; border-radius: 6px; text-decoration: none; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
   .btn-call { background: #3B82F6; color: white; padding: 3px 8px; border-radius: 6px; text-decoration: none; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
@@ -96,7 +90,6 @@
   
   .status-select { padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); font-weight: 700; font-size: 13px; background: #FFF; color: var(--text-dark); cursor: pointer; outline: none; }
 
-  /* ÜRÜN TABLOSU */
   .product-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
   .product-table th { background: #F8FAFC; padding: 12px 20px; font-weight: 700; color: var(--text-muted); font-size: 12px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
   .product-table td { padding: 14px 20px; border-bottom: 1px solid var(--border); vertical-align: middle; }
@@ -109,7 +102,6 @@
   .btn-primary:hover { background: var(--emerald); }
   .hidden { display: none !important; }
 
-  /* HARİTA KUTUSU CSS */
   #map-container { height: 380px; width: 100%; border-radius: 12px; border: 2px solid var(--border); margin-top: 12px; z-index: 1; }
 
   .footer { background: #FFF; border-top: 1px solid var(--border); padding: 16px 24px; text-align: center; font-size: 12px; color: var(--text-muted); margin-top: auto; }
@@ -117,12 +109,10 @@
 </head>
 <body>
 
-<!-- 1. HEADER -->
 <header class="header">
   <div class="header-left">
     <div class="logo">🏪 Köşebaşı<span>Kasa Paneli</span></div>
     
-    <!-- OPERASYON KONTROLLERİ -->
     <div class="shop-controls">
       <div id="salter-btn" class="status-toggle toggle-acik" onclick="salteriDegistir()">
         🟢 Dükkân Siparişe Açık
@@ -169,7 +159,6 @@
       </div>
     </div>
 
-    <!-- ÜRÜNLER SEKMESİ -->
     <div id="sekme-urunler" class="hidden">
       <div class="panel">
         <div class="panel-header">
@@ -212,11 +201,10 @@
       </div>
     </div>
 
-    <!-- DÜKKAN KONUM VE SERVİS SEKMESİ (YENİ) -->
     <div id="sekme-ayarlar" class="hidden">
       <div class="panel">
         <div class="panel-header">
-          <h2>📍 Dükkân Konumunu ve Servis Ağını Ayarla</h2>
+          <h2>Dükkân Konumunu ve Servis Ağını Ayarla</h2>
         </div>
         <div style="padding: 24px;">
           <p style="margin-top:0; font-size:14px; color:var(--text-muted); line-height: 1.5;">
@@ -241,7 +229,6 @@
             </div>
           </div>
 
-          <!-- HARİTA -->
           <div id="map-container"></div>
 
           <div style="margin-top: 20px; text-align: right;">
@@ -255,10 +242,9 @@
 </div>
 
 <footer class="footer">
-  Köşebaşı Mahalle Bakkalı · Operasyon & Kasa Yönetim Platformu v2.2
+  Nihat Market  · Kasa Yönetim Platformu
 </footer>
 
-<!-- LEAFLET JS KÜTÜPHANESİ -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
 <script>
@@ -267,7 +253,6 @@ let sonSiparisSayisi = -1;
 let dukkanAktif = true;
 let dukkanMinLimit = 50.0;
 
-// HARİTA DEĞİŞKENLERİ
 let map, marker;
 let secilenLat = 36.2000;
 let secilenLon = 36.1500;
@@ -279,13 +264,11 @@ function sekmeDegis(sekme, el) {
   document.getElementById('sekme-urunler').classList.toggle('hidden', sekme !== 'urunler');
   document.getElementById('sekme-ayarlar').classList.toggle('hidden', sekme !== 'ayarlar');
 
-  // Harita sekmesi açıldığında Leaflet boyutunu güncelle (görünmezlik sorununu çözer)
   if (sekme === 'ayarlar') {
     setTimeout(() => { if(map) map.invalidateSize(); }, 200);
   }
 }
 
-// MARKET DURUMUNU ÇEK VE ŞALTERİ GÜNCELLE
 async function marketDurumYukle() {
   const res = await fetch(`/api/market/durum?market_id=${MARKET_ID}`);
   if (res.ok) {
@@ -313,7 +296,7 @@ async function marketDurumYukle() {
 }
 
 function haritayiBaslat() {
-  if (map) return; // Harita zaten başlatıldıysa tekrar kurma
+  if (map) return; 
   
   map = L.map('map-container').setView([secilenLat, secilenLon], 15);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -323,14 +306,12 @@ function haritayiBaslat() {
   marker = L.marker([secilenLat, secilenLon], {draggable: true}).addTo(map);
   marker.bindPopup("<b>Dükkânınızın Konumu</b><br>Sürükleyerek veya haritaya tıklayarak taşıyabilirsiniz.").openPopup();
 
-  // Haritaya tıklandığında pini oraya taşı
   map.on('click', function(e) {
     marker.setLatLng(e.latlng);
     secilenLat = e.latlng.lat;
     secilenLon = e.latlng.lng;
   });
 
-  // Pin sürüklendiğinde koordinatları güncelle
   marker.on('dragend', function(e) {
     const pos = marker.getLatLng();
     secilenLat = pos.lat;
@@ -550,19 +531,17 @@ async function cikisYap() {
 setInterval(saatGuncelle, 1000); saatGuncelle();
 marketDurumYukle();
 siparisleriYukle(); urunleriYukle();
-// 🚀 WEBSOCKET CANLI BAĞLANTI MOTORU (8 Saniyelik Sayacın Yerine)
 const socket = io();
 
 socket.on("connect", () => {
   console.log("🟢 Bakkal Kasası Canlı Ağ Bağlantısı Kurdu!");
 });
 
-// Backend'den "yeni_siparis_geldi" sinyali fırlatıldığı salise tetiklenir!
 socket.on("yeni_siparis_geldi", (veri) => {
   if (veri.market_id === MARKET_ID) {
     console.log("🔔 CANLI SİPARİŞ DÜŞTÜ!", veri);
-    zilSesiCal();         // Anında zili çal
-    siparisleriYukle();   // Sayfayı yenilemeye gerek kalmadan listeyi güncelle
+    zilSesiCal();         
+    siparisleriYukle();   
   }
 });
 </script>
