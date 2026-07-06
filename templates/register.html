@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yeni Hesap Kaydı — Köşebaşı Platformu</title>
+<title>Yeni Hesap Kaydı — Nihat Market Shopping</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -66,8 +66,8 @@
 <body>
 
 <div class="brand-header">
-  <div class="brand-logo">Köşebaşı<span>Market</span></div>
-  <div class="brand-subtitle">Mahallenizin Dijital Bakkal & Kasa Platformu</div>
+  <div class="brand-logo">Nihat<span>Market</span></div>
+  <div class="brand-subtitle">Dijital Market Platformu</div>
 </div>
 
 <div class="register-card">
@@ -117,7 +117,7 @@
   </form>
 
   <div class="security-badge">
-    🛡️ Bilgileriniz 256-bit SSL şifreleme standartları ile korunmaktadır.
+    Bilgileriniz 256-bit SSL şifreleme standartları ile korunmaktadır.
   </div>
 
   <div class="footer-links">
@@ -157,7 +157,6 @@ async function kayitOl(event) {
   try {
     const secilenRol = rolInput.value;
 
-    // 1. ADIM: Kayıt İşlemi (Seçilen rol tam isabetle gönderilir)
     const registerRes = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -166,7 +165,7 @@ async function kayitOl(event) {
         email: emailInput.value.trim(),
         sifre: sifreInput.value,
         ad_soyad: adSoyadInput.value.trim(),
-        market_adi: adSoyadInput.value.trim(), // Bakkal seçilirse market adı olarak gider
+        market_adi: adSoyadInput.value.trim(), 
         telefon: telefonInput.value.trim(),
         adres: adresInput.value.trim()
       })
@@ -180,7 +179,6 @@ async function kayitOl(event) {
       bildirimKutu.style.display = 'block';
       submitBtn.style.background = '#10B981';
 
-      // 2. ADIM: Arka planda anında giriş yap
       const loginRes = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -193,7 +191,6 @@ async function kayitOl(event) {
       const loginData = await loginRes.json();
 
       setTimeout(() => {
-        // Doğru roldeyse direkt kendi ekranına uçur!
         window.location.href = loginData.yonlendir || (secilenRol === 'market' ? '/market' : '/musteri');
       }, 800);
 

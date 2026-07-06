@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Köşebaşı Market — Sanal Market</title>
+<title>Nihat Market</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -19,13 +19,11 @@
   * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
   body { background-color: #FFFFFF; color: var(--text-main); margin: 0; padding: 0; }
 
-  /* DÜKKAN KAPALI UYARI BANDI */
   .shop-status-banner {
     background: #FEE2E2; color: #DC2626; text-align: center; font-size: 13px; font-weight: 700;
     padding: 10px; border-bottom: 1px solid #FECACA; display: none;
   }
 
-  /* MAĞAZA KÜNYESİ VE MESAFE BAR */
   .store-info-bar {
     background: #FFFBEB; border-bottom: 1px solid #FEF3C7; padding: 10px 24px; font-size: 13px;
   }
@@ -50,7 +48,6 @@
     background: #FEE2E2; color: #DC2626; font-weight: 800; padding: 6px 12px; border-radius: 6px; font-size: 12px; border: 1px solid #FECACA;
   }
 
-  /* 1. ÜST NAVİGASYON */
   .header {
     position: sticky; top: 0; z-index: 100; background: #FFFFFF;
     border-bottom: 1px solid var(--border-color); padding: 12px 24px;
@@ -85,7 +82,6 @@
 
   .header-actions { display: flex; align-items: center; gap: 12px; }
 
-  /* PROFİL MENÜSÜ */
   .profile-menu { position: relative; }
   .profile-btn {
     display: flex; align-items: center; gap: 8px; background: #F8FAFC; border: 1px solid var(--border-color);
@@ -110,7 +106,6 @@
   .cart-btn:hover { background: #FFFBED; }
   .cart-btn .cart-icon { background: var(--migros-yellow); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
 
-  /* ANA İÇERİK */
   .main-container { max-width: 1280px; margin: 0 auto; padding: 24px; }
 
   .hero-banner {
@@ -170,7 +165,6 @@
   .qty-ctrl button:hover { background: var(--migros-orange); color: #FFF; }
   .qty-ctrl span { font-weight: 700; font-size: 14px; color: var(--text-main); }
 
-  /* MODALLAR */
   .modal-backdrop {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.6);
     display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px);
@@ -187,7 +181,6 @@
   .form-control { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; }
   .form-control:focus { border-color: var(--migros-orange); }
 
-  /* SİPARİŞ GEÇMİŞİ VE İPTAL BUTONU */
   .order-history-card { border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-bottom: 12px; }
   .status-badge { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 12px; text-transform: uppercase; }
   .st-bekliyor { background: #FEF3C7; color: #D97706; }
@@ -201,34 +194,30 @@
 </head>
 <body>
 
-<!-- ÜST UYARI BANDI (Dükkan Kapalıysa Çıkar) -->
 <div id="shop-banner" class="shop-status-banner">
   🔴 Bakkalımız şu an online siparişlere ve Gel-Al teslimatına kapalıdır. Yarın sabah görüşmek üzere!
 </div>
 
-<!-- MAĞAZA KÜNYESİ VE MESAFE BANDI -->
 <div class="store-info-bar">
   <div class="store-info-container">
     <div class="store-title">
       <span>🏪</span>
-      <span id="store-ad-text">Köşebaşı Market</span>
+      <span id="store-ad-text">Nihat Market</span>
       <span style="color:#B45309; font-weight:500;" id="store-adres-text">· Yükleniyor...</span>
     </div>
     <div id="location-action-area">
-      <!-- Buraya bakkalın açık/kapalı durumuna göre buton veya kilit uyarısı gelecek -->
     </div>
   </div>
 </div>
 
-<!-- HEADER -->
 <header class="header">
   <div class="header-container">
     <a href="#" class="brand-logo" onclick="kategoriFiltrele('','')">Köşebaşı<span>Market</span></a>
     
     <div class="delivery-selector">
-      <span>📍 Teslimat:</span>
+      <span>Teslimat:</span>
       <select id="header-teslimat" onchange="teslimatTuruDegisti(this.value)">
-        <option value="adrese_teslim">🛵 Adrese Teslim (15 dk)</option>
+        <option value="adrese_teslim">Adrese Teslim (15 dk)</option>
         <option value="gel_al">🛍️ Gel-Al (Dükkandan Al)</option>
       </select>
     </div>
@@ -281,7 +270,6 @@
   <div class="product-grid" id="urun-alani"></div>
 </main>
 
-<!-- SİPARİŞLERİM TAKİP MODALI -->
 <div class="modal-backdrop hidden" id="siparislerim-modal">
   <div class="modal-box">
     <div class="modal-header">
@@ -294,7 +282,6 @@
   </div>
 </div>
 
-<!-- SEPET VE CHECKOUT MODALI -->
 <div class="modal-backdrop hidden" id="sepet-modal">
   <div class="modal-box">
     <div class="modal-header">
@@ -338,7 +325,6 @@
   </div>
 </div>
 
-<!-- FOTOĞRAF GALERİSİ MODALI -->
 <div class="modal-backdrop hidden" id="galeri-modal">
   <div class="modal-box" style="max-width: 440px; text-align: center;">
     <div class="modal-header">
@@ -358,7 +344,6 @@ const MARKET_ID = 1;
 let sepet = {};
 let urunler = [];
 
-// BAKKAL OPERASYON VERİLERİ
 let marketAktif = true;
 let marketMinLimit = 50.0;
 let marketMaksKm = 3.0;
@@ -367,7 +352,6 @@ let marketLon = 36.1500;
 let musteriKm = null;
 
 async function baslat() {
-  // 1. Market bilgilerini ve konumunu çek
   try {
     const durRes = await fetch(`/api/musteri/market-durum?market_id=${MARKET_ID}`);
     if (durRes.ok) {
@@ -384,17 +368,14 @@ async function baslat() {
       const locAlan = document.getElementById('location-action-area');
 
       if (!marketAktif) {
-        // DÜKKAN KAPALI SÜPER-KİLİDİ
         document.getElementById('shop-banner').style.display = 'block';
         locAlan.innerHTML = '<span class="shop-closed-badge">🔴 Dükkân Şu An Kapalı (Hizmet Verilmiyor)</span>';
       } else {
-        // DÜKKAN AÇIKSA KONUM BUTONUNU GÖSTER
         locAlan.innerHTML = '<button class="btn-find-location" onclick="konumumuBul()">📍 Konumumu Bul ve Mesafeyi Gör</button>';
       }
     }
   } catch(e) {}
 
-  // 2. Kullanıcı profil adı çek
   try {
     const meRes = await fetch('/api/auth/me');
     if (meRes.ok) {
@@ -418,9 +399,8 @@ async function baslat() {
   await urunleriYukle('');
 }
 
-// TEK TIKLA KONUM VE MESAFE BULMA (HAVERSINE FORMÜLÜ)
 function konumumuBul() {
-  if (!marketAktif) return; // Dükkân kapalıysa işlem yapma
+  if (!marketAktif) return; 
 
   if (!navigator.geolocation) {
     alert("Tarayıcınız konum özelliğini desteklemiyor.");
@@ -434,7 +414,6 @@ function konumumuBul() {
     const mLat = pos.coords.latitude;
     const mLon = pos.coords.longitude;
     
-    // Haversine KM Hesabı
     const R = 6371;
     const dLat = (marketLat - mLat) * Math.PI / 180;
     const dLon = (marketLon - mLon) * Math.PI / 180;
@@ -555,7 +534,6 @@ function ekranaCiz(liste) {
     const resimler = u.resim_url.split(',');
     const ilkResim = resimler[0];
     
-    // DÜKKAN KAPALIYSA BUTON GRİ VE KİLİTLİ OLACAK
     let butonAlani = '';
     if (!marketAktif) {
       butonAlani = `<button class="btn-disabled" disabled>Dükkân Kapalı</button>`;
@@ -651,7 +629,6 @@ function teslimatTuruDegisti(val) {
   sepetModalKontrol();
 }
 
-// GÜVENLİK VE MESAFE KONTROL MOTORU
 function sepetModalKontrol() {
   const tYontem = document.getElementById('modal-teslimat').value;
   const btn = document.getElementById('siparis-tamamla-btn');
@@ -662,7 +639,6 @@ function sepetModalKontrol() {
     btn.disabled = true; btn.textContent = 'Dükkân Şu An Kapalı'; btn.style.background = '#CBD5E1'; return;
   }
 
-  // Eğer Adrese Teslim seçildiyse ve mesafe sınırın dışındaysa
   if (tYontem === 'adrese_teslim' && musteriKm !== null && parseFloat(musteriKm) > marketMaksKm) {
     btn.disabled = true;
     btn.textContent = 'Mesafe Çok Uzak (Sadece Gel-Al)';
@@ -721,14 +697,11 @@ async function siparisiOnayla() {
 }
 
 baslat();
-// 🚀 MÜŞTERİ CANLI TAKİP BAĞLANTISI
 const socket = io();
 
-// Bakkal durumu değiştirdiği an müşteri ekranı haberdar olur
 socket.on("siparis_durumu_degisti", (veri) => {
   console.log("📦 Sipariş durumunuz canlı güncellendi:", veri);
   
-  // Eğer müşterinin "Siparişlerim" modalı açıksa, listeyi saliseler içinde otomatik yenile
   const modal = document.getElementById('siparislerim-modal');
   if (modal && !modal.classList.contains('hidden')) {
     siparislerimModalAc();

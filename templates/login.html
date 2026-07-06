@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Giriş Yap — Köşebaşı Market Platformu</title>
+<title>Giriş Yap — Nihat Market Shopping</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -22,13 +22,11 @@
     justify-content: center; align-items: center; padding: 20px;
   }
 
-  /* LOGO ALANI */
   .brand-header { text-align: center; margin-bottom: 24px; }
   .brand-logo { font-size: 26px; font-weight: 800; color: var(--migros-orange); text-decoration: none; letter-spacing: -0.5px; }
   .brand-logo span { color: var(--migros-dark); }
   .brand-subtitle { font-size: 14px; color: var(--text-muted); font-weight: 500; margin-top: 4px; }
 
-  /* KART TASARIMI */
   .login-card {
     background: #FFFFFF; width: 100%; max-width: 420px;
     border: 1px solid var(--border-color); border-radius: 16px;
@@ -38,7 +36,6 @@
   .form-title { font-size: 20px; font-weight: 800; margin: 0 0 6px 0; color: var(--migros-dark); }
   .form-desc { font-size: 13px; color: var(--text-muted); margin: 0 0 24px 0; line-height: 1.4; }
 
-  /* FORM İÇERİĞİ */
   .form-group { margin-bottom: 18px; }
   .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-main); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.3px; }
   .form-control {
@@ -47,7 +44,6 @@
   }
   .form-control:focus { border-color: var(--migros-orange); background: #FFF; box-shadow: 0 0 0 3px rgba(255,123,0,0.1); }
 
-  /* BUTONLAR */
   .btn-submit {
     width: 100%; background: var(--migros-orange); color: #FFF; font-weight: 700;
     font-size: 15px; padding: 14px; border: none; border-radius: 8px; cursor: pointer;
@@ -56,14 +52,12 @@
   .btn-submit:hover { background: #E66E00; transform: translateY(-1px); }
   .btn-submit:disabled { background: #CBD5E1; cursor: not-allowed; transform: none; }
 
-  /* HATA VE BİLGİ KUTULARI */
   .alert-box {
     padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 600;
     margin-bottom: 18px; display: none; text-align: center;
   }
   .alert-error { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
 
-  /* ALT YÖNLENDİRME ALANI */
   .footer-links { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color); text-align: center; font-size: 13px; }
   .footer-links a { color: var(--migros-orange); font-weight: 700; text-decoration: none; }
   .footer-links a:hover { text-decoration: underline; }
@@ -77,8 +71,8 @@
 <body>
 
 <div class="brand-header">
-  <div class="brand-logo">Köşebaşı<span>Market</span></div>
-  <div class="brand-subtitle">Mahallenizin Dijital Bakkal & Kasa Platformu</div>
+  <div class="brand-logo">Nihat<span>Market</span></div>
+  <div class="brand-subtitle">Dijital Market Platformu</div>
 </div>
 
 <div class="login-card">
@@ -103,12 +97,12 @@
 
   <div class="footer-links">
     Mahallemizde yeni misiniz? <br>
-    <a href="/register" style="display:inline-block; margin-top:6px;">🛍️ Müşteri Olarak Kayıt Olun</a>
+    <a href="/register" style="display:inline-block; margin-top:6px;">Müşteri Olarak Kayıt Olun</a>
   </div>
 </div>
 
 <div class="merchant-note">
-  🔒 <b>Esnaf / Bakkal Güvenlik Notu:</b> Dükkân yetkili hesapları siber güvenlik kuralları gereği sistem yöneticisi tarafından açılmaktadır. Yetkili şifrenizle direkt giriş yapabilirsiniz.
+  <b>Esnaf / Bakkal Güvenlik Notu:</b> Dükkân yetkili hesapları siber güvenlik kuralları gereği sistem yöneticisi tarafından açılmaktadır. Yetkili şifrenizle direkt giriş yapabilirsiniz.
 </div>
 
 <script>
@@ -120,7 +114,6 @@ async function girisYap(event) {
   const submitBtn = document.getElementById('submit-btn');
   const hataKutu = document.getElementById('hata-kutu');
 
-  // Hata kutusunu gizle ve butonu kilitle
   hataKutu.style.display = 'none';
   submitBtn.disabled = true;
   submitBtn.textContent = 'Doğrulanıyor...';
@@ -139,15 +132,13 @@ async function girisYap(event) {
 
     if (response.ok) {
       submitBtn.textContent = 'Giriş Başarılı! Yönlendiriliyorsunuz...';
-      submitBtn.style.background = '#10B981'; // Başarılı yeşili
+      submitBtn.style.background = '#10B981'; 
 
-      // AKILLI YÖNLENDİRME: Rol neyse o ekrana fırlat!
       setTimeout(() => {
         window.location.href = data.yonlendir || '/musteri';
       }, 700);
 
     } else {
-      // Hata durumunda uyar
       hataKutu.textContent = data.hata || 'Giriş yapılamadı. Bilgilerinizi kontrol edin.';
       hataKutu.style.display = 'block';
       submitBtn.disabled = false;
