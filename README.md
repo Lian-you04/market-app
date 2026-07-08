@@ -16,7 +16,7 @@ docker compose down
 docker compose up --build
 ```
 
-Uygulama `http://localhost:5001` üzerinde ayağa kalkar.
+Uygulama `http://localhost:5002` üzerinde ayağa kalkar.
 Sağlık kontrolü: `GET /health`
 
 ## Klasör yapısı

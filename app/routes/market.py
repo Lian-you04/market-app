@@ -3,7 +3,6 @@ import uuid
 from flask import Blueprint, request, jsonify, current_app
 from app import db, socketio
 from app.models import Urun, Siparis, SiparisDetay, Market
-from .decorators import admin_required
 
 market_bp = Blueprint("market", __name__)
 IZIN_VERILEN_UZANTILAR = {"png", "jpg", "jpeg", "webp"}
