@@ -7,7 +7,7 @@ app = create_app()
 with app.app_context():
     email = "ahmetamca@kosebasimarket.com"
     sifre = "HatayBakkal2026!"
-    dükkan_adi = "Köşebaşı Mahalle Bakkalı"
+    dükkan_adi = "Nihat Market"
 
     # Daha önce eklenmiş mi?
     mevcut = Kullanici.query.filter_by(email=email).first()
