@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nihat Market</title>
+<title>Nihat Market Kasa</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
@@ -398,7 +398,7 @@ async function siparisleriYukle() {
       : '<span class="delivery-badge badge-adrese">🛵 ADRESE TESLİM (KAPIMA GETİR)</span>';
 
     const safTel = s.musteri_tel ? s.musteri_tel.replace(/[^0-9]/g, '') : '';
-    const wpLink = safTel ? `https://wa.me/90${safTel.startsWith('0') ? safTel.substring(1) : safTel}?text=Merhaba%20${encodeURIComponent(s.musteri_ad)}%2C%20Köşebaşı%20Market'ten%20verdiğiniz%20${s.id}%20nolu%20siparişiniz%20hakkında...` : '#';
+    const wpLink = safTel ? `https://wa.me/90${safTel.startsWith('0') ? safTel.substring(1) : safTel}?text=Merhaba%20${encodeURIComponent(s.musteri_ad)}%2C%20Nihat%20Market'ten%20verdiğiniz%20${s.id}%20nolu%20siparişiniz%20hakkında...` : '#';
 
     const kalemler = s.detaylar.map(d => `
       <div class="item-row">

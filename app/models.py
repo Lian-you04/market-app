@@ -10,7 +10,7 @@ class Kullanici(db.Model):
     sifre_hash = db.Column(db.String(256), nullable=False)
     rol = db.Column(db.String(20), nullable=False)  # 'market' veya 'musteri'
     olusturma_tarihi = db.Column(db.DateTime, default=datetime.utcnow)
-    aktif = db.Column(db.Boolean, default=True)
+    aktif = db.Column(db.Boolean, default=True) 
 
     def sifre_belirle(self, sifre):
         self.sifre_hash = generate_password_hash(sifre)

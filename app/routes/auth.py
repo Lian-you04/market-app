@@ -123,7 +123,7 @@ def me():
     profil_adi = kullanici.email
     if kullanici.rol == "market":
         m = kullanici.market[0] if isinstance(kullanici.market, list) and kullanici.market else kullanici.market
-        profil_adi = m.ad if m else "Köşebaşı Market"
+        profil_adi = m.ad if m else "Nihat Market"
     elif kullanici.rol == "musteri":
         m = kullanici.musteri[0] if isinstance(kullanici.musteri, list) and kullanici.musteri else kullanici.musteri
         profil_adi = m.ad_soyad if m else kullanici.email.split("@")[0].capitalize()
