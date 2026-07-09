@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nihat Market Kasa</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <style>
   :root {
@@ -102,8 +101,6 @@
   .btn-primary:hover { background: var(--emerald); }
   .hidden { display: none !important; }
 
-  #map-container { height: 380px; width: 100%; border-radius: 12px; border: 2px solid var(--border); margin-top: 12px; z-index: 1; }
-
   .footer { background: #FFF; border-top: 1px solid var(--border); padding: 16px 24px; text-align: center; font-size: 12px; color: var(--text-muted); margin-top: auto; }
 </style>
 </head>
@@ -140,9 +137,6 @@
     <div class="nav-item" onclick="sekmeDegis('urunler', this)">
       <span>🏷️ Raf & Ürün Yönetimi</span>
     </div>
-    <div class="nav-item" onclick="sekmeDegis('ayarlar', this)">
-      <span>📍 Dükkân Konum & Servis</span>
-    </div>
   </aside>
 
   <main class="main-content">
@@ -173,10 +167,18 @@
             <input id="u-fiyat" type="number" step="0.01" placeholder="Fiyat (TL)" style="padding:10px; border:1px solid var(--border); border-radius:6px;">
             <input id="u-stok" type="number" placeholder="Başlangıç Stoğu" style="padding:10px; border:1px solid var(--border); border-radius:6px;">
             <select id="u-kategori" style="padding:10px; border:1px solid var(--border); border-radius:6px;">
-              <option value="yeni_urunler">🔔 Yeni Ürünler</option><option value="et_tavuk">🥩 Et & Şarküteri</option>
-              <option value="meyve_sebze">🍅 Meyve & Sebze</option><option value="sut_kahvaltilik">🧀 Süt & Kahvaltı</option>
-              <option value="atistirmalik">🍟 Atıştırmalık</option><option value="icecek">🥤 İçecekler</option>
-              <option value="ekmek_pastane">🍞 Ekmek & Pastane</option><option value="temizlik">🧼 Temizlik</option>
+              <option value="et_tavuk">🥩 Et & Tavuk</option>
+              <option value="meyve_sebze">🍅 Meyve & Sebze</option>
+              <option value="sut_kahvaltilik">🧀 Süt & Kahvaltı</option>
+              <option value="aburcubur">🍫 Aburcubur</option>
+              <option value="icecek">🥤 İçecekler</option>
+              <option value="ekmek_firin">🍞 Ekmek & Fırın</option>
+              <option value="tatlilar">🍰 Tatlılar</option>
+              <option value="temizlik">🧼 Temizlik</option>
+              <option value="kozmetik">🧴 Kozmetik</option>
+              <option value="dondurma">🍦 Dondurma</option>
+              <option value="evcil_hayvan_mamasi">🐾 Evcil Hayvan Maması</option>
+              <option value="elektronik">🔌 Elektronik</option>
             </select>
           </div>
           <div style="display: flex; gap: 12px; align-items: center;">
@@ -201,42 +203,7 @@
       </div>
     </div>
 
-    <div id="sekme-ayarlar" class="hidden">
-      <div class="panel">
-        <div class="panel-header">
-          <h2>Dükkân Konumunu ve Servis Ağını Ayarla</h2>
-        </div>
-        <div style="padding: 24px;">
-          <p style="margin-top:0; font-size:14px; color:var(--text-muted); line-height: 1.5;">
-            Ahmet Amca, aşağıdaki haritada dükkânının olduğu yere fareyle bir kez tıkla veya kırmızı bayrağı sürükleyerek dükkânın üstüne bırak. 
-            Ardından kuryenin en fazla kaç kilometre uzağa adrese teslim siparişi götüreceğini seç ve kaydet.
-          </p>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-            <div>
-              <label style="display:block; font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">DÜKKÂN AÇIK ADRESİ</label>
-              <input id="dukkan-adresi-input" type="text" placeholder="Örn: Sümerler Mah. Harbiye Cad. No:12 Antakya/Hatay" style="width:100%; padding:12px; border:1px solid var(--border); border-radius:8px; font-size:14px; font-weight:600;">
-            </div>
-            <div>
-              <label style="display:block; font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">MAKSİMUM SERVİS YARIÇAPI (KM)</label>
-              <select id="dukkan-km-input" style="width:100%; padding:12px; border:1px solid var(--border); border-radius:8px; font-size:14px; font-weight:700;">
-                <option value="1.0">1.0 KM (Sadece Yakın Sokaklar)</option>
-                <option value="2.0">2.0 KM (Mahalle İçi)</option>
-                <option value="3.0">3.0 KM (Standart Çevre Mahalleler)</option>
-                <option value="5.0">5.0 KM (Geniş Bölge Servisi)</option>
-                <option value="10.0">10.0 KM (Tüm İlçe)</option>
-              </select>
-            </div>
-          </div>
-
-          <div id="map-container"></div>
-
-          <div style="margin-top: 20px; text-align: right;">
-            <button class="btn btn-primary" onclick="konumVeAyarlariKaydet()" style="font-size:16px; padding: 14px 28px;">💾 Haritadaki Konumu ve Ayarları Kaydet</button>
-          </div>
-        </div>
-      </div>
-    </div>
 
   </main>
 </div>
@@ -245,7 +212,6 @@
   Nihat Market  · Kasa Yönetim Platformu
 </footer>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
 <script>
 const MARKET_ID = 1;
@@ -253,20 +219,12 @@ let sonSiparisSayisi = -1;
 let dukkanAktif = true;
 let dukkanMinLimit = 50.0;
 
-let map, marker;
-let secilenLat = 36.2000;
-let secilenLon = 36.1500;
 
 function sekmeDegis(sekme, el) {
   document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('sekme-siparisler').classList.toggle('hidden', sekme !== 'siparisler');
   document.getElementById('sekme-urunler').classList.toggle('hidden', sekme !== 'urunler');
-  document.getElementById('sekme-ayarlar').classList.toggle('hidden', sekme !== 'ayarlar');
-
-  if (sekme === 'ayarlar') {
-    setTimeout(() => { if(map) map.invalidateSize(); }, 200);
-  }
 }
 
 async function marketDurumYukle() {
@@ -275,12 +233,6 @@ async function marketDurumYukle() {
     const veri = await res.json();
     dukkanAktif = veri.aktif;
     dukkanMinLimit = veri.min_siparis_tutari;
-    secilenLat = veri.konum_lat || 36.2000;
-    secilenLon = veri.konum_lon || 36.1500;
-    
-    document.getElementById('dukkan-adresi-input').value = veri.adres || '';
-    document.getElementById('dukkan-km-input').value = (veri.maks_teslimat_km || 3.0).toString();
-
     const salter = document.getElementById('salter-btn');
     if (dukkanAktif) {
       salter.className = 'status-toggle toggle-acik';
@@ -291,53 +243,6 @@ async function marketDurumYukle() {
     }
     document.getElementById('min-tutar-gosterge').textContent = `${dukkanMinLimit.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
 
-    haritayiBaslat();
-  }
-}
-
-function haritayiBaslat() {
-  if (map) return; 
-  
-  map = L.map('map-container').setView([secilenLat, secilenLon], 15);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap katkıda bulunanlar'
-  }).addTo(map);
-
-  marker = L.marker([secilenLat, secilenLon], {draggable: true}).addTo(map);
-  marker.bindPopup("<b>Dükkânınızın Konumu</b><br>Sürükleyerek veya haritaya tıklayarak taşıyabilirsiniz.").openPopup();
-
-  map.on('click', function(e) {
-    marker.setLatLng(e.latlng);
-    secilenLat = e.latlng.lat;
-    secilenLon = e.latlng.lng;
-  });
-
-  marker.on('dragend', function(e) {
-    const pos = marker.getLatLng();
-    secilenLat = pos.lat;
-    secilenLon = pos.lng;
-  });
-}
-
-async function konumVeAyarlariKaydet() {
-  const adresVal = document.getElementById('dukkan-adresi-input').value.trim();
-  const kmVal = parseFloat(document.getElementById('dukkan-km-input').value);
-
-  const res = await fetch('/api/market/durum', {
-    method: 'PUT', headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      market_id: MARKET_ID,
-      adres: adresVal,
-      maks_teslimat_km: kmVal,
-      konum_lat: secilenLat,
-      konum_lon: secilenLon
-    })
-  });
-
-  if (res.ok) {
-    alert("🎉 Harita konumu ve servis sınırları başarıyla kaydedildi!");
-  } else {
-    alert("Kaydederken bir sorun oluştu!");
   }
 }
 
@@ -424,7 +329,7 @@ async function siparisleriYukle() {
                 <a href="${wpLink}" target="_blank" class="btn-wp">💬 WhatsApp</a>
                 <a href="tel:${s.musteri_tel}" class="btn-call">📞 Ara</a>
               </span> <br>
-              Ödeme Tipi: <b>${s.odeme_yontemi === 'nakit' ? '💵 Kasada/Kapıda Nakit' : '💳 Kasada/Kapıda Kredi Kartı'}</b>
+              Ödeme Tipi: <b>${s.odeme_yontemi === 'nakit' ? '💵 Nakit ödeme' : '💳 Kredi/Banka kartı ile ödeme'}</b>
               ${s.siparis_notu ? `<br><span style="color:#D97706; font-weight:600;">📝 Not / Adres: "${s.siparis_notu}"</span>` : ''}
             </div>
           </div>
@@ -432,14 +337,16 @@ async function siparisleriYukle() {
           <div style="text-align: right;">
             <div style="font-size: 22px; font-weight: 800; color: var(--emerald-dark); margin-bottom: 8px;">
               ${s.toplam_tutar.toLocaleString('tr-TR', {minimumFractionDigits:2})} TL
-            </div>
-            <select class="status-select" onchange="durumDegistir(${s.id}, this.value)">
-              <option value="bekliyor" ${s.durum==='bekliyor'?'selected':''}>⏳ Beklemede / Yeni</option>
-              <option value="hazirlaniyor" ${s.durum==='hazirlaniyor'?'selected':''}>📦 Poşetleniyor</option>
-              <option value="yolda" ${s.durum==='yolda'?'selected':''}>🚶 Yola Çıktı / Tezgâhta Hazır</option>
-              <option value="teslim_edildi" ${s.durum==='teslim_edildi'?'selected':''}>✅ Teslim Edildi</option>
-              <option value="iptal" ${s.durum==='iptal'?'selected':''}>❌ İptal Et</option>
-            </select>
+          </div>
+           <div style="display:flex; flex-direction:column; gap:8px;">
+             <button onclick="durumDegistir(${s.id}, 'teslim_edildi')" style="background:#10B981; color:white; border:none; padding:10px 14px; border-radius:8px; font-weight:800; cursor:pointer;">
+               ✅ Teslim Et
+             </button>
+
+             <button onclick="durumDegistir(${s.id}, 'iptal')" style="background:#FEE2E2; color:#DC2626; border:1px solid #FECACA; padding:10px 14px; border-radius:8px; font-weight:800; cursor:pointer;">
+               ❌ İptal Et
+             </button>
+           </div>
           </div>
         </div>
         <div class="order-items">${kalemler}</div>
@@ -449,9 +356,27 @@ async function siparisleriYukle() {
 }
 
 async function durumDegistir(id, durum) {
-  await fetch(`/api/market/siparisler/${id}/durum`, {
-    method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({durum})
+  const eminMisin = confirm(
+    durum === 'teslim_edildi'
+      ? 'Bu siparişi teslim edildi olarak işaretlemek istiyor musunuz?'
+      : 'Bu siparişi iptal etmek istiyor musunuz?'
+  );
+
+  if (!eminMisin) return;
+
+  const res = await fetch(`/api/market/siparisler/${id}/durum`, {
+    method: 'PUT',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({durum})
   });
+
+  const veri = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    alert(veri.hata || 'Sipariş durumu güncellenemedi.');
+    return;
+  }
+
   siparisleriYukle();
 }
 

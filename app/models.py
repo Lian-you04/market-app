@@ -99,3 +99,19 @@ class SiparisDetay(db.Model):
     birim_fiyat = db.Column(db.Numeric(10, 2), nullable=False)
 
     urun = db.relationship("Urun")
+
+    # 7. FAVORİ ÜRÜNLER TABLOSU
+class FavoriUrun(db.Model):
+    __tablename__ = "favori_urunler"
+
+    id = db.Column(db.Integer, primary_key=True)
+    musteri_id = db.Column(db.Integer, db.ForeignKey("musteriler.id"), nullable=False)
+    urun_id = db.Column(db.Integer, db.ForeignKey("urunler.id"), nullable=False)
+    olusturma_tarihi = db.Column(db.DateTime, default=datetime.utcnow)
+
+    musteri = db.relationship("Musteri", backref="favoriler")
+    urun = db.relationship("Urun")
+
+    __table_args__ = (
+        db.UniqueConstraint("musteri_id", "urun_id", name="uq_musteri_urun_favori"),
+    )

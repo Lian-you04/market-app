@@ -60,13 +60,6 @@
   .brand-logo { font-size: 22px; font-weight: 800; color: var(--migros-orange); text-decoration: none; display: flex; align-items: center; gap: 6px; letter-spacing: -0.5px; }
   .brand-logo span { color: var(--migros-dark); }
 
-  .delivery-selector {
-    display: flex; align-items: center; gap: 8px; background: var(--migros-gray);
-    border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600;
-  }
-  .delivery-selector select {
-    background: transparent; border: none; font-weight: 700; color: var(--text-main); outline: none; cursor: pointer;
-  }
 
   .search-bar { flex: 1; max-width: 450px; display: flex; position: relative; }
   .search-bar input {
@@ -180,6 +173,7 @@
   .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
   .form-control { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; }
   .form-control:focus { border-color: var(--migros-orange); }
+  .phone-row { display: grid; grid-template-columns: 92px 1fr; gap: 8px; }
 
   .order-history-card { border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-bottom: 12px; }
   .status-badge { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 12px; text-transform: uppercase; }
@@ -190,37 +184,30 @@
   .st-iptal { background: #FEE2E2; color: #DC2626; }
   .btn-cancel-order { background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.2s; }
   .btn-cancel-order:hover { background: #DC2626; color: white; }
+
+  .fav-btn {
+    position: absolute; top: 10px; right: 10px; width: 34px; height: 34px;
+    border-radius: 50%; border: 1px solid var(--border-color); background: #FFF;
+    cursor: pointer; font-size: 17px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .fav-btn.active { background: #FEF2F2; border-color: #FCA5A5; }
+  .fav-list-card {
+    display: flex; gap: 12px; align-items: center; border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 12px; margin-bottom: 12px;
+  }
+  .fav-list-card img { width: 72px; height: 72px; object-fit: contain; border-radius: 8px; background: #F8FAFC; }
 </style>
 </head>
 <body>
 
 <div id="shop-banner" class="shop-status-banner">
-  🔴 Bakkalımız şu an online siparişlere ve Gel-Al teslimatına kapalıdır. Yarın sabah görüşmek üzere!
+  🔴 Bakkalımız şu an online siparişlere kapalıdır. Yarın sabah görüşmek üzere!
 </div>
 
-<div class="store-info-bar">
-  <div class="store-info-container">
-    <div class="store-title">
-      <span>🏪</span>
-      <span id="store-ad-text">Nihat Market</span>
-      <span style="color:#B45309; font-weight:500;" id="store-adres-text">· Yükleniyor...</span>
-    </div>
-    <div id="location-action-area">
-    </div>
-  </div>
-</div>
 
 <header class="header">
   <div class="header-container">
     <a href="#" class="brand-logo" onclick="kategoriFiltrele('','')">Nihat<span>Market</span></a>
-    
-    <div class="delivery-selector">
-      <span>Teslimat:</span>
-      <select id="header-teslimat" onchange="teslimatTuruDegisti(this.value)">
-        <option value="adrese_teslim">Adrese Teslim (15 dk)</option>
-        <option value="gel_al">🛍️ Gel-Al (Dükkandan Al)</option>
-      </select>
-    </div>
 
     <div class="search-bar">
       <input type="text" id="search-input" placeholder="Ürün, kategori veya marka ara..." onkeyup="if(event.key==='Enter') urunAra()">
@@ -234,6 +221,8 @@
         </div>
         <div class="dropdown-content" id="profil-dropdown">
           <a href="javascript:void(0)" onclick="siparislerimModalAc()">📦 Siparişlerim</a>
+          <a href="javascript:void(0)" onclick="favorilerimModalAc()">❤️ Favorilerim</a>
+          <a href="javascript:void(0)" onclick="ayarlarModalAc()">⚙️ Ayarlarım</a>
           <a href="javascript:void(0)" onclick="cikisYap()">🚪 Çıkış Yap</a>
         </div>
       </div>
@@ -273,11 +262,24 @@
 <div class="modal-backdrop hidden" id="siparislerim-modal">
   <div class="modal-box">
     <div class="modal-header">
-      <h3 style="margin:0; font-size:18px;">📦 Geçmiş Siparişlerim & Durum Takibi</h3>
+      <h3 style="margin:0; font-size:18px;">📦 Siparişlerim</h3>
       <button onclick="document.getElementById('siparislerim-modal').classList.add('hidden')" style="background:none; border:none; font-size:22px; cursor:pointer;">✕</button>
     </div>
     <div class="modal-body" id="siparislerim-icerik">
       <div style="text-align: center; color: var(--text-muted); padding: 20px;">Yükleniyor...</div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal-backdrop hidden" id="favorilerim-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 style="margin:0; font-size:18px;">❤️ Favorilerim</h3>
+      <button onclick="document.getElementById('favorilerim-modal').classList.add('hidden')" style="background:none; border:none; font-size:22px; cursor:pointer;">✕</button>
+    </div>
+    <div class="modal-body" id="favorilerim-icerik">
+      <div style="text-align: center; color: var(--text-muted); padding: 20px;">Favoriler yükleniyor...</div>
     </div>
   </div>
 </div>
@@ -292,27 +294,17 @@
       <div id="modal-sepet-icerik" style="border-bottom: 1px solid var(--border-color); padding-bottom: 16px; margin-bottom: 16px; max-height: 200px; overflow-y: auto;"></div>
       
       <div class="form-group">
-        <label>Seçilen Teslimat Yöntemi</label>
-        <select id="modal-teslimat" class="form-control" style="font-weight:700; color:var(--migros-orange);" onchange="sepetModalKontrol()">
-          <option value="adrese_teslim">🛵 Adrese Teslim (Kapıma Getirin)</option>
-          <option value="gel_al">🛍️ Gel-Al (Dükkandan Kendim Alacağım)</option>
-        </select>
-      </div>
-
-      <div class="form-group">
         <label>Ödeme Seçeneği</label>
         <select id="modal-odeme" class="form-control">
-          <option value="nakit">💵 Kapıda / Kasada Nakit Ödeme</option>
-          <option value="kart">💳 Kapıda / Kasada Kredi Kartı</option>
+          <option value="nakit">💵 Nakit ödeme</option>
+          <option value="kart">💳 Kredi/Banka kartı ile ödeme</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label>Adres veya Sipariş Notunuz</label>
-        <textarea id="modal-not" class="form-control" rows="2" placeholder="Bina ve Daire no detayınızı veya iletmek istediğiniz notu yazın..."></textarea>
+        <label>Sipariş Notunuz</label>
+        <textarea id="modal-not" class="form-control" rows="2" placeholder="Apartman adı, kat, daire no veya kurye için notunuzu yazın..."></textarea>
       </div>
-
-      <div id="modal-mesafe-uyarisi" style="display:none; font-size:13px; font-weight:700; color:#DC2626; background:#FEE2E2; padding:10px; border-radius:8px; margin-top:12px;"></div>
 
       <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px;">
         <div>
@@ -321,6 +313,51 @@
         </div>
         <button id="siparis-tamamla-btn" onclick="siparisiOnayla()" style="background: var(--migros-orange); color: white; border: none; padding: 14px 28px; border-radius: 10px; font-weight: 700; font-size: 15px; cursor: pointer;">Siparişi Tamamla ➔</button>
       </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal-backdrop hidden" id="ayarlar-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 style="margin:0; font-size:18px;">⚙️ Hesap Ayarları</h3>
+      <button onclick="document.getElementById('ayarlar-modal').classList.add('hidden')" style="background:none; border:none; font-size:22px; cursor:pointer;">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="ayarlar-bildirim" style="display:none; font-size:13px; font-weight:700; padding:10px; border-radius:8px; margin-bottom:14px;"></div>
+
+      <div class="form-group">
+        <label>E-posta Adresi</label>
+        <input id="ayar-email" class="form-control" type="email" disabled>
+      </div>
+
+      <div class="form-group">
+        <label>Ad</label>
+        <input id="ayar-ad" class="form-control" type="text" placeholder="Adınız">
+      </div>
+
+      <div class="form-group">
+        <label>Soyad</label>
+        <input id="ayar-soyad" class="form-control" type="text" placeholder="Soyadınız">
+      </div>
+
+      <div class="form-group">
+        <label>Telefon</label>
+        <div class="phone-row">
+          <select id="ayar-ulke-kodu" class="form-control">
+            <option value="+90" selected>🇹🇷 +90</option>
+          </select>
+          <input id="ayar-telefon" class="form-control" type="tel" inputmode="tel" placeholder="5XX XXX XX XX" autocomplete="tel-national">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Adres Tarifi</label>
+        <textarea id="ayar-adres" class="form-control" rows="3" placeholder="Mahalle, sokak, bina, kat/daire ve tarif bilgisi"></textarea>
+      </div>
+
+      <button onclick="profilKaydet()" style="width:100%; background:var(--migros-orange); color:white; border:none; padding:14px; border-radius:10px; font-weight:800; cursor:pointer;">Bilgilerimi Güncelle</button>
     </div>
   </div>
 </div>
@@ -341,15 +378,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
 <script>
 const MARKET_ID = 1;
+let marketHaritaUrl = 'https://maps.app.goo.gl/CPR7e1GN8gCaBfLs6';
 let sepet = {};
 let urunler = [];
 
 let marketAktif = true;
 let marketMinLimit = 50.0;
 let marketMaksKm = 3.0;
-let marketLat = 36.2000;
-let marketLon = 36.1500;
-let musteriKm = null;
+
 
 async function baslat() {
   try {
@@ -358,30 +394,21 @@ async function baslat() {
       const mVeri = await durRes.json();
       marketAktif = mVeri.aktif;
       marketMinLimit = mVeri.min_siparis_tutari || 50.0;
-      marketMaksKm = mVeri.maks_teslimat_km || 3.0;
-      marketLat = mVeri.konum_lat || 36.2000;
-      marketLon = mVeri.konum_lon || 36.1500;
-
-      document.getElementById('store-ad-text').textContent = mVeri.ad || 'Nihat Market';
-      document.getElementById('store-adres-text').textContent = `· ${mVeri.adres || 'Antakya Merkez'}`;
-
-      const locAlan = document.getElementById('location-action-area');
-
       if (!marketAktif) {
         document.getElementById('shop-banner').style.display = 'block';
-        locAlan.innerHTML = '<span class="shop-closed-badge">🔴 Dükkân Şu An Kapalı (Hizmet Verilmiyor)</span>';
-      } else {
-        locAlan.innerHTML = '<button class="btn-find-location" onclick="konumumuBul()">📍 Konumumu Bul ve Mesafeyi Gör</button>';
       }
     }
   } catch(e) {}
 
   try {
     const meRes = await fetch('/api/auth/me');
+
     if (meRes.ok) {
       const meData = await meRes.json();
-      if (meData.kullanici && meData.kullanici.ad) {
-        document.getElementById('kullanici-adi-alan').textContent = meData.kullanici.ad.split(' ')[0];
+      const profilAdi = meData.profil_adi || meData.kullanici?.ad;
+
+      if (profilAdi) {
+        document.getElementById('kullanici-adi-alan').textContent = profilAdi.split(' ')[0];
       }
     }
   } catch(e) {}
@@ -397,39 +424,6 @@ async function baslat() {
   `).join('');
   
   await urunleriYukle('');
-}
-
-function konumumuBul() {
-  if (!marketAktif) return; 
-
-  if (!navigator.geolocation) {
-    alert("Tarayıcınız konum özelliğini desteklemiyor.");
-    return;
-  }
-  
-  const alan = document.getElementById('location-action-area');
-  alan.innerHTML = '<span style="color:#B45309; font-weight:700;">📍 Konum alınıyor...</span>';
-
-  navigator.geolocation.getCurrentPosition(pos => {
-    const mLat = pos.coords.latitude;
-    const mLon = pos.coords.longitude;
-    
-    const R = 6371;
-    const dLat = (marketLat - mLat) * Math.PI / 180;
-    const dLon = (marketLon - mLon) * Math.PI / 180;
-    const a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(mLat*Math.PI/180)*Math.cos(marketLat*Math.PI/180) * Math.sin(dLon/2)*Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    musteriKm = (R * c).toFixed(1);
-
-    if (parseFloat(musteriKm) <= marketMaksKm) {
-      alan.innerHTML = `<span class="distance-badge">📍 Bakkalımıza ${musteriKm} km uzaklıktasınız (~15 dk)</span>`;
-    } else {
-      alan.innerHTML = `<span class="distance-warning">⚠️ Bakkala ${musteriKm} km uzaktasınız (Sadece Gel-Al Uygun)</span>`;
-    }
-  }, err => {
-    alan.innerHTML = '<button class="btn-find-location" onclick="konumumuBul()">📍 Konum İznini Yenile</button>';
-    alert("Konum alınamadı. Lütfen tarayıcı izinlerinizi kontrol edin.");
-  });
 }
 
 function dropdownAc() {
@@ -448,6 +442,98 @@ async function cikisYap() {
   window.location.href = '/login';
 }
 
+
+
+async function ayarlarModalAc() {
+  document.getElementById('profil-dropdown').style.display = 'none';
+  document.getElementById('ayarlar-modal').classList.remove('hidden');
+  await profilYukle();
+}
+
+async function profilYukle() {
+  const bildirim = document.getElementById('ayarlar-bildirim');
+  bildirim.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/musteri/profil');
+    const veri = await res.json();
+
+    if (!res.ok) {
+      bildirim.textContent = veri.hata || 'Profil bilgileriniz alınamadı.';
+      bildirim.style.background = '#FEE2E2';
+      bildirim.style.color = '#DC2626';
+      bildirim.style.display = 'block';
+      return;
+    }
+
+    document.getElementById('ayar-email').value = veri.email || '';
+    document.getElementById('ayar-ad').value = veri.ad || '';
+    document.getElementById('ayar-soyad').value = veri.soyad || '';
+
+    let telefon = veri.telefon || '';
+    if (telefon.startsWith('+90')) {
+      document.getElementById('ayar-ulke-kodu').value = '+90';
+      telefon = telefon.substring(3);
+    }
+    if (telefon.startsWith('0')) telefon = telefon.substring(1);
+    document.getElementById('ayar-telefon').value = telefon;
+    document.getElementById('ayar-adres').value = veri.adres_tarifi || veri.adres || '';
+  } catch (e) {
+    bildirim.textContent = 'Sunucuyla bağlantı kurulamadı.';
+    bildirim.style.background = '#FEE2E2';
+    bildirim.style.color = '#DC2626';
+    bildirim.style.display = 'block';
+  }
+}
+
+async function profilKaydet() {
+  const bildirim = document.getElementById('ayarlar-bildirim');
+  bildirim.style.display = 'none';
+
+  const ad = document.getElementById('ayar-ad').value.trim();
+  const soyad = document.getElementById('ayar-soyad').value.trim();
+
+  const payload = {
+    ad: ad,
+    soyad: soyad,
+    ad_soyad: `${ad} ${soyad}`.trim(),
+    ulke_kodu: document.getElementById('ayar-ulke-kodu').value,
+    telefon: document.getElementById('ayar-telefon').value.trim(),
+    adres_tarifi: document.getElementById('ayar-adres').value.trim()
+  };
+
+  try {
+    const res = await fetch('/api/musteri/profil', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const veri = await res.json();
+
+    if (res.ok) {
+      bildirim.textContent = veri.mesaj || 'Profil bilgileriniz güncellendi.';
+      bildirim.style.background = '#ECFDF5';
+      bildirim.style.color = '#059669';
+      bildirim.style.display = 'block';
+
+      if (payload.ad_soyad) {
+        document.getElementById('kullanici-adi-alan').textContent = payload.ad_soyad.split(' ')[0];
+      }
+    } else {
+      bildirim.textContent = veri.hata || 'Profil güncellenemedi.';
+      bildirim.style.background = '#FEE2E2';
+      bildirim.style.color = '#DC2626';
+      bildirim.style.display = 'block';
+    }
+  } catch (e) {
+    bildirim.textContent = 'Sunucuyla bağlantı kurulamadı.';
+    bildirim.style.background = '#FEE2E2';
+    bildirim.style.color = '#DC2626';
+    bildirim.style.display = 'block';
+  }
+}
+
 async function siparislerimModalAc() {
   document.getElementById('profil-dropdown').style.display = 'none';
   document.getElementById('siparislerim-modal').classList.remove('hidden');
@@ -456,22 +542,22 @@ async function siparislerimModalAc() {
   alan.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">Siparişleriniz yükleniyor...</div>';
 
   try {
-    const res = await fetch('/api/musteri/siparisler');
+    const res = await fetch('/api/musteri/siparisler/gecmis');
     if (!res.ok) {
-      alan.innerHTML = '<div style="color: red; text-align: center; padding: 20px;">Siparişleri görmek için lütfen tekrar giriş yapın.</div>';
+      alan.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px;">Henüz sipariş oluşturulmadı.</div>';
       return;
     }
     const liste = await res.json();
     
     if (liste.length === 0) {
-      alan.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 30px;">Henüz verilmiş bir siparişiniz bulunmuyor.</div>';
+      alan.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 30px;">Henüz tamamlanmış veya iptal edilmiş siparişiniz bulunmuyor.</div>';
       return;
     }
 
     alan.innerHTML = liste.map(s => {
       let rozetSinif = 'st-bekliyor', durumYazi = '⏳ Beklemede / Alındı';
       if (s.durum === 'hazirlaniyor') { rozetSinif = 'st-hazirlaniyor'; durumYazi = '📦 Poşetleniyor'; }
-      else if (s.durum === 'yolda') { rozetSinif = 'st-yolda'; durumYazi = s.teslimat_yontemi==='gel_al' ? '🚶 Tezgâhta Hazır Gel-Al' : '🛵 Yola Çıktı / Kuryede'; }
+      else if (s.durum === 'yolda') { rozetSinif = 'st-yolda'; durumYazi = '🛵 Yola Çıktı / Kuryede'; }
       else if (s.durum === 'teslim_edildi') { rozetSinif = 'st-teslim'; durumYazi = '✅ Teslim Edildi'; }
       else if (s.durum === 'iptal') { rozetSinif = 'st-iptal'; durumYazi = '❌ İptal Edildi'; }
 
@@ -485,10 +571,10 @@ async function siparislerimModalAc() {
           </div>
           <div style="font-size:13px; font-weight:600; color:var(--text-main); margin-bottom:8px;">${urunDetayi}</div>
           <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
-            <span style="color:var(--text-muted);">${s.teslimat_yontemi === 'gel_al' ? '🛍️ Gel-Al' : '🛵 Adrese Teslim'} (${s.odeme_yontemi})</span>
+            <span style="color:var(--text-muted);">🛵 Adrese Teslim (${s.odeme_yontemi === 'kart' ? 'Kredi/Banka kartı' : 'Nakit ödeme'})</span>
             <div>
               <span style="font-size:15px; font-weight:800; color:var(--migros-orange); margin-right:10px;">${s.toplam_tutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</span>
-              ${s.durum === 'bekliyor' ? `<button class="btn-cancel-order" onclick="siparisiIptalEt(${s.id})">❌ İptal Et</button>` : ''}
+              
             </div>
           </div>
         </div>
@@ -496,8 +582,93 @@ async function siparislerimModalAc() {
     }).join('');
 
   } catch(e) {
-    alan.innerHTML = '<div style="color: red; text-align: center;">Bağlantı hatası oluştu.</div>';
+    alan.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px;">Henüz sipariş oluşturulmadı.</div>';
   }
+}
+
+
+async function favorilerimModalAc() {
+  document.getElementById('profil-dropdown').style.display = 'none';
+  document.getElementById('favorilerim-modal').classList.remove('hidden');
+
+  const alan = document.getElementById('favorilerim-icerik');
+  alan.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px;">Favorileriniz yükleniyor...</div>';
+
+  try {
+    const res = await fetch('/api/musteri/favoriler');
+    const liste = await res.json();
+
+    if (!res.ok) {
+      alan.innerHTML = `<div style="color:#DC2626; text-align:center; padding:20px;">${liste.hata || 'Favoriler alınamadı.'}</div>`;
+      return;
+    }
+
+    if (liste.length === 0) {
+      alan.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px;">Henüz favori ürününüz yok. Ürün kartlarındaki 🤍 simgesine dokunarak favori ürün ekleyebilirsiniz.</div>';
+      return;
+    }
+
+    alan.innerHTML = liste.map(f => {
+      const resim = (f.resim_url || '').split(',')[0];
+      const aktif = f.aktif && f.stok_adet > 0;
+      return `
+        <div class="fav-list-card">
+          <img src="${resim}" alt="${f.ad}">
+          <div style="flex:1;">
+            <div style="font-size:14px; font-weight:800; color:var(--text-main);">${f.ad}</div>
+            <div style="font-size:13px; font-weight:800; color:var(--migros-orange); margin-top:4px;">${Number(f.fiyat).toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</div>
+            <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">${aktif ? 'Stokta var' : 'Stokta yok'}</div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <button class="btn-add" ${aktif ? '' : 'disabled'} onclick="favoridenSepeteEkle(${f.urun_id})">Sepete Ekle</button>
+            <button class="btn-cancel-order" onclick="favoriSil(${f.urun_id})">Kaldır</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch(e) {
+    alan.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px;">Favori ürün seçmek için ürün kartlarındaki 🤍 simgesine dokunun.</div>';
+  }
+}
+
+async function favoriToggle(event, urunId, favoriMi) {
+  event.stopPropagation();
+  try {
+    const res = await fetch(`/api/musteri/favoriler/${urunId}`, {
+      method: favoriMi ? 'DELETE' : 'POST'
+    });
+    const veri = await res.json().catch(() => ({}));
+
+    if (res.ok) {
+      await urunleriYukle(document.body.dataset.aktifKategori || '');
+    } else if (res.status === 401) {
+      alert('Favorilere ürün eklemek için lütfen giriş yapın.');
+      window.location.href = '/login';
+    } else {
+      alert(veri.hata || 'Favori işlemi yapılamadı.');
+    }
+  } catch(e) {
+    alert('Favori işlemi sırasında bağlantı hatası oluştu.');
+  }
+}
+
+async function favoriSil(urunId) {
+  const res = await fetch(`/api/musteri/favoriler/${urunId}`, { method: 'DELETE' });
+  if (res.ok) {
+    await favorilerimModalAc();
+    await urunleriYukle(document.body.dataset.aktifKategori || '');
+  }
+}
+
+function favoridenSepeteEkle(urunId) {
+  const urun = urunler.find(u => u.id === urunId);
+  if (!urun) {
+    document.getElementById('favorilerim-modal').classList.add('hidden');
+    urunleriYukle('').then(() => sepetteDegistir(urunId, 1));
+    return;
+  }
+  sepetteDegistir(urunId, 1);
+  document.getElementById('favorilerim-modal').classList.add('hidden');
 }
 
 async function siparisiIptalEt(id) {
@@ -515,6 +686,7 @@ async function siparisiIptalEt(id) {
 }
 
 async function urunleriYukle(katId = '') {
+  document.body.dataset.aktifKategori = katId || '';
   let url = `/api/musteri/urunler?market_id=${MARKET_ID}`;
   if (katId) url += `&kategori=${katId}`;
   const res = await fetch(url);
@@ -551,6 +723,7 @@ function ekranaCiz(liste) {
 
     return `
       <div class="product-card">
+        <button class="fav-btn ${u.favori ? 'active' : ''}" onclick="favoriToggle(event, ${u.id}, ${u.favori ? 'true' : 'false'})" title="Favorilere ekle/çıkar">${u.favori ? '❤️' : '🤍'}</button>
         <img src="${ilkResim}" class="product-img" onclick="galeriAc(${u.id})">
         <div class="product-price">${Number(u.fiyat).toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</div>
         <div class="product-name" title="${u.ad}">${u.ad}</div>
@@ -561,6 +734,7 @@ function ekranaCiz(liste) {
 }
 
 function kategoriFiltrele(id, ad, el) {
+  document.body.dataset.aktifKategori = id || '';
   document.getElementById('aktif-kategori-baslik').textContent = ad || 'Tüm Ürünler';
   document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('active'));
   if (el) el.classList.add('active');
@@ -618,33 +792,18 @@ function sepetModalAc() {
   
   document.getElementById('modal-sepet-icerik').innerHTML = html;
   document.getElementById('modal-toplam-tutar').textContent = `${tot.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
-  document.getElementById('modal-teslimat').value = document.getElementById('header-teslimat').value;
-  
   sepetModalKontrol();
   document.getElementById('sepet-modal').classList.remove('hidden');
 }
 
-function teslimatTuruDegisti(val) {
-  document.getElementById('modal-teslimat').value = val;
-  sepetModalKontrol();
-}
 
 function sepetModalKontrol() {
-  const tYontem = document.getElementById('modal-teslimat').value;
   const btn = document.getElementById('siparis-tamamla-btn');
-  const uyari = document.getElementById('modal-mesafe-uyarisi');
-  uyari.style.display = 'none';
 
   if (!marketAktif) {
-    btn.disabled = true; btn.textContent = 'Dükkân Şu An Kapalı'; btn.style.background = '#CBD5E1'; return;
-  }
-
-  if (tYontem === 'adrese_teslim' && musteriKm !== null && parseFloat(musteriKm) > marketMaksKm) {
     btn.disabled = true;
-    btn.textContent = 'Mesafe Çok Uzak (Sadece Gel-Al)';
+    btn.textContent = 'Dükkân Şu An Kapalı';
     btn.style.background = '#CBD5E1';
-    uyari.textContent = `⚠️ Konumunuz (${musteriKm} km) bakkalımızın adrese teslim sınırları (${marketMaksKm} km) dışındadır. Lütfen yukarıdan "Gel-Al" seçin.`;
-    uyari.style.display = 'block';
     return;
   }
 
@@ -674,14 +833,16 @@ function galeriAc(id) {
 
 async function siparisiOnayla() {
   const kalemler = Object.entries(sepet).map(([id, adet]) => ({ urun_id: parseInt(id), adet }));
-  
+  const musteriNotu = document.getElementById('modal-not').value.trim();
+
   const res = await fetch('/api/musteri/siparis', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       market_id: MARKET_ID,
       odeme_yontemi: document.getElementById('modal-odeme').value,
-      teslimat_yontemi: document.getElementById('modal-teslimat').value,
-      not: document.getElementById('modal-not').value,
+      teslimat_yontemi: 'adrese_teslim',
+      not: musteriNotu,
       urunler: kalemler
     })
   });
@@ -690,7 +851,9 @@ async function siparisiOnayla() {
   if (res.ok) {
     document.getElementById('sepet-modal').classList.add('hidden');
     alert("🎉 Siparişiniz bakkala ulaştı! Hazırlanıyor.");
-    sepet = {}; sepetGuncelle(); urunleriYukle('');
+    sepet = {};
+    sepetGuncelle();
+    urunleriYukle('');
   } else {
     alert("Sipariş verilemedi: " + (veri.hata || "Giriş yapmanız gerekiyor!"));
   }
