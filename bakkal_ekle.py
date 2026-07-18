@@ -34,10 +34,7 @@ with app.app_context():
                 kullanici_id=kullanici.id,
                 ad=dukkan_adi,
                 adres="https://maps.app.goo.gl/CPR7e1GN8gCaBfLs6",
-                telefon="05551234567",
-                konum_lat=36.14088267948598,
-                konum_lon=36.10321437409666,
-                maks_teslimat_km=999
+                telefon="05551234567"
             )
 
             db.session.add(market)

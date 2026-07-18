@@ -36,18 +36,14 @@ def siparis_json(s):
 def market_durum_ogren():
     try:
         market_id = request.args.get("market_id", 1, type=int)
-        m = Market.query.get_or_404(market_id)
+        market = Market.query.get_or_404(market_id)
 
         return jsonify({
-            "ad": m.ad,
-            "adres": m.adres,
-            "harita_url": m.adres,
-            "aktif": m.aktif,
-            "min_siparis_tutari": float(m.min_siparis_tutari),
-            "maks_teslimat_km": float(m.maks_teslimat_km),
-            "konum_lat": float(m.konum_lat),
-            "konum_lon": float(m.konum_lon)
+            "ad": market.ad,
+            "aktif": market.aktif,
+            "min_siparis_tutari": float(market.min_siparis_tutari)
         }), 200
+
     except Exception as e:
         return jsonify({"hata": str(e)}), 500
 
@@ -216,6 +212,72 @@ def gecmis_siparisleri_getir():
 
     except Exception as e:
         return jsonify({"hata": str(e)}), 500
+    
+
+@musteri_bp.route("/siparisler/<int:siparis_id>/tekrar", methods=["POST"])
+@role_required("musteri")
+def siparisi_tekrarla(siparis_id):
+    try:
+        musteri = aktif_musteri_getir()
+
+        if not musteri:
+            return jsonify({
+                "hata": "Müşteri profili bulunamadı."
+            }), 404
+
+        eski_siparis = Siparis.query.get_or_404(siparis_id)
+
+        if eski_siparis.musteri_id != musteri.id:
+            return jsonify({
+                "hata": "Bu sipariş size ait değil."
+            }), 403
+
+        sepete_eklenecekler = []
+        eklenemeyenler = []
+
+        for detay in eski_siparis.detaylar:
+            urun = detay.urun
+
+            if not urun:
+                eklenemeyenler.append("Silinmiş ürün")
+                continue
+
+            if not urun.aktif or urun.stok_adet <= 0:
+                eklenemeyenler.append(urun.ad)
+                continue
+
+            eklenecek_adet = min(detay.adet, urun.stok_adet)
+
+            sepete_eklenecekler.append({
+                "urun_id": urun.id,
+                "ad": urun.ad,
+                "adet": eklenecek_adet,
+                "fiyat": float(urun.fiyat),
+                "resim_url": urun.resim_url,
+                "max_alinabilir_adet": urun.stok_adet
+            })
+
+            if eklenecek_adet < detay.adet:
+                eklenemeyenler.append(
+                    f"{urun.ad}: yalnızca {eklenecek_adet} adet stokta"
+                )
+
+        if not sepete_eklenecekler:
+            return jsonify({
+                "hata": "Bu siparişte tekrar sepete eklenebilecek ürün bulunamadı.",
+                "eklenemeyenler": eklenemeyenler
+            }), 400
+
+        return jsonify({
+            "mesaj": "Uygun ürünler sepete eklenmeye hazır.",
+            "urunler": sepete_eklenecekler,
+            "eklenemeyenler": eklenemeyenler
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "hata": f"Sipariş tekrarlanamadı: {str(e)}"
+        }), 500
 
 
 @musteri_bp.route("/siparisler/aktif", methods=["GET"])

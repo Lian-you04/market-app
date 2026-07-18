@@ -306,13 +306,54 @@
         <textarea id="modal-not" class="form-control" rows="2" placeholder="Apartman adı, kat, daire no veya kurye için notunuzu yazın..."></textarea>
       </div>
 
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px;">
-        <div>
-          <div style="font-size: 12px; color: var(--text-muted);">ÖDENECEK TUTAR</div>
-          <div id="modal-toplam-tutar" style="font-size: 24px; font-weight: 800; color: var(--migros-orange);">0,00 TL</div>
-        </div>
-        <button id="siparis-tamamla-btn" onclick="siparisiOnayla()" style="background: var(--migros-orange); color: white; border: none; padding: 14px 28px; border-radius: 10px; font-weight: 700; font-size: 15px; cursor: pointer;">Siparişi Tamamla ➔</button>
-      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:24px; gap:12px; flex-wrap:wrap;">
+
+  <div>
+    <div style="font-size:12px; color:var(--text-muted);">
+      ÖDENECEK TUTAR
+    </div>
+
+    <div id="modal-toplam-tutar"
+         style="font-size:24px; font-weight:800; color:var(--migros-orange);">
+      0,00 TL
+    </div>
+  </div>
+
+  <div style="display:flex; gap:10px;">
+
+    <button
+      onclick="sepetiBosalt()"
+      style="
+        background:#FEE2E2;
+        color:#DC2626;
+        border:1px solid #FECACA;
+        padding:14px 18px;
+        border-radius:10px;
+        font-weight:700;
+        cursor:pointer;
+      ">
+      🗑️ Sepeti Boşalt
+    </button>
+
+    <button
+      id="siparis-tamamla-btn"
+      onclick="siparisiOnayla()"
+      style="
+        background:var(--migros-orange);
+        color:white;
+        border:none;
+        padding:14px 28px;
+        border-radius:10px;
+        font-weight:700;
+        font-size:15px;
+        cursor:pointer;
+      ">
+      Siparişi Tamamla ➜
+    </button>
+
+  </div>
+
+</div>
     </div>
   </div>
 </div>
@@ -379,6 +420,7 @@
 <script>
 const MARKET_ID = 1;
 let marketHaritaUrl = 'https://maps.app.goo.gl/CPR7e1GN8gCaBfLs6';
+let sepetAnahtari = null;
 let sepet = {};
 let urunler = [];
 
@@ -406,6 +448,10 @@ async function baslat() {
     if (meRes.ok) {
       const meData = await meRes.json();
       const profilAdi = meData.profil_adi || meData.kullanici?.ad;
+      sepetAnahtari = `nihatMarketSepet_${meData.id}`;
+      sepet = JSON.parse(localStorage.getItem(sepetAnahtari) || '{}');
+
+      localStorage.removeItem('nihatMarketSepet');
 
       if (profilAdi) {
         document.getElementById('kullanici-adi-alan').textContent = profilAdi.split(' ')[0];
@@ -424,6 +470,7 @@ async function baslat() {
   `).join('');
   
   await urunleriYukle('');
+  await sepetiDogrula();
 }
 
 function dropdownAc() {
@@ -537,55 +584,156 @@ async function profilKaydet() {
 async function siparislerimModalAc() {
   document.getElementById('profil-dropdown').style.display = 'none';
   document.getElementById('siparislerim-modal').classList.remove('hidden');
-  
+
   const alan = document.getElementById('siparislerim-icerik');
-  alan.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">Siparişleriniz yükleniyor...</div>';
+
+  alan.innerHTML = `
+    <div style="text-align:center; color:var(--text-muted); padding:20px;">
+      Siparişleriniz yükleniyor...
+    </div>
+  `;
 
   try {
     const res = await fetch('/api/musteri/siparisler/gecmis');
+    const veri = await res.json().catch(() => null);
+
     if (!res.ok) {
-      alan.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px;">Henüz sipariş oluşturulmadı.</div>';
+      alan.innerHTML = `
+        <div style="text-align:center; color:var(--text-muted); padding:30px;">
+          ${veri?.hata || 'Sipariş geçmişiniz alınamadı.'}
+        </div>
+      `;
       return;
     }
-    const liste = await res.json();
-    
+
+    const liste = Array.isArray(veri) ? veri : [];
+
     if (liste.length === 0) {
-      alan.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 30px;">Henüz tamamlanmış veya iptal edilmiş siparişiniz bulunmuyor.</div>';
+      alan.innerHTML = `
+        <div style="text-align:center; color:var(--text-muted); padding:30px;">
+          Henüz tamamlanmış veya iptal edilmiş siparişiniz bulunmuyor.
+        </div>
+      `;
       return;
     }
 
     alan.innerHTML = liste.map(s => {
-      let rozetSinif = 'st-bekliyor', durumYazi = '⏳ Beklemede / Alındı';
-      if (s.durum === 'hazirlaniyor') { rozetSinif = 'st-hazirlaniyor'; durumYazi = '📦 Poşetleniyor'; }
-      else if (s.durum === 'yolda') { rozetSinif = 'st-yolda'; durumYazi = '🛵 Yola Çıktı / Kuryede'; }
-      else if (s.durum === 'teslim_edildi') { rozetSinif = 'st-teslim'; durumYazi = '✅ Teslim Edildi'; }
-      else if (s.durum === 'iptal') { rozetSinif = 'st-iptal'; durumYazi = '❌ İptal Edildi'; }
+      const teslimEdildi = s.durum === 'teslim_edildi';
 
-      const urunDetayi = s.detaylar.map(d => `${d.adet}x ${d.ad}`).join(', ');
+      const rozetSinif = teslimEdildi
+        ? 'st-teslim'
+        : 'st-iptal';
+
+      const durumYazi = teslimEdildi
+        ? '✅ Teslim Edildi'
+        : '❌ İptal Edildi';
+
+      const urunDetayi = Array.isArray(s.detaylar)
+        ? s.detaylar
+            .map(d => `${d.adet}x ${d.ad}`)
+            .join(', ')
+        : 'Ürün bilgisi bulunamadı';
+
+      const odemeYazi = s.odeme_yontemi === 'kart'
+        ? 'Kredi/Banka kartı ile ödeme'
+        : 'Nakit ödeme';
+
+      const toplamTutar = Number(s.toplam_tutar || 0).toLocaleString(
+        'tr-TR',
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      );
 
       return `
         <div class="order-history-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <span style="font-size:12px; font-weight:700; color:var(--text-muted);">Sipariş #${s.id} · ${s.tarih}</span>
-            <span class="status-badge ${rozetSinif}">${durumYazi}</span>
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            margin-bottom:8px;
+          ">
+            <span style="
+              font-size:12px;
+              font-weight:700;
+              color:var(--text-muted);
+            ">
+              Sipariş #${s.id} · ${s.tarih || ''}
+            </span>
+
+            <span class="status-badge ${rozetSinif}">
+              ${durumYazi}
+            </span>
           </div>
-          <div style="font-size:13px; font-weight:600; color:var(--text-main); margin-bottom:8px;">${urunDetayi}</div>
-          <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
-            <span style="color:var(--text-muted);">🛵 Adrese Teslim (${s.odeme_yontemi === 'kart' ? 'Kredi/Banka kartı' : 'Nakit ödeme'})</span>
-            <div>
-              <span style="font-size:15px; font-weight:800; color:var(--migros-orange); margin-right:10px;">${s.toplam_tutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</span>
-              
+
+          <div style="
+            font-size:13px;
+            font-weight:600;
+            color:var(--text-main);
+            margin-bottom:10px;
+            line-height:1.5;
+          ">
+            ${urunDetayi}
+          </div>
+
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            flex-wrap:wrap;
+            font-size:12px;
+          ">
+            <span style="color:var(--text-muted);">
+              🛵 Adrese Teslim · ${odemeYazi}
+            </span>
+
+            <div style="
+              display:flex;
+              align-items:center;
+              gap:8px;
+              flex-wrap:wrap;
+            ">
+              <span style="
+                font-size:15px;
+                font-weight:800;
+                color:var(--migros-orange);
+              ">
+                ${toplamTutar} TL
+              </span>
+
+              <button
+                type="button"
+                onclick="siparisiTekrarla(${s.id})"
+                style="
+                  background:#FFF7ED;
+                  color:#EA580C;
+                  border:1px solid #FDBA74;
+                  padding:7px 11px;
+                  border-radius:7px;
+                  font-size:11px;
+                  font-weight:800;
+                  cursor:pointer;
+                "
+              >
+                🔁 Siparişi Tekrarla
+              </button>
             </div>
           </div>
         </div>
       `;
     }).join('');
 
-  } catch(e) {
-    alan.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px;">Henüz sipariş oluşturulmadı.</div>';
+  } catch (error) {
+    alan.innerHTML = `
+      <div style="text-align:center; color:var(--text-muted); padding:30px;">
+        Sipariş geçmişi yüklenirken bağlantı hatası oluştu.
+      </div>
+    `;
   }
 }
-
 
 async function favorilerimModalAc() {
   document.getElementById('profil-dropdown').style.display = 'none';
@@ -760,11 +908,17 @@ function sepetteDegistir(id, miktar) {
   
   if (yeni <= 0) delete sepet[id]; else sepet[id] = yeni;
   
+  sepetiKaydet();
   sepetGuncelle();
   ekranaCiz(urunler);
 }
 
 function sepetGuncelle() {
+
+  if (sepetAnahtari) {
+  localStorage.setItem(sepetAnahtari, JSON.stringify(sepet));
+  }
+
   let tot = 0;
   for (const [id, adet] of Object.entries(sepet)) {
     const u = urunler.find(x => x.id == id);
@@ -775,24 +929,128 @@ function sepetGuncelle() {
 
 function sepetModalAc() {
   const sepetAnahtar = Object.keys(sepet);
-  if (sepetAnahtar.length === 0) return alert("Sepetiniz boş!");
-  
-  let html = '', tot = 0;
+
+  if (sepetAnahtar.length === 0) {
+    alert('Sepetiniz boş!');
+    return;
+  }
+
+  let html = '';
+  let toplam = 0;
+
   for (const id of sepetAnahtar) {
-    const u = urunler.find(x => x.id == id);
-    const tutar = u.fiyat * sepet[id];
-    tot += tutar;
+    const urun = urunler.find(x => x.id == id);
+
+    if (!urun) continue;
+
+    const adet = sepet[id];
+    const satirToplam = urun.fiyat * adet;
+    toplam += satirToplam;
+
     html += `
-      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #F1F5F9;">
-        <span style="font-size:13px; font-weight:600;"><b>${sepet[id]}x</b> ${u.ad}</span>
-        <span style="font-weight:700; color:var(--migros-orange);">${tutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</span>
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:12px;
+        padding:12px 0;
+        border-bottom:1px solid #F1F5F9;
+      ">
+        <div style="flex:1; min-width:0;">
+          <div style="
+            font-size:13px;
+            font-weight:700;
+            color:var(--text-main);
+            margin-bottom:4px;
+          ">
+            ${urun.ad}
+          </div>
+
+          <div style="
+            font-size:12px;
+            color:var(--text-muted);
+          ">
+            ${Number(urun.fiyat).toLocaleString('tr-TR', {
+              minimumFractionDigits: 2
+            })} TL / adet
+          </div>
+        </div>
+
+        <div style="
+          display:flex;
+          align-items:center;
+          border:1px solid var(--migros-orange);
+          border-radius:8px;
+          overflow:hidden;
+          flex-shrink:0;
+        ">
+          <button
+            type="button"
+            onclick="sepetModalAdetDegistir(${urun.id}, -1)"
+            style="
+              width:34px;
+              height:34px;
+              border:none;
+              background:#FFF;
+              color:var(--migros-orange);
+              font-size:18px;
+              font-weight:800;
+              cursor:pointer;
+            "
+          >
+            −
+          </button>
+
+          <span style="
+            min-width:34px;
+            text-align:center;
+            font-size:14px;
+            font-weight:800;
+            color:var(--text-main);
+          ">
+            ${adet}
+          </span>
+
+          <button
+            type="button"
+            onclick="sepetModalAdetDegistir(${urun.id}, 1)"
+            style="
+              width:34px;
+              height:34px;
+              border:none;
+              background:#FFF;
+              color:var(--migros-orange);
+              font-size:18px;
+              font-weight:800;
+              cursor:pointer;
+            "
+          >
+            +
+          </button>
+        </div>
+
+        <div style="
+          min-width:90px;
+          text-align:right;
+          font-size:13px;
+          font-weight:800;
+          color:var(--migros-orange);
+        ">
+          ${satirToplam.toLocaleString('tr-TR', {
+            minimumFractionDigits: 2
+          })} TL
+        </div>
       </div>
     `;
   }
-  
+
   document.getElementById('modal-sepet-icerik').innerHTML = html;
-  document.getElementById('modal-toplam-tutar').textContent = `${tot.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
-  sepetModalKontrol();
+
+  document.getElementById('modal-toplam-tutar').textContent =
+    `${toplam.toLocaleString('tr-TR', {
+      minimumFractionDigits: 2
+    })} TL`;
+
   document.getElementById('sepet-modal').classList.remove('hidden');
 }
 
@@ -852,11 +1110,168 @@ async function siparisiOnayla() {
     document.getElementById('sepet-modal').classList.add('hidden');
     alert("🎉 Siparişiniz bakkala ulaştı! Hazırlanıyor.");
     sepet = {};
+    localStorage.removeItem('nihatMarketSepet');
     sepetGuncelle();
     urunleriYukle('');
   } else {
     alert("Sipariş verilemedi: " + (veri.hata || "Giriş yapmanız gerekiyor!"));
   }
+}
+
+async function siparisiTekrarla(siparisId) {
+  try {
+    const res = await fetch(`/api/musteri/siparisler/${siparisId}/tekrar`, {
+      method: 'POST'
+    });
+
+    const veri = await res.json();
+
+    if (!res.ok) {
+      alert(veri.hata || 'Sipariş tekrar sepete eklenemedi.');
+      return;
+    }
+
+    for (const urun of veri.urunler) {
+  const mevcutAdet = Number(sepet[urun.urun_id] || 0);
+  const tekrarAdedi = Number(urun.adet || 0);
+  const maksimumStok = Number(urun.max_alinabilir_adet || 0);
+
+  const yeniAdet = Math.min(
+    mevcutAdet + tekrarAdedi,
+    maksimumStok
+  );
+
+  if (yeniAdet > 0) {
+    sepet[urun.urun_id] = yeniAdet;
+  }
+}
+
+sepetiKaydet();
+sepetGuncelle();
+    await urunleriYukle(document.body.dataset.aktifKategori || '');
+
+    document
+      .getElementById('siparislerim-modal')
+      .classList.add('hidden');
+
+    let mesaj = 'Siparişinizdeki uygun ürünler sepete eklendi.';
+
+    if (veri.eklenemeyenler && veri.eklenemeyenler.length > 0) {
+      mesaj += '\n\nEklenemeyen ürünler:\n- ' +
+        veri.eklenemeyenler.join('\n- ');
+    }
+
+    alert(mesaj);
+
+  } catch (error) {
+    alert('Sipariş tekrar sepete eklenirken bağlantı hatası oluştu.');
+  }
+}
+
+function sepetiBosalt() {
+  if (Object.keys(sepet).length === 0) {
+    alert('Sepetiniz zaten boş.');
+    return;
+  }
+
+  const onay = confirm('Sepetinizdeki tüm ürünleri kaldırmak istiyor musunuz?');
+
+  if (!onay) return;
+
+  sepet = {};
+
+  if (sepetAnahtari) {
+    localStorage.removeItem(sepetAnahtari);
+  }
+
+  sepetGuncelle();
+  ekranaCiz(urunler);
+
+  document.getElementById('modal-sepet-icerik').innerHTML = `
+    <div style="text-align:center; color:var(--text-muted); padding:24px;">
+      Sepetiniz boş.
+    </div>
+  `;
+
+  document.getElementById('modal-toplam-tutar').textContent = '0,00 TL';
+
+  document.getElementById('sepet-modal').classList.add('hidden');
+}
+function sepetModalAdetDegistir(urunId, miktar) {
+  const urun = urunler.find(u => u.id === urunId);
+
+  if (!urun) return;
+
+  const mevcutAdet = sepet[urunId] || 0;
+  const yeniAdet = mevcutAdet + miktar;
+
+  if (yeniAdet > urun.max_alinabilir_adet) {
+    alert(`Bu üründen en fazla ${urun.max_alinabilir_adet} adet alabilirsiniz.`);
+    return;
+  }
+
+  if (yeniAdet <= 0) {
+    delete sepet[urunId];
+  } else {
+    sepet[urunId] = yeniAdet;
+  }
+
+  sepetiKaydet();
+  sepetGuncelle();
+  ekranaCiz(urunler);
+
+  if (Object.keys(sepet).length === 0) {
+    document.getElementById('sepet-modal').classList.add('hidden');
+    alert('Sepetiniz boş.');
+    return;
+  }
+
+  sepetModalAc();
+}
+
+function sepetiKaydet() {
+  if (!sepetAnahtari) return;
+
+  localStorage.setItem(
+    sepetAnahtari,
+    JSON.stringify(sepet)
+  );
+}
+
+function sepetiDogrula() {
+  let degisti = false;
+
+  for (const urunId of Object.keys(sepet)) {
+    const urun = urunler.find(u => String(u.id) === String(urunId));
+
+    // Ürün artık listede yoksa veya stok tamamen bittiyse sepetten çıkar.
+    if (!urun || Number(urun.max_alinabilir_adet) <= 0) {
+      delete sepet[urunId];
+      degisti = true;
+      continue;
+    }
+
+    const sepettekiAdet = Number(sepet[urunId]) || 0;
+    const mevcutStok = Number(urun.max_alinabilir_adet) || 0;
+
+    // Sepetteki adet stoktan fazlaysa mevcut stok seviyesine indir.
+    if (sepettekiAdet > mevcutStok) {
+      sepet[urunId] = mevcutStok;
+      degisti = true;
+    }
+
+    if (Number(sepet[urunId]) <= 0) {
+      delete sepet[urunId];
+      degisti = true;
+    }
+  }
+
+  if (degisti) {
+    sepetiKaydet();
+  }
+
+  sepetGuncelle();
+  ekranaCiz(urunler);
 }
 
 baslat();
