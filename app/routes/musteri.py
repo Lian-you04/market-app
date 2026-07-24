@@ -27,7 +27,11 @@ def siparis_json(s):
         "odeme_yontemi": s.odeme_yontemi,
         "teslimat_yontemi": s.teslimat_yontemi,
         "toplam_tutar": float(s.toplam_tutar),
-        "tarih": s.olusturma_tarihi.strftime("%d.%m.%Y %H:%M") if s.olusturma_tarihi else "",
+        "tarih": (
+            s.olusturma_tarihi.strftime("%d.%m.%Y %H:%M")
+            if s.olusturma_tarihi
+            else ""
+        ),
         "detaylar": kalemler
     }
 
@@ -51,19 +55,68 @@ def market_durum_ogren():
 @musteri_bp.route("/kategoriler", methods=["GET"])
 def kategoriler_listele():
     return jsonify([
-        {"id": "et_tavuk", "ad": "🥩 Et & Tavuk", "resim": "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=200&q=80"},
-        {"id": "meyve_sebze", "ad": "🍅 Meyve & Sebze", "resim": "https://images.unsplash.com/photo-1610348725531-843dff563e2c?auto=format&fit=crop&w=200&q=80"},
-        {"id": "sut_kahvaltilik", "ad": "🧀 Süt & Kahvaltı", "resim": "https://images.unsplash.com/photo-1628088062854-d1870b4553da?auto=format&fit=crop&w=200&q=80"},
-        {"id": "aburcubur", "ad": "🍫 Aburcubur", "resim": "https://images.unsplash.com/photo-1606312619070-d48b4c652a52?auto=format&fit=crop&w=200&q=80"},
-        {"id": "icecek", "ad": "🥤 İçecekler", "resim": "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=200&q=80"},
-        {"id": "ekmek_firin", "ad": "🍞 Ekmek & Fırın", "resim": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=200&q=80"},
-        {"id": "tatlilar", "ad": "🍰 Tatlılar", "resim": "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=200&q=80"},
-        {"id": "temizlik", "ad": "🧼 Temizlik", "resim": "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=200&q=80"},
-        {"id": "kozmetik", "ad": "🧴 Kozmetik", "resim": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=200&q=80"},
-        {"id": "dondurma", "ad": "🍦 Dondurma", "resim": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=200&q=80"},
-        {"id": "evcil_hayvan_mamasi", "ad": "🐾 Evcil Hayvan Maması", "resim": "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?auto=format&fit=crop&w=200&q=80"},
-        {"id": "elektronik", "ad": "🔌 Elektronik", "resim": "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=200&q=80"}
+        {
+            "id": "et_tavuk",
+            "ad": "🥩 Et & Tavuk",
+            "resim": "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=200&q=80"
+        },
+        {
+            "id": "meyve_sebze",
+            "ad": "🍅 Meyve & Sebze",
+            "resim": "https://images.unsplash.com/photo-1610348725531-843dff563e2c?auto=format&fit=crop&w=200&q=80"
+        },
+        {
+            "id": "sut_kahvaltilik",
+            "ad": "🧀 Süt & Kahvaltı",
+            "resim": "https://images.unsplash.com/photo-1628088062854-d1870b4553da?auto=format&fit=crop&w=200&q=80"
+        },
+        {
+            "id": "aburcubur",
+            "ad": "🍫 Aburcubur",
+            "resim": "https://images.unsplash.com/photo-1606312619070-d48b4c652a52?auto=format&fit=crop&w=200&q=80"
+        },
+        {
+            "id": "icecek",
+            "ad": "🥤 İçecekler",
+            "resim": "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=200&q=80"
+        },
+        {
+            "id": "ekmek_firin",
+            "ad": "🍞 Ekmek & Fırın",
+            "resim": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=200&q=80"
+        },
+        {
+            "id": "tatlilar",
+            "ad": "🍰 Tatlılar",
+            "resim": "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=200&q=80"
+        },
+        {
+            "id": "temizlik",
+            "ad": "🧼 Temizlik",
+            "resim": "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=200&q=80"
+        },
+        {
+            "id": "kozmetik",
+            "ad": "🧴 Kozmetik",
+            "resim": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=200&q=80"
+        },
+        {
+            "id": "dondurma",
+            "ad": "🍦 Dondurma",
+            "resim": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=200&q=80"
+        },
+        {
+            "id": "evcil_hayvan_mamasi",
+            "ad": "🐾 Evcil Hayvan Maması",
+            "resim": "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?auto=format&fit=crop&w=200&q=80"
+        },
+        {
+            "id": "elektronik",
+            "ad": "🔌 Elektronik",
+            "resim": "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=200&q=80"
+        }
     ])
+
 
 @musteri_bp.route("/urunler", methods=["GET"])
 def urunleri_getir():
@@ -71,7 +124,10 @@ def urunleri_getir():
         market_id = request.args.get("market_id", 1, type=int)
         kategori = request.args.get("kategori")
 
-        query = Urun.query.filter_by(market_id=market_id, aktif=True)
+        query = Urun.query.filter_by(
+            market_id=market_id,
+            aktif=True
+        )
 
         if kategori:
             query = query.filter_by(kategori=kategori)
@@ -83,7 +139,10 @@ def urunleri_getir():
 
         if musteri:
             favori_ids = {
-                f.urun_id for f in FavoriUrun.query.filter_by(musteri_id=musteri.id).all()
+                f.urun_id
+                for f in FavoriUrun.query.filter_by(
+                    musteri_id=musteri.id
+                ).all()
             }
 
         return jsonify([{
@@ -109,7 +168,9 @@ def profil_getir():
         musteri = aktif_musteri_getir()
 
         if not musteri:
-            return jsonify({"hata": "Müşteri profili bulunamadı!"}), 404
+            return jsonify({
+                "hata": "Müşteri profili bulunamadı!"
+            }), 404
 
         kullanici = Kullanici.query.get(kullanici_id)
 
@@ -139,28 +200,39 @@ def profil_guncelle():
         musteri = aktif_musteri_getir()
 
         if not musteri:
-            return jsonify({"hata": "Müşteri profili bulunamadı!"}), 404
+            return jsonify({
+                "hata": "Müşteri profili bulunamadı!"
+            }), 404
 
         ad = data.get("ad", "").strip()
         soyad = data.get("soyad", "").strip()
         ad_soyad = data.get("ad_soyad", "").strip()
         telefon = data.get("telefon", "").strip().replace(" ", "")
-        adres_tarifi = data.get("adres_tarifi", data.get("adres", "")).strip()
+        adres_tarifi = data.get(
+            "adres_tarifi",
+            data.get("adres", "")
+        ).strip()
 
         if ad or soyad:
             ad_soyad = f"{ad} {soyad}".strip()
 
         if not ad_soyad:
-            return jsonify({"hata": "Ad ve soyad boş olamaz!"}), 400
+            return jsonify({
+                "hata": "Ad ve soyad boş olamaz!"
+            }), 400
 
         if not telefon:
-            return jsonify({"hata": "Telefon boş olamaz!"}), 400
+            return jsonify({
+                "hata": "Telefon boş olamaz!"
+            }), 400
 
         if not telefon.startswith("+90"):
             telefon = "+90" + telefon.lstrip("0")
 
         if not adres_tarifi:
-            return jsonify({"hata": "Adres tarifi boş olamaz!"}), 400
+            return jsonify({
+                "hata": "Adres tarifi boş olamaz!"
+            }), 400
 
         musteri.ad_soyad = ad_soyad
         musteri.telefon = telefon
@@ -168,7 +240,9 @@ def profil_guncelle():
 
         db.session.commit()
 
-        return jsonify({"mesaj": "Profil bilgileriniz güncellendi."}), 200
+        return jsonify({
+            "mesaj": "Profil bilgileriniz güncellendi."
+        }), 200
 
     except Exception as e:
         db.session.rollback()
@@ -182,16 +256,25 @@ def musteri_siparislerini_getir():
         musteri = aktif_musteri_getir()
 
         if not musteri:
-            return jsonify({"hata": "Müşteri profili bulunamadı!"}), 404
+            return jsonify({
+                "hata": "Müşteri profili bulunamadı!"
+            }), 404
 
-        siparisler = Siparis.query.filter_by(musteri_id=musteri.id).order_by(
+        siparisler = Siparis.query.filter_by(
+            musteri_id=musteri.id
+        ).order_by(
             Siparis.olusturma_tarihi.desc()
         ).all()
 
-        return jsonify([siparis_json(s) for s in siparisler]), 200
+        return jsonify([
+            siparis_json(s)
+            for s in siparisler
+        ]), 200
 
     except Exception as e:
-        return jsonify({"hata": f"Siparişler çekilemedi: {str(e)}"}), 500
+        return jsonify({
+            "hata": f"Siparişler çekilemedi: {str(e)}"
+        }), 500
 
 
 @musteri_bp.route("/siparisler/gecmis", methods=["GET"])
@@ -201,20 +284,33 @@ def gecmis_siparisleri_getir():
         musteri = aktif_musteri_getir()
 
         if not musteri:
-            return jsonify({"hata": "Müşteri profili bulunamadı!"}), 404
+            return jsonify({
+                "hata": "Müşteri profili bulunamadı!"
+            }), 404
 
         siparisler = Siparis.query.filter(
             Siparis.musteri_id == musteri.id,
-            Siparis.durum.in_(["teslim_edildi", "iptal"])
-        ).order_by(Siparis.olusturma_tarihi.desc()).all()
+            Siparis.durum.in_([
+                "teslim_edildi",
+                "iptal"
+            ])
+        ).order_by(
+            Siparis.olusturma_tarihi.desc()
+        ).all()
 
-        return jsonify([siparis_json(s) for s in siparisler]), 200
+        return jsonify([
+            siparis_json(s)
+            for s in siparisler
+        ]), 200
 
     except Exception as e:
         return jsonify({"hata": str(e)}), 500
-    
 
-@musteri_bp.route("/siparisler/<int:siparis_id>/tekrar", methods=["POST"])
+
+@musteri_bp.route(
+    "/siparisler/<int:siparis_id>/tekrar",
+    methods=["POST"]
+)
 @role_required("musteri")
 def siparisi_tekrarla(siparis_id):
     try:
@@ -246,7 +342,10 @@ def siparisi_tekrarla(siparis_id):
                 eklenemeyenler.append(urun.ad)
                 continue
 
-            eklenecek_adet = min(detay.adet, urun.stok_adet)
+            eklenecek_adet = min(
+                detay.adet,
+                urun.stok_adet
+            )
 
             sepete_eklenecekler.append({
                 "urun_id": urun.id,
@@ -259,12 +358,16 @@ def siparisi_tekrarla(siparis_id):
 
             if eklenecek_adet < detay.adet:
                 eklenemeyenler.append(
-                    f"{urun.ad}: yalnızca {eklenecek_adet} adet stokta"
+                    f"{urun.ad}: yalnızca "
+                    f"{eklenecek_adet} adet stokta"
                 )
 
         if not sepete_eklenecekler:
             return jsonify({
-                "hata": "Bu siparişte tekrar sepete eklenebilecek ürün bulunamadı.",
+                "hata": (
+                    "Bu siparişte tekrar sepete "
+                    "eklenebilecek ürün bulunamadı."
+                ),
                 "eklenemeyenler": eklenemeyenler
             }), 400
 
@@ -287,20 +390,33 @@ def aktif_siparisleri_getir():
         musteri = aktif_musteri_getir()
 
         if not musteri:
-            return jsonify({"hata": "Müşteri profili bulunamadı!"}), 404
+            return jsonify({
+                "hata": "Müşteri profili bulunamadı!"
+            }), 404
 
         siparisler = Siparis.query.filter(
             Siparis.musteri_id == musteri.id,
-            Siparis.durum.notin_(["teslim_edildi", "iptal"])
-        ).order_by(Siparis.olusturma_tarihi.desc()).all()
+            Siparis.durum.notin_([
+                "teslim_edildi",
+                "iptal"
+            ])
+        ).order_by(
+            Siparis.olusturma_tarihi.desc()
+        ).all()
 
-        return jsonify([siparis_json(s) for s in siparisler]), 200
+        return jsonify([
+            siparis_json(s)
+            for s in siparisler
+        ]), 200
 
     except Exception as e:
         return jsonify({"hata": str(e)}), 500
 
 
-@musteri_bp.route("/siparisler/<int:siparis_id>/iptal", methods=["POST"])
+@musteri_bp.route(
+    "/siparisler/<int:siparis_id>/iptal",
+    methods=["POST"]
+)
 @role_required("musteri")
 def musteri_siparis_iptal(siparis_id):
     try:
@@ -308,11 +424,16 @@ def musteri_siparis_iptal(siparis_id):
         siparis = Siparis.query.get_or_404(siparis_id)
 
         if not musteri or siparis.musteri_id != musteri.id:
-            return jsonify({"hata": "Bu siparişi iptal etme yetkiniz yok!"}), 403
+            return jsonify({
+                "hata": "Bu siparişi iptal etme yetkiniz yok!"
+            }), 403
 
         if siparis.durum != "bekliyor":
             return jsonify({
-                "hata": "Hazırlanmaya başlanmış sipariş iptal edilemez. Lütfen bakkalı arayın."
+                "hata": (
+                    "Hazırlanmaya başlanmış sipariş iptal edilemez. "
+                    "Lütfen bakkalı arayın."
+                )
             }), 400
 
         siparis.durum = "iptal"
@@ -320,6 +441,7 @@ def musteri_siparis_iptal(siparis_id):
         for detay in siparis.detaylar:
             if detay.urun:
                 detay.urun.stok_adet += detay.adet
+
                 if detay.urun.stok_adet > 0:
                     detay.urun.aktif = True
 
@@ -331,7 +453,10 @@ def musteri_siparis_iptal(siparis_id):
         })
 
         return jsonify({
-            "mesaj": "Siparişiniz iptal edildi ve stoklar iade edildi."
+            "mesaj": (
+                "Siparişiniz iptal edildi "
+                "ve stoklar iade edildi."
+            )
         }), 200
 
     except Exception as e:
@@ -346,9 +471,13 @@ def favorileri_getir():
         musteri = aktif_musteri_getir()
 
         if not musteri:
-            return jsonify({"hata": "Müşteri profili bulunamadı!"}), 404
+            return jsonify({
+                "hata": "Müşteri profili bulunamadı!"
+            }), 404
 
-        favoriler = FavoriUrun.query.filter_by(musteri_id=musteri.id).all()
+        favoriler = FavoriUrun.query.filter_by(
+            musteri_id=musteri.id
+        ).all()
 
         return jsonify([{
             "urun_id": f.urun.id,
@@ -358,7 +487,11 @@ def favorileri_getir():
             "resim_url": f.urun.resim_url,
             "stok_adet": f.urun.stok_adet,
             "max_alinabilir_adet": f.urun.stok_adet,
-            "stok_durumu": "var" if f.urun.stok_adet > 0 else "tukendi",
+            "stok_durumu": (
+                "var"
+                if f.urun.stok_adet > 0
+                else "tukendi"
+            ),
             "aktif": f.urun.aktif
         } for f in favoriler if f.urun]), 200
 
@@ -366,15 +499,23 @@ def favorileri_getir():
         return jsonify({"hata": str(e)}), 500
 
 
-@musteri_bp.route("/favoriler/<int:urun_id>", methods=["POST"])
-@musteri_bp.route("/favori/<int:urun_id>", methods=["POST"])
+@musteri_bp.route(
+    "/favoriler/<int:urun_id>",
+    methods=["POST"]
+)
+@musteri_bp.route(
+    "/favori/<int:urun_id>",
+    methods=["POST"]
+)
 @role_required("musteri")
 def favori_ekle(urun_id):
     try:
         musteri = aktif_musteri_getir()
 
         if not musteri:
-            return jsonify({"hata": "Müşteri profili bulunamadı!"}), 404
+            return jsonify({
+                "hata": "Müşteri profili bulunamadı!"
+            }), 404
 
         urun = Urun.query.get_or_404(urun_id)
 
@@ -389,10 +530,12 @@ def favori_ekle(urun_id):
                 "favori": True
             }), 200
 
-        db.session.add(FavoriUrun(
-            musteri_id=musteri.id,
-            urun_id=urun.id
-        ))
+        db.session.add(
+            FavoriUrun(
+                musteri_id=musteri.id,
+                urun_id=urun.id
+            )
+        )
 
         db.session.commit()
 
@@ -406,15 +549,23 @@ def favori_ekle(urun_id):
         return jsonify({"hata": str(e)}), 500
 
 
-@musteri_bp.route("/favoriler/<int:urun_id>", methods=["DELETE"])
-@musteri_bp.route("/favori/<int:urun_id>", methods=["DELETE"])
+@musteri_bp.route(
+    "/favoriler/<int:urun_id>",
+    methods=["DELETE"]
+)
+@musteri_bp.route(
+    "/favori/<int:urun_id>",
+    methods=["DELETE"]
+)
 @role_required("musteri")
 def favori_sil(urun_id):
     try:
         musteri = aktif_musteri_getir()
 
         if not musteri:
-            return jsonify({"hata": "Müşteri profili bulunamadı!"}), 404
+            return jsonify({
+                "hata": "Müşteri profili bulunamadı!"
+            }), 404
 
         favori = FavoriUrun.query.filter_by(
             musteri_id=musteri.id,
@@ -434,24 +585,61 @@ def favori_sil(urun_id):
         db.session.rollback()
         return jsonify({"hata": str(e)}), 500
 
-
 @musteri_bp.route("/siparis", methods=["POST"])
 @role_required("musteri")
 def siparis_olustur():
     try:
         kullanici_id = session.get("kullanici_id")
-        data = request.get_json(silent=True) or {}
-        market_id = data.get("market_id", 1)
+        data = request.get_json(silent=True)
+
+        if not isinstance(data, dict):
+            return jsonify({
+                "hata": "Geçersiz sipariş verisi!"
+            }), 400
+        
+        try:
+            market_id = int(data.get("market_id", 1))
+        except (TypeError, ValueError):
+            return jsonify({
+                "hata": "Geçersiz market kimliği!"
+            }), 400
+
+        if market_id <= 0:
+            return jsonify({
+                "hata": "Geçersiz market kimliği!"
+            }), 400
 
         market = Market.query.get_or_404(market_id)
 
         if not market.aktif:
-            return jsonify({"hata": "Bakkal şu an siparişe kapalıdır!"}), 400
+            return jsonify({
+                "hata": "Bakkal şu an siparişe kapalıdır!"
+            }), 400
+
+        odeme_yontemi = data.get(
+            "odeme_yontemi",
+            "nakit"
+        )
+
+        izin_verilen_odeme_yontemleri = {
+            "nakit",
+            "kart"
+        }
+
+        if odeme_yontemi not in izin_verilen_odeme_yontemleri:
+            return jsonify({
+                "hata": "Geçersiz ödeme yöntemi!"
+            }), 400
 
         musteri = aktif_musteri_getir()
 
         if not musteri:
             kullanici = Kullanici.query.get(kullanici_id)
+
+            if not kullanici:
+                return jsonify({
+                    "hata": "Kullanıcı hesabı bulunamadı!"
+                }), 404
 
             musteri = Musteri(
                 kullanici_id=kullanici_id,
@@ -465,56 +653,139 @@ def siparis_olustur():
 
         istenen_kalemler = data.get("urunler", [])
 
+        if not isinstance(istenen_kalemler, list):
+            return jsonify({
+                "hata": "Ürünler listesi geçersiz!"
+            }), 400
+
         if not istenen_kalemler:
-            return jsonify({"hata": "Sepetiniz boş!"}), 400
+            return jsonify({
+                "hata": "Sepetiniz boş!"
+            }), 400
+
+        urun_adetleri = {}
+
+        for kalem in istenen_kalemler:
+            if not isinstance(kalem, dict):
+                return jsonify({
+                    "hata": "Geçersiz sepet verisi!"
+                }), 400
+
+            try:
+                urun_id = int(kalem.get("urun_id"))
+                adet = int(kalem.get("adet"))
+
+            except (TypeError, ValueError):
+                return jsonify({
+                    "hata": (
+                        "Ürün kimliği veya adet "
+                        "bilgisi geçersiz!"
+                    )
+                }), 400
+
+            if adet <= 0:
+                return jsonify({
+                    "hata": (
+                        "Ürün adedi sıfırdan "
+                        "büyük olmalıdır!"
+                    )
+                }), 400
+
+            urun_adetleri[urun_id] = (
+                urun_adetleri.get(urun_id, 0) + adet
+            )
 
         kontrol_edilmis_kalemler = []
 
-        for kalem in istenen_kalemler:
-            urun = Urun.query.get(kalem.get("urun_id"))
+        for urun_id, toplam_adet in urun_adetleri.items():
+            urun = (
+                Urun.query
+                .filter_by(id=urun_id)
+                .with_for_update()
+                .first()
+            )
 
-            if not urun or not urun.aktif or urun.market_id != int(market_id):
+            if (
+                not urun
+                or not urun.aktif
+                or urun.market_id != market_id
+            ):
                 return jsonify({
-                    "hata": f"Ürün bulunamadı veya artık satışta değil (id: {kalem.get('urun_id')})"
+                    "hata": (
+                        "Ürün bulunamadı veya artık satışta değil "
+                        f"(id: {urun_id})"
+                    )
                 }), 400
 
-            adet = int(kalem.get("adet", 0))
-
-            if adet <= 0:
-                return jsonify({"hata": f"'{urun.ad}' için geçersiz adet!"}), 400
-
-            if urun.stok_adet < adet:
+            if urun.stok_adet < toplam_adet:
                 return jsonify({
-                    "hata": f"'{urun.ad}' için yeterli stok yok! Mevcut stok: {urun.stok_adet}"
+                    "hata": (
+                        f"'{urun.ad}' için yeterli stok yok! "
+                        f"İstenen: {toplam_adet}, "
+                        f"mevcut stok: {urun.stok_adet}"
+                    )
                 }), 400
 
-            kontrol_edilmis_kalemler.append((urun, adet))
+            kontrol_edilmis_kalemler.append(
+                (urun, toplam_adet)
+            )
+
+        toplam = sum(
+            float(urun.fiyat) * adet
+            for urun, adet in kontrol_edilmis_kalemler
+        )
+
+        minimum_tutar = float(
+            market.min_siparis_tutari or 0
+        )
+
+        if toplam < minimum_tutar:
+            return jsonify({
+                "hata": (
+                    f"Minimum sipariş tutarı "
+                    f"{minimum_tutar:.2f} TL'dir. "
+                    f"Sepet toplamınız {toplam:.2f} TL."
+                )
+            }), 400
+
+        siparis_notu = data.get("not", "")
+
+        if not isinstance(siparis_notu, str):
+            return jsonify({
+                "hata": "Sipariş notu metin olmalıdır!"
+            }), 400
+
+        siparis_notu = siparis_notu.strip()
+
+        if len(siparis_notu) > 500:
+            return jsonify({
+                "hata": "Sipariş notu en fazla 500 karakter olabilir!"
+            }), 400
 
         yeni_siparis = Siparis(
             market_id=market_id,
             musteri_id=musteri.id,
             durum="bekliyor",
-            odeme_yontemi=data.get("odeme_yontemi", "nakit"),
+            odeme_yontemi=odeme_yontemi,
             teslimat_yontemi="adrese_teslim",
-            siparis_notu=data.get("not", ""),
+            siparis_notu=siparis_notu,
             toplam_tutar=0.0
         )
 
         db.session.add(yeni_siparis)
         db.session.flush()
 
-        toplam = 0.0
-
         for urun, adet in kontrol_edilmis_kalemler:
             fiyat = float(urun.fiyat)
-            toplam += fiyat * adet
 
-            db.session.add(SiparisDetay(
-                siparis_id=yeni_siparis.id,
-                urun_id=urun.id,
-                adet=adet,
-                birim_fiyat=fiyat
-            ))
+            db.session.add(
+                SiparisDetay(
+                    siparis_id=yeni_siparis.id,
+                    urun_id=urun.id,
+                    adet=adet,
+                    birim_fiyat=fiyat
+                )
+            )
 
             urun.stok_adet -= adet
 
@@ -537,4 +808,7 @@ def siparis_olustur():
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({"hata": f"Sipariş hatası: {str(e)}"}), 500
+
+        return jsonify({
+            "hata": f"Sipariş hatası: {str(e)}"
+        }), 500
