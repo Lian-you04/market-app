@@ -6,6 +6,67 @@
 <title>Nihat Market Kasa</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+<script>
+(function () {
+  const izinliSekmeler = [
+    'dashboard',
+    'siparisler',
+    'urunler',
+    'raporlar',
+    'yorumlar',
+    'musteriler',
+    'ayarlar'
+  ];
+
+  let aktifSekme = 'dashboard';
+
+  try {
+    const kayitliSekme = sessionStorage.getItem(
+      'marketAktifSekme'
+    );
+
+    if (izinliSekmeler.includes(kayitliSekme)) {
+      aktifSekme = kayitliSekme;
+    }
+  } catch (e) {
+    aktifSekme = 'dashboard';
+  }
+
+  document.documentElement.setAttribute(
+    'data-market-aktif-sekme',
+    aktifSekme
+  );
+})();
+
+(function () {
+  const izinliDonemler = [
+    'gunluk',
+    'haftalik',
+    'aylik',
+    'yillik'
+  ];
+
+  let grafikDonemi = 'gunluk';
+
+  try {
+    const kayitliDonem = sessionStorage.getItem(
+      'marketGrafikDonemi'
+    );
+
+    if (izinliDonemler.includes(kayitliDonem)) {
+      grafikDonemi = kayitliDonem;
+    }
+  } catch (e) {
+    grafikDonemi = 'gunluk';
+  }
+
+  document.documentElement.setAttribute(
+    'data-market-grafik-donemi',
+    grafikDonemi
+  );
+})();
+</script>
+
 <style>
   :root {
     --bg-main: #F8FAFC;
@@ -49,11 +110,29 @@
   .btn-logout { background: rgba(255,255,255,0.08); color: #FFF; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
   .btn-logout:hover { background: var(--rose); }
 
-  .layout { display: flex; flex: 1; }
-  .sidebar {
-    width: 240px; background: var(--navy-sidebar); padding: 20px 12px;
-    display: flex; flex-direction: column; gap: 8px; border-right: 1px solid rgba(255,255,255,0.05);
-  }
+  .layout {
+  display: flex;
+  flex: 1;
+  padding-left: 240px;
+}
+.sidebar {
+  position: fixed;
+  top: 72px;
+  bottom: 0;
+  left: 0;
+  z-index: 90;
+
+  width: 240px;
+  padding: 20px 12px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  overflow-y: auto;
+  background: var(--navy-sidebar);
+  border-right: 1px solid rgba(255,255,255,0.05);
+}
   .nav-item {
     padding: 12px 16px; border-radius: 8px; color: #CBD5E1; text-decoration: none; font-weight: 600; font-size: 14px;
     display: flex; align-items: center; justify-content: space-between; transition: 0.2s; cursor: pointer;
@@ -101,7 +180,86 @@
   .btn-primary:hover { background: var(--emerald); }
   .hidden { display: none !important; }
 
+  html:not([data-market-aktif-sekme="dashboard"])
+  #sekme-dashboard {
+    display: none !important;
+  }
+
+  html[data-market-aktif-sekme="siparisler"]
+  #sekme-siparisler,
+  html[data-market-aktif-sekme="urunler"]
+  #sekme-urunler,
+  html[data-market-aktif-sekme="raporlar"]
+  #sekme-raporlar,
+  html[data-market-aktif-sekme="yorumlar"]
+  #sekme-yorumlar,
+  html[data-market-aktif-sekme="musteriler"]
+  #sekme-musteriler,
+  html[data-market-aktif-sekme="ayarlar"]
+  #sekme-ayarlar {
+    display: block !important;
+  }
+
+  html:not([data-market-aktif-sekme="dashboard"])
+  .nav-item[data-sekme="dashboard"] {
+    background: transparent;
+    color: #CBD5E1;
+  }
+
+  html[data-market-aktif-sekme="siparisler"]
+  .nav-item[data-sekme="siparisler"],
+  html[data-market-aktif-sekme="urunler"]
+  .nav-item[data-sekme="urunler"],
+  html[data-market-aktif-sekme="raporlar"]
+  .nav-item[data-sekme="raporlar"],
+  html[data-market-aktif-sekme="yorumlar"]
+  .nav-item[data-sekme="yorumlar"],
+  html[data-market-aktif-sekme="musteriler"]
+  .nav-item[data-sekme="musteriler"],
+  html[data-market-aktif-sekme="ayarlar"]
+  .nav-item[data-sekme="ayarlar"] {
+    background: var(--emerald-dark);
+    color: #FFFFFF;
+  }
+
+  .siparis-yukleniyor {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.siparis-yukleniyor-spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #E2E8F0;
+  border-top-color: var(--emerald-dark);
+  border-radius: 50%;
+  animation: siparis-yukleniyor-don 0.7s linear infinite;
+}
+
+@keyframes siparis-yukleniyor-don {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
   .footer { background: #FFF; border-top: 1px solid var(--border); padding: 16px 24px; text-align: center; font-size: 12px; color: var(--text-muted); margin-top: auto; }
+
+  html[data-market-grafik-donemi="gunluk"]
+  .dashboard-donem-btn[data-donem="gunluk"],
+
+  html[data-market-grafik-donemi="haftalik"]
+  .dashboard-donem-btn[data-donem="haftalik"],
+
+  html[data-market-grafik-donemi="aylik"]
+  .dashboard-donem-btn[data-donem="aylik"],
+
+  html[data-market-grafik-donemi="yillik"]
+  .dashboard-donem-btn[data-donem="yillik"] {
+    background: var(--emerald-dark);
+    color: #FFFFFF;
+}
 </style>
 </head>
 <body>
@@ -130,49 +288,461 @@
 
 <div class="layout">
 <aside class="sidebar">
-  <div class="nav-item active" onclick="sekmeDegis('dashboard', this)">
+  <div class="nav-item active" data-sekme="dashboard" onclick="sekmeDegis('dashboard', this)">
     <span>🏠 Dashboard</span>
   </div>
 
-  <div class="nav-item" onclick="sekmeDegis('siparisler', this)">
+  <div class="nav-item" data-sekme="siparisler" onclick="sekmeDegis('siparisler', this)">
     <span>📦 Siparişler</span>
     <span class="badge" id="bekleyen-sayisi">0</span>
   </div>
 
-  <div class="nav-item" onclick="sekmeDegis('urunler', this)">
+  <div class="nav-item" data-sekme="urunler" onclick="sekmeDegis('urunler', this)">
     <span>🏷️ Ürünler</span>
   </div>
 
-  <div class="nav-item" onclick="sekmeDegis('raporlar', this)">
+  <div class="nav-item" data-sekme="raporlar" onclick="sekmeDegis('raporlar', this)">
     <span>📊 Raporlar</span>
   </div>
 
-  <div class="nav-item" onclick="sekmeDegis('yorumlar', this)">
+  <div class="nav-item" data-sekme="yorumlar" onclick="sekmeDegis('yorumlar', this)">
     <span>⭐ Yorumlar</span>
   </div>
 
-  <div class="nav-item" onclick="sekmeDegis('musteriler', this)">
+  <div class="nav-item" data-sekme="musteriler" onclick="sekmeDegis('musteriler', this)">
     <span>👥 Kayıtlı Müşteriler</span>
   </div>
 
-  <div class="nav-item" onclick="sekmeDegis('ayarlar', this)">
+  <div class="nav-item" data-sekme="ayarlar" onclick="sekmeDegis('ayarlar', this)">
     <span>⚙️ Ayarlar</span>
   </div>
 </aside>
 
   <main class="main-content">
-    <!-- DASHBOARD SEKMESİ -->
+   
+<!-- DASHBOARD SEKMESİ -->
 <div id="sekme-dashboard">
   <div class="panel">
+
     <div class="panel-header">
-      <h2>Dashboard</h2>
+      <div>
+        <h2>Dashboard</h2>
+        <div style="
+          font-size: 12px;
+          color: var(--text-muted);
+          margin-top: 4px;
+        ">
+          Bugünkü market performansınız
+        </div>
+      </div>
+
+      <span style="
+        font-size: 12px;
+        color: var(--text-muted);
+      ">
+        Veriler canlı olarak güncellenir
+      </span>
     </div>
 
-    <div style="padding: 40px; text-align: center; color: var(--text-muted);">
-      Dashboard hazırlanıyor...
+
+    <!-- DASHBOARD ÖZET KARTLARI -->
+    <div style="
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      padding: 24px;
+    ">
+
+      <!-- BUGÜNKÜ SİPARİŞ -->
+      <div style="
+        background: #FFFFFF;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+      ">
+        <div style="
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 16px;
+        ">
+          <span style="
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+          ">
+            Bugünkü Sipariş
+          </span>
+
+          <span style="
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #E0F2FE;
+            border-radius: 10px;
+            font-size: 20px;
+          ">
+            📦
+          </span>
+        </div>
+
+        <div
+          id="dashboard-bugunku-siparis"
+          style="
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--text-dark);
+          "
+        >
+          0
+        </div>
+
+        <div style="
+          font-size: 12px;
+          color: var(--text-muted);
+          margin-top: 6px;
+        ">
+          Bugün oluşturulan tüm siparişler
+        </div>
+      </div>
+
+
+      <!-- BEKLEYEN SİPARİŞ -->
+      <div style="
+        background: #FFFFFF;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+      ">
+        <div style="
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 16px;
+        ">
+          <span style="
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+          ">
+            Bekleyen Sipariş
+          </span>
+
+          <span style="
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #FEF3C7;
+            border-radius: 10px;
+            font-size: 20px;
+          ">
+            ⏳
+          </span>
+        </div>
+
+        <div
+          id="dashboard-bekleyen-siparis"
+          style="
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--amber);
+          "
+        >
+          0
+        </div>
+
+        <div style="
+          font-size: 12px;
+          color: var(--text-muted);
+          margin-top: 6px;
+        ">
+          İşlem bekleyen aktif siparişler
+        </div>
+      </div>
+
+
+      <!-- TAMAMLANAN SİPARİŞ -->
+      <div style="
+        background: #FFFFFF;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+      ">
+        <div style="
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 16px;
+        ">
+          <span style="
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+          ">
+            Tamamlanan Sipariş
+          </span>
+
+          <span style="
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #D1FAE5;
+            border-radius: 10px;
+            font-size: 20px;
+          ">
+            ✅
+          </span>
+        </div>
+
+        <div
+          id="dashboard-tamamlanan-siparis"
+          style="
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--emerald-dark);
+          "
+        >
+          0
+        </div>
+
+        <div style="
+          font-size: 12px;
+          color: var(--text-muted);
+          margin-top: 6px;
+        ">
+          Bugün teslim edilen siparişler
+        </div>
+      </div>
+
+
+      <!-- BUGÜNKÜ CİRO -->
+      <div style="
+        background: #FFFFFF;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+      ">
+        <div style="
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 16px;
+        ">
+          <span
+            id="dashboard-ciro-basligi"
+            style="
+              font-size: 13px;
+              font-weight: 700;
+              color: var(--text-muted);
+            "
+          >
+            Bugünkü Ciro
+          </span>
+
+          <span style="
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #EDE9FE;
+            border-radius: 10px;
+            font-size: 20px;
+          ">
+            💰
+          </span>
+        </div>
+
+        <div
+          id="dashboard-bugunku-ciro"
+          style="
+            font-size: 30px;
+            font-weight: 800;
+            color: #7C3AED;
+          "
+        >
+          0,00 TL
+        </div>
+
+        <div style="
+          font-size: 12px;
+          color: var(--text-muted);
+          margin-top: 6px;
+        ">
+          Teslim edilen siparişlerin toplamı
+        </div>
+      </div>
+
+    </div>
+    <!-- DASHBOARD ÖZET KARTLARI SONU -->
+
+
+    <!-- SİPARİŞ GRAFİĞİ -->
+    <div style="
+      padding: 0 24px 24px 24px;
+    ">
+      <div style="
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #FFFFFF;
+        padding: 20px;
+      ">
+
+        <div style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 24px;
+        ">
+
+          <div>
+            <div style="
+              font-size: 16px;
+              font-weight: 800;
+              color: var(--text-dark);
+            ">
+              Sipariş Grafiği
+            </div>
+
+            <div style="
+              font-size: 12px;
+              color: var(--text-muted);
+              margin-top: 4px;
+            ">
+              Sipariş yoğunluğunu dönemlere göre inceleyin
+            </div>
+          </div>
+
+
+          <!-- GRAFİK DÖNEM BUTONLARI -->
+          <div style="
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+          ">
+
+            <button
+              class="btn dashboard-donem-btn"
+              data-donem="gunluk"
+              onclick="dashboardGrafikDonemDegistir('gunluk', this)"
+            >
+              Günlük
+            </button>
+
+            <button
+              class="btn dashboard-donem-btn"
+              data-donem="haftalik"
+              onclick="dashboardGrafikDonemDegistir('haftalik', this)"
+            >
+              Haftalık
+            </button>
+
+            <button
+              class="btn dashboard-donem-btn"
+              data-donem="aylik"
+              onclick="dashboardGrafikDonemDegistir('aylik', this)"
+            >
+              Aylık
+            </button>
+
+            <button
+              class="btn dashboard-donem-btn"
+              data-donem="yillik"
+              onclick="dashboardGrafikDonemDegistir('yillik', this)"
+            > 
+              Yıllık
+            </button>
+
+          </div>
+          <!-- GRAFİK DÖNEM BUTONLARI SONU -->
+
+        </div>
+
+
+        <!-- CHART.JS GRAFİK ALANI -->
+        <div style="
+          position: relative;
+          width: 100%;
+          height: 320px;
+        ">
+          <canvas id="dashboard-siparis-grafik"></canvas>
+        </div>
+
+      </div>
+    </div>
+    <!-- SİPARİŞ GRAFİĞİ SONU -->
+
+    <!-- EN ÇOK SATAN ÜRÜNLER -->
+<div style="padding: 0 24px 24px;">
+  <div style="
+    padding: 20px;
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  ">
+    <div style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    ">
+      <div>
+        <h3 style="
+          margin: 0;
+          font-size: 16px;
+          color: var(--text-dark);
+        ">
+          En Çok Satan Ürünler
+        </h3>
+
+        <p style="
+          margin: 4px 0 0;
+          font-size: 12px;
+          color: var(--text-muted);
+        ">
+          Teslim edilen siparişlere göre ilk 5 ürün
+        </p>
+      </div>
+
+      <span style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        background: #ECFDF5;
+        border-radius: 10px;
+        font-size: 20px;
+      ">
+        🏆
+      </span>
+    </div>
+
+    <div id="dashboard-en-cok-satanlar-listesi" style="min-height: 360px;">
+      <div style="
+        padding: 32px;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 13px;
+      ">
+        En çok satan ürünler yükleniyor...
+      </div>
     </div>
   </div>
 </div>
+<!-- EN ÇOK SATAN ÜRÜNLER SONU -->
+
+  </div>
+</div>
+<!-- DASHBOARD SEKMESİ SONU -->
     <!-- SİPARİŞLER SEKMESİ -->
     <div id="sekme-siparisler" class="hidden">
       <div class="panel">
@@ -181,8 +751,14 @@
           <span style="font-size: 12px; color: var(--text-muted);">Siparişler 8 saniyede bir otomatik yenilenir</span>
         </div>
         <div id="siparis-listesi">
-          <div style="padding: 40px; text-align: center; color: var(--text-muted);">Siparişler yükleniyor...</div>
-        </div>
+  <div
+    class="siparis-yukleniyor"
+    role="status"
+    aria-label="Siparişler yükleniyor"
+  >
+    <div class="siparis-yukleniyor-spinner"></div>
+  </div>
+</div>
       </div>
     </div>
 
@@ -294,20 +870,21 @@
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 const MARKET_ID = 1;
 let sonSiparisSayisi = -1;
 let dukkanAktif = true;
 let dukkanMinLimit = 50.0;
+let dashboardGrafik = null;
+let dashboardGrafikDonemi = (
+  document.documentElement.getAttribute(
+    'data-market-grafik-donemi'
+  ) || 'gunluk'
+);
 
 
 function sekmeDegis(sekme, el) {
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.remove('active');
-  });
-
-  el.classList.add('active');
-
   const sekmeler = [
     'dashboard',
     'siparisler',
@@ -318,13 +895,388 @@ function sekmeDegis(sekme, el) {
     'ayarlar'
   ];
 
+  if (!sekmeler.includes(sekme)) {
+    sekme = 'dashboard';
+  }
+
+  document.documentElement.setAttribute(
+    'data-market-aktif-sekme',
+    sekme
+  );
+
+  sessionStorage.setItem(
+    'marketAktifSekme',
+    sekme
+  );
+
+  document.querySelectorAll(
+    '.nav-item'
+  ).forEach(item => {
+    item.classList.remove('active');
+  });
+
+  if (el) {
+    el.classList.add('active');
+  }
+
   sekmeler.forEach(sekmeAdi => {
-    const sekmeAlani = document.getElementById(`sekme-${sekmeAdi}`);
+    const sekmeAlani = document.getElementById(
+      `sekme-${sekmeAdi}`
+    );
 
     if (sekmeAlani) {
-      sekmeAlani.classList.toggle('hidden', sekmeAdi !== sekme);
+      sekmeAlani.classList.toggle(
+        'hidden',
+        sekmeAdi !== sekme
+      );
     }
   });
+}
+
+function aktifSekmeyiGeriYukle() {
+  const kayitliSekme = document.documentElement.getAttribute(
+    'data-market-aktif-sekme'
+  ) || 'dashboard';
+
+  const menuOgesi = document.querySelector(
+    `.nav-item[data-sekme="${kayitliSekme}"]`
+  );
+
+  if (menuOgesi) {
+    sekmeDegis(
+      kayitliSekme,
+      menuOgesi
+    );
+    return;
+  }
+
+  const dashboardMenuOgesi = document.querySelector(
+    '.nav-item[data-sekme="dashboard"]'
+  );
+
+  sekmeDegis(
+    'dashboard',
+    dashboardMenuOgesi
+  );
+}
+
+async function dashboardOzetYukle() {
+  try {
+    const res = await fetch(
+      `/api/market/dashboard-ozet?market_id=${MARKET_ID}`
+    );
+
+    if (!res.ok) {
+      throw new Error('Dashboard bilgileri alınamadı.');
+    }
+
+    const veri = await res.json();
+
+    document.getElementById(
+      'dashboard-bugunku-siparis'
+    ).textContent = veri.bugunku_siparis ?? 0;
+
+    document.getElementById(
+      'dashboard-bekleyen-siparis'
+    ).textContent = veri.bekleyen_siparis ?? 0;
+
+    document.getElementById(
+      'dashboard-tamamlanan-siparis'
+    ).textContent = veri.tamamlanan_siparis ?? 0;
+
+  } catch (e) {
+    console.error('Dashboard yükleme hatası:', e);
+  }
+}
+
+async function dashboardGrafikYukle(donem = 'haftalik') {
+  try {
+    const res = await fetch(
+      `/api/market/dashboard-grafik?market_id=${MARKET_ID}&donem=${donem}`
+    );
+
+    if (!res.ok) {
+      throw new Error('Grafik bilgileri alınamadı.');
+    }
+
+    const veri = await res.json();
+
+    const ciroBasligi = document.getElementById(
+      'dashboard-ciro-basligi'
+    );
+
+    const ciroTutari = document.getElementById(
+      'dashboard-bugunku-ciro'
+    );
+
+    if (ciroBasligi) {
+      ciroBasligi.textContent = veri.ciro_basligi || 'Ciro';
+    }
+
+    if (ciroTutari) {
+      ciroTutari.textContent = `${Number(
+        veri.ciro || 0
+      ).toLocaleString('tr-TR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })} TL`;
+    }
+
+    const canvas = document.getElementById(
+      'dashboard-siparis-grafik'
+    );
+
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+
+    if (dashboardGrafik) {
+      dashboardGrafik.destroy();
+    }
+
+    dashboardGrafik = new Chart(ctx, {
+      type: 'line',
+
+      data: {
+        labels: veri.labels,
+
+        datasets: [{
+          label: 'Sipariş Sayısı',
+          data: veri.veriler,
+          borderColor: '#059669',
+          backgroundColor: 'rgba(5, 150, 105, 0.10)',
+          borderWidth: 3,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: '#059669',
+          fill: true,
+          tension: 0.35
+        }]
+      },
+
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
+
+        plugins: {
+          legend: {
+            display: false
+          },
+
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `${context.parsed.y} sipariş`;
+              }
+            }
+          }
+        },
+
+        scales: {
+          y: {
+            beginAtZero: true,
+
+            ticks: {
+              precision: 0
+            },
+
+            grid: {
+              color: 'rgba(148, 163, 184, 0.15)'
+            }
+          },
+
+          x: {
+            grid: {
+              display: false
+            }
+          }
+        }
+      }
+    });
+
+  } catch (e) {
+    console.error(
+      'Dashboard grafik yükleme hatası:',
+      e
+    );
+  }
+}
+
+
+function dashboardGrafikDonemDegistir(donem, buton) {
+  const izinliDonemler = [
+    'gunluk',
+    'haftalik',
+    'aylik',
+    'yillik'
+  ];
+
+  if (!izinliDonemler.includes(donem)) {
+    donem = 'gunluk';
+  }
+
+  dashboardGrafikDonemi = donem;
+
+  document.documentElement.setAttribute(
+    'data-market-grafik-donemi',
+    donem
+  );
+
+  sessionStorage.setItem(
+    'marketGrafikDonemi',
+    donem
+  );
+
+  document.querySelectorAll(
+    '.dashboard-donem-btn'
+  ).forEach(btn => {
+    btn.classList.remove('btn-primary');
+  });
+
+  if (buton) {
+    buton.classList.add('btn-primary');
+  }
+
+  dashboardGrafikYukle(donem);
+}
+
+async function dashboardEnCokSatanlariYukle() {
+  const alan = document.getElementById(
+    'dashboard-en-cok-satanlar-listesi'
+  );
+
+  if (!alan) return;
+
+  try {
+    const res = await fetch(
+      `/api/market/dashboard-en-cok-satanlar?market_id=${MARKET_ID}`
+    );
+
+    if (!res.ok) {
+      throw new Error(
+        'En çok satan ürünler alınamadı.'
+      );
+    }
+
+    const urunler = await res.json();
+
+    if (!Array.isArray(urunler) || urunler.length === 0) {
+      alan.innerHTML = `
+        <div style="
+          padding: 32px;
+          text-align: center;
+          color: var(--text-muted);
+          font-size: 13px;
+        ">
+          Henüz teslim edilmiş ürün satışı bulunmuyor.
+        </div>
+      `;
+
+      return;
+    }
+
+    alan.innerHTML = '';
+
+    urunler.forEach((urun, index) => {
+      const satir = document.createElement('div');
+
+      satir.style.display = 'flex';
+      satir.style.alignItems = 'center';
+      satir.style.gap = '14px';
+      satir.style.padding = '12px 0';
+
+      if (index < urunler.length - 1) {
+        satir.style.borderBottom =
+          '1px solid var(--border)';
+      }
+
+      const sira = document.createElement('div');
+
+      sira.textContent = index + 1;
+      sira.style.width = '30px';
+      sira.style.height = '30px';
+      sira.style.flexShrink = '0';
+      sira.style.display = 'flex';
+      sira.style.alignItems = 'center';
+      sira.style.justifyContent = 'center';
+      sira.style.borderRadius = '50%';
+      sira.style.background = (
+        index === 0 ? '#FEF3C7' : '#F1F5F9'
+      );
+      sira.style.color = (
+        index === 0 ? '#B45309' : 'var(--text-muted)'
+      );
+      sira.style.fontSize = '13px';
+      sira.style.fontWeight = '800';
+
+      const resim = document.createElement('img');
+
+      resim.src = (
+        urun.resim_url
+          ? urun.resim_url.split(',')[0]
+          : ''
+      );
+
+      resim.alt = urun.ad || 'Ürün';
+      resim.style.width = '48px';
+      resim.style.height = '48px';
+      resim.style.flexShrink = '0';
+      resim.style.objectFit = 'cover';
+      resim.style.border = '1px solid var(--border)';
+      resim.style.borderRadius = '8px';
+
+      resim.addEventListener('error', () => {
+        resim.style.display = 'none';
+      });
+
+      const ad = document.createElement('div');
+
+      ad.textContent = urun.ad || 'İsimsiz Ürün';
+      ad.style.flex = '1';
+      ad.style.fontSize = '14px';
+      ad.style.fontWeight = '700';
+      ad.style.color = 'var(--text-dark)';
+
+      const adet = document.createElement('div');
+
+      adet.textContent = `${
+        Number(urun.toplam_adet) || 0
+      } adet`;
+
+      adet.style.fontSize = '14px';
+      adet.style.fontWeight = '800';
+      adet.style.color = 'var(--emerald-dark)';
+
+      satir.appendChild(sira);
+      satir.appendChild(resim);
+      satir.appendChild(ad);
+      satir.appendChild(adet);
+
+      alan.appendChild(satir);
+    });
+
+  } catch (e) {
+    console.error(
+      'En çok satan ürünler yükleme hatası:',
+      e
+    );
+
+    alan.innerHTML = `
+      <div style="
+        padding: 32px;
+        text-align: center;
+        color: var(--rose);
+        font-size: 13px;
+      ">
+        En çok satan ürünler yüklenemedi.
+      </div>
+    `;
+  }
 }
 
 async function marketDurumYukle() {
@@ -477,7 +1429,10 @@ async function durumDegistir(id, durum) {
     return;
   }
 
-  siparisleriYukle();
+ siparisleriYukle();
+ dashboardOzetYukle();
+ dashboardGrafikYukle(dashboardGrafikDonemi);
+ dashboardEnCokSatanlariYukle();
 }
 
 async function kalemDuzenle(siparisId, detayId, eskiAdet, ad) {
@@ -554,19 +1509,25 @@ async function cikisYap() {
 }
 
 setInterval(saatGuncelle, 1000); saatGuncelle();
+aktifSekmeyiGeriYukle();
 marketDurumYukle();
-siparisleriYukle(); urunleriYukle();
+dashboardOzetYukle();
+dashboardGrafikYukle(
+  dashboardGrafikDonemi
+);
+dashboardEnCokSatanlariYukle();
+siparisleriYukle();
+urunleriYukle();
+
 const socket = io();
-
-socket.on("connect", () => {
-  console.log("🟢 Bakkal Kasası Canlı Ağ Bağlantısı Kurdu!");
-});
-
 socket.on("yeni_siparis_geldi", (veri) => {
   if (veri.market_id === MARKET_ID) {
     console.log("🔔 CANLI SİPARİŞ DÜŞTÜ!", veri);
-    zilSesiCal();         
-    siparisleriYukle();   
+
+    zilSesiCal();
+    siparisleriYukle();
+    dashboardOzetYukle();
+    dashboardGrafikYukle(dashboardGrafikDonemi);
   }
 });
 </script>
