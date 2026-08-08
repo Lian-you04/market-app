@@ -4,9 +4,6 @@ import os
 app = create_app()
 
 with app.app_context():
-    # Tabloları oluştur (yoksa). Market hesabı burada OLUŞTURULMUYOR.
-    # Market/bakkal hesabı yönetimi tamamen bakkal_ekle.py'ye ait —
-    # tek bir yerden, tek bir şekilde kontrol edilsin diye.
     db.create_all()
 
 if __name__ == "__main__":

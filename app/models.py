@@ -2,7 +2,6 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 
-# 1. EN ÜST HİYERARŞİ: KULLANICILAR TABLOSU
 class Kullanici(db.Model):
     __tablename__ = "kullanicilar"
     id = db.Column(db.Integer, primary_key=True)
@@ -18,12 +17,9 @@ class Kullanici(db.Model):
     def sifre_dogrula(self, sifre):
         return check_password_hash(self.sifre_hash, sifre)
 
-    # 🚀 ÇÖZÜM BURADA: auth.py dosyası hata vermesin diye ikinci bir isim (alias) ekliyoruz!
     def sifre_kontrol(self, sifre):
         return check_password_hash(self.sifre_hash, sifre)
 
-
-# 2. HİYERARŞİ: MARKETLER TABLOSU (kullanicilar tablosuna bağlı)
 class Market(db.Model):
     __tablename__ = "marketler"
     id = db.Column(db.Integer, primary_key=True)
@@ -32,7 +28,7 @@ class Market(db.Model):
     adres = db.Column(db.Text, nullable=False)
     telefon = db.Column(db.String(20), nullable=False)
     
-    # Harita Koordinatları ve Servis Sınırları (Antakya/Hatay Merkezli)
+
     konum_lat = db.Column(db.Float, default=36.2000)
     konum_lon = db.Column(db.Float, default=36.1500)
     maks_teslimat_km = db.Column(db.Float, default=3.0)
@@ -42,8 +38,6 @@ class Market(db.Model):
     kullanici = db.relationship("Kullanici", backref="market")
     urunler = db.relationship("Urun", backref="market", cascade="all, delete-orphan")
 
-
-# 3. HİYERARŞİ: MÜŞTERİLER TABLOSU (kullanicilar tablosuna bağlı)
 class Musteri(db.Model):
     __tablename__ = "musteriler"
     id = db.Column(db.Integer, primary_key=True)
@@ -56,8 +50,6 @@ class Musteri(db.Model):
 
     kullanici = db.relationship("Kullanici", backref="musteri")
 
-
-# 4. HİYERARŞİ: ÜRÜNLER TABLOSU (marketler tablosuna bağlı)
 class Urun(db.Model):
     __tablename__ = "urunler"
     id = db.Column(db.Integer, primary_key=True)
@@ -70,8 +62,6 @@ class Urun(db.Model):
     resim_url = db.Column(db.Text, nullable=True)
     aktif = db.Column(db.Boolean, default=True)
 
-
-# 5. HİYERARŞİ: SİPARİŞLER TABLOSU (marketler ve musteriler tablosuna bağlı)
 class Siparis(db.Model):
     __tablename__ = "siparisler"
     id = db.Column(db.Integer, primary_key=True)
@@ -88,8 +78,6 @@ class Siparis(db.Model):
     musteri = db.relationship("Musteri", backref="siparisler")
     detaylar = db.relationship("SiparisDetay", backref="siparis", cascade="all, delete-orphan")
 
-
-# 6. EN ALT HİYERARŞİ: SİPARİŞ DETAYLARI TABLOSU (siparisler ve urunler tablosuna bağlı)
 class SiparisDetay(db.Model):
     __tablename__ = "siparis_detaylari"
     id = db.Column(db.Integer, primary_key=True)
@@ -100,7 +88,6 @@ class SiparisDetay(db.Model):
 
     urun = db.relationship("Urun")
 
-    # 7. FAVORİ ÜRÜNLER TABLOSU
 class FavoriUrun(db.Model):
     __tablename__ = "favori_urunler"
 
