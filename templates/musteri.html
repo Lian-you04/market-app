@@ -1284,6 +1284,34 @@ socket.on("siparis_durumu_degisti", (veri) => {
     siparislerimModalAc();
   }
 });
+
+socket.on(
+  "urun_degisikligi",
+  async (veri) => {
+    if (
+      Number(veri.market_id)
+      !== Number(MARKET_ID)
+    ) {
+      return;
+    }
+
+    const aktifKategori = (
+      document.body.dataset.aktifKategori
+      || ''
+    );
+
+    try {
+      await urunleriYukle(
+        aktifKategori
+      );
+    } catch (hata) {
+      console.error(
+        "Ürünler canlı güncellenemedi:",
+        hata
+      );
+    }
+  }
+);
 </script>
 </body>
 </html>

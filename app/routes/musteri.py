@@ -124,9 +124,10 @@ def urunleri_getir():
         market_id = request.args.get("market_id", 1, type=int)
         kategori = request.args.get("kategori")
 
-        query = Urun.query.filter_by(
-            market_id=market_id,
-            aktif=True
+        query = Urun.query.filter(
+            Urun.market_id == market_id,
+            Urun.aktif.is_(True),
+            Urun.stok_adet > 0
         )
 
         if kategori:
@@ -787,10 +788,12 @@ def siparis_olustur():
                 )
             )
 
-            urun.stok_adet -= adet
+            urun.stok_adet = max(
+                0,
+                urun.stok_adet - adet
+            )
 
-            if urun.stok_adet <= 0:
-                urun.aktif = False
+            urun.aktif = urun.stok_adet > 0
 
         yeni_siparis.toplam_tutar = toplam
 

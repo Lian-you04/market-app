@@ -3,7 +3,8 @@ import secrets
 
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO 
+
 
 db = SQLAlchemy()
 socketio = SocketIO()
@@ -16,24 +17,17 @@ def create_app():
         static_folder="../static"
     )
 
-    # -----------------------------
-    # Güvenlik
-    # -----------------------------
     app.config["SECRET_KEY"] = (
         os.environ.get("SECRET_KEY")
         or secrets.token_hex(32)
     )
 
-    # Docker her yeniden başladığında yeni oturum kimliği üret.
     app.config["APP_BOOT_ID"] = secrets.token_hex(16)
 
     app.config["SESSION_COOKIE_HTTPONLY"] = True
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
     app.config["SESSION_COOKIE_SECURE"] = False
 
-    # -----------------------------
-    # Veritabanı
-    # -----------------------------
     db_user = os.environ.get("DB_USER", "root")
     db_pass = os.environ.get("DB_PASSWORD", "root")
     db_host = os.environ.get("DB_HOST", "db")
@@ -52,18 +46,12 @@ def create_app():
 
     db.init_app(app)
 
-    # -----------------------------
-    # SocketIO
-    # -----------------------------
     socketio.init_app(
         app,
         cors_allowed_origins="*",
         async_mode="eventlet"
     )
 
-    # -----------------------------
-    # Blueprintler
-    # -----------------------------
     from app.security import role_required
 
     from app.routes.auth import auth_bp
@@ -74,9 +62,6 @@ def create_app():
     app.register_blueprint(musteri_bp, url_prefix="/api/musteri")
     app.register_blueprint(market_bp, url_prefix="/api/market")
 
-    # -----------------------------
-    # Cache kapat
-    # -----------------------------
     @app.after_request
     def disable_cache(response):
         response.headers["Cache-Control"] = (
@@ -86,9 +71,6 @@ def create_app():
         response.headers["Expires"] = "0"
         return response
 
-    # -----------------------------
-    # Sayfalar
-    # -----------------------------
     @app.route("/health")
     def health():
         return {"status": "ok"}

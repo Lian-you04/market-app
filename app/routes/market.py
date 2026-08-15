@@ -1,12 +1,19 @@
 import os
 import uuid
+import json
 from datetime import datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 from flask import Blueprint, request, jsonify, current_app
 
 from app import db, socketio
-from app.models import Urun, Siparis, SiparisDetay, Market
+from app.models import (
+    Urun,
+    Siparis,
+    SiparisDetay,
+    FavoriUrun,
+    Market
+)
 from app.security import role_required
 
 
@@ -495,22 +502,76 @@ def urun_ekle():
             form_verisi = request.form
             dosyalar = request.files.getlist("resimler")
 
-            if not dosyalar or all(d.filename == "" for d in dosyalar):
+            if not dosyalar or all(
+                dosya.filename == ""
+                for dosya in dosyalar
+            ):
                 tekli_dosya = request.files.get("resim")
 
-                if tekli_dosya and tekli_dosya.filename != "":
+                if (
+                    tekli_dosya
+                    and tekli_dosya.filename != ""
+                ):
                     dosyalar = [tekli_dosya]
 
         else:
-            form_verisi = request.get_json(silent=True) or {}
+            form_verisi = (
+                request.get_json(silent=True)
+                or {}
+            )
 
-        market_id = form_verisi.get("market_id", 1)
-        ad = form_verisi.get("ad", "").strip()
-        fiyat = form_verisi.get("fiyat")
+        market_id = int(
+            form_verisi.get("market_id", 1)
+        )
 
-        if not ad or fiyat is None:
+        if market_id <= 0:
             return jsonify({
-                "hata": "Ürün Adı ve Fiyat alanları zorunludur!"
+                "hata": "Geçerli bir market seçilmelidir."
+            }), 400
+
+        market = Market.query.get(market_id)
+
+        if not market:
+            return jsonify({
+                "hata": "Market bulunamadı."
+            }), 404
+
+        ad = str(
+            form_verisi.get("ad", "")
+        ).strip()
+
+        fiyat_degeri = form_verisi.get("fiyat")
+
+        if not ad:
+            return jsonify({
+                "hata": "Ürün adı zorunludur."
+            }), 400
+
+        if fiyat_degeri in (None, ""):
+            return jsonify({
+                "hata": "Ürün fiyatı zorunludur."
+            }), 400
+
+        fiyat = float(fiyat_degeri)
+
+        stok_degeri = form_verisi.get(
+            "stok_adet",
+            0
+        )
+
+        if stok_degeri in (None, ""):
+            stok_degeri = 0
+
+        stok_adet = int(stok_degeri)
+
+        if fiyat < 0:
+            return jsonify({
+                "hata": "Ürün fiyatı negatif olamaz."
+            }), 400
+
+        if stok_adet < 0:
+            return jsonify({
+                "hata": "Stok adedi negatif olamaz."
             }), 400
 
         kaydedilen_yollar = []
@@ -521,19 +582,34 @@ def urun_ekle():
                 "uploads"
             )
 
-            os.makedirs(yukleme_klasoru, exist_ok=True)
+            os.makedirs(
+                yukleme_klasoru,
+                exist_ok=True
+            )
 
             for dosya in dosyalar:
                 if (
                     dosya
                     and dosya.filename != ""
-                    and resim_uzantisi_gonderilebilir_mi(dosya.filename)
+                    and resim_uzantisi_gonderilebilir_mi(
+                        dosya.filename
+                    )
                 ):
-                    uzanti = dosya.filename.rsplit(".", 1)[1].lower()
-                    guvenli_isim = f"{uuid.uuid4().hex}.{uzanti}"
+                    uzanti = (
+                        dosya.filename
+                        .rsplit(".", 1)[1]
+                        .lower()
+                    )
+
+                    guvenli_isim = (
+                        f"{uuid.uuid4().hex}.{uzanti}"
+                    )
 
                     dosya.save(
-                        os.path.join(yukleme_klasoru, guvenli_isim)
+                        os.path.join(
+                            yukleme_klasoru,
+                            guvenli_isim
+                        )
                     )
 
                     kaydedilen_yollar.append(
@@ -549,34 +625,68 @@ def urun_ekle():
         resim_yolu = (
             ",".join(kaydedilen_yollar)
             if kaydedilen_yollar
-            else form_verisi.get("resim_url", varsayilan_resim)
+            else (
+                form_verisi.get("resim_url")
+                or varsayilan_resim
+            )
         )
 
+        kategori = str(
+            form_verisi.get(
+                "kategori",
+                "meyve_sebze"
+            )
+        ).strip()
+
+        if not kategori:
+            kategori = "meyve_sebze"
+
         urun = Urun(
-            market_id=int(market_id),
+            market_id=market_id,
             ad=ad,
-            aciklama=form_verisi.get("aciklama", "").strip(),
-            fiyat=float(fiyat),
-            stok_adet=int(form_verisi.get("stok_adet", 0)),
-            kategori=form_verisi.get("kategori", "meyve_sebze"),
+            aciklama=str(
+                form_verisi.get(
+                    "aciklama",
+                    ""
+                )
+            ).strip(),
+            fiyat=fiyat,
+            stok_adet=stok_adet,
+            kategori=kategori,
             resim_url=resim_yolu,
-            aktif=True
+            aktif=stok_adet > 0
         )
 
         db.session.add(urun)
         db.session.commit()
 
+        socketio.emit(
+            "urun_degisikligi",
+            {
+                "market_id": urun.market_id,
+                "urun_id": urun.id,
+                "islem": "eklendi"
+            }
+        )
+        
         return jsonify({
             "id": urun.id,
+            "ad": urun.ad,
+            "fiyat": float(urun.fiyat),
+            "stok_adet": urun.stok_adet,
+            "aktif": urun.aktif,
             "resim_url": resim_yolu,
-            "mesaj": "Ürün başarıyla eklendi"
+            "mesaj": "Ürün başarıyla eklendi."
         }), 201
 
     except (TypeError, ValueError):
         db.session.rollback()
 
         return jsonify({
-            "hata": "Fiyat ve stok alanları geçerli bir sayı olmalıdır."
+            "hata": (
+                "Fiyat ve stok alanları "
+                "geçerli bir sayı olmalıdır."
+            )
         }), 400
 
     except Exception as e:
@@ -586,13 +696,128 @@ def urun_ekle():
             "hata": f"Ürün eklenemedi: {str(e)}"
         }), 500
 
-
-@market_bp.route("/urunler/<int:urun_id>", methods=["PUT"])
+@market_bp.route(
+    "/urunler/<int:urun_id>",
+    methods=["PUT"]
+)
 @role_required("market")
 def urun_guncelle(urun_id):
+    yuklenen_dosya_yollari = []
+
     try:
         urun = Urun.query.get_or_404(urun_id)
-        data = request.get_json(silent=True) or {}
+
+        orijinal_resim_yollari = [
+            resim.strip()
+            for resim in (
+                urun.resim_url or ""
+            ).split(",")
+            if resim.strip()
+        ]
+
+        korunacak_resim_yollari = list(
+            orijinal_resim_yollari
+        )
+
+        resim_listesi_gonderildi = False
+
+        multipart_mi = (
+            request.content_type
+            and "multipart/form-data"
+            in request.content_type
+        )
+
+        if multipart_mi:
+            data = request.form.to_dict()
+
+            dosyalar = [
+                dosya
+                for dosya in request.files.getlist(
+                    "resimler"
+                )
+                if dosya and dosya.filename
+            ]
+
+            ham_mevcut_resimler = data.get(
+                "mevcut_resimler"
+            )
+
+            if ham_mevcut_resimler is not None:
+                resim_listesi_gonderildi = True
+
+                try:
+                    gelen_resim_listesi = json.loads(
+                        ham_mevcut_resimler or "[]"
+                    )
+                except (TypeError, ValueError):
+                    return jsonify({
+                        "hata": (
+                            "Mevcut görsel listesi "
+                            "geçerli değil."
+                        )
+                    }), 400
+
+                if not isinstance(
+                    gelen_resim_listesi,
+                    list
+                ):
+                    return jsonify({
+                        "hata": (
+                            "Mevcut görsel listesi "
+                            "dizi olmalıdır."
+                        )
+                    }), 400
+
+                korunacak_resim_yollari = []
+
+                for resim_yolu in (
+                    gelen_resim_listesi
+                ):
+                    if not isinstance(
+                        resim_yolu,
+                        str
+                    ):
+                        continue
+
+                    temiz_yol = resim_yolu.strip()
+
+                    if (
+                        temiz_yol
+                        and temiz_yol
+                        in orijinal_resim_yollari
+                        and temiz_yol
+                        not in korunacak_resim_yollari
+                    ):
+                        korunacak_resim_yollari.append(
+                            temiz_yol
+                        )
+
+        else:
+            data = request.get_json(
+                silent=True
+            )
+            dosyalar = []
+
+        if not isinstance(data, dict):
+            return jsonify({
+                "hata": (
+                    "Geçerli bir JSON veya form verisi "
+                    "gönderilmelidir."
+                )
+            }), 400
+
+        if any(
+            not resim_uzantisi_gonderilebilir_mi(
+                dosya.filename
+            )
+            for dosya in dosyalar
+        ):
+            return jsonify({
+                "hata": (
+                    "Sadece PNG, JPG, JPEG ve WEBP "
+                    "formatları yüklenebilir."
+                )
+            }), 400
 
         if "fiyat" in data:
             yeni_fiyat = float(data["fiyat"])
@@ -616,7 +841,50 @@ def urun_guncelle(urun_id):
             urun.aktif = yeni_stok > 0
 
         if "aktif" in data:
-            urun.aktif = bool(data["aktif"])
+            ham_aktif = data["aktif"]
+
+            if isinstance(ham_aktif, bool):
+                yeni_aktif = ham_aktif
+
+            elif isinstance(ham_aktif, str):
+                aktif_metni = (
+                    ham_aktif.strip().lower()
+                )
+
+                if aktif_metni == "true":
+                    yeni_aktif = True
+
+                elif aktif_metni == "false":
+                    yeni_aktif = False
+
+                else:
+                    return jsonify({
+                        "hata": (
+                            "Aktif alanı true veya false "
+                            "olmalıdır."
+                        )
+                    }), 400
+
+            else:
+                return jsonify({
+                    "hata": (
+                        "Aktif alanı true veya false "
+                        "olmalıdır."
+                    )
+                }), 400
+
+            if (
+                yeni_aktif
+                and urun.stok_adet <= 0
+            ):
+                return jsonify({
+                    "hata": (
+                        "Stok adedi 0 olan ürün "
+                        "satışa açılamaz."
+                    )
+                }), 400
+
+            urun.aktif = yeni_aktif
 
         if "ad" in data:
             yeni_ad = str(data["ad"]).strip()
@@ -629,30 +897,207 @@ def urun_guncelle(urun_id):
             urun.ad = yeni_ad
 
         if "aciklama" in data:
-            urun.aciklama = str(data["aciklama"]).strip()
+            urun.aciklama = (
+                ""
+                if data["aciklama"] is None
+                else str(data["aciklama"]).strip()
+            )
 
         if "kategori" in data:
-            urun.kategori = str(data["kategori"]).strip()
+            yeni_kategori = str(
+                data["kategori"]
+            ).strip()
+
+            if not yeni_kategori:
+                return jsonify({
+                    "hata": "Kategori boş olamaz."
+                }), 400
+
+            urun.kategori = yeni_kategori
+
+        yeni_resim_yollari = []
+
+        if dosyalar:
+            yukleme_klasoru = os.path.join(
+                current_app.static_folder,
+                "uploads"
+            )
+
+            os.makedirs(
+                yukleme_klasoru,
+                exist_ok=True
+            )
+
+            for dosya in dosyalar:
+                uzanti = (
+                    dosya.filename
+                    .rsplit(".", 1)[1]
+                    .lower()
+                )
+
+                guvenli_isim = (
+                    f"{uuid.uuid4().hex}.{uzanti}"
+                )
+
+                dosya_sistem_yolu = os.path.join(
+                    yukleme_klasoru,
+                    guvenli_isim
+                )
+
+                dosya.save(
+                    dosya_sistem_yolu
+                )
+
+                yuklenen_dosya_yollari.append(
+                    dosya_sistem_yolu
+                )
+
+                yeni_resim_yollari.append(
+                    f"/static/uploads/{guvenli_isim}"
+                )
+
+        if (
+            resim_listesi_gonderildi
+            or yeni_resim_yollari
+        ):
+            urun.resim_url = ",".join(
+                korunacak_resim_yollari
+                + yeni_resim_yollari
+            )
 
         db.session.commit()
 
+        socketio.emit(
+            "urun_degisikligi",
+            {
+                "market_id": urun.market_id,
+                "urun_id": urun.id,
+                "islem": "guncellendi"
+            }
+        )
+
         return jsonify({
-            "mesaj": "Ürün güncellendi",
-            "stok": urun.stok_adet,
+            "mesaj": "Ürün güncellendi.",
+            "id": urun.id,
+            "ad": urun.ad,
+            "fiyat": float(urun.fiyat),
+            "stok_adet": urun.stok_adet,
+            "kategori": urun.kategori,
+            "resim_url": urun.resim_url,
             "aktif": urun.aktif
         }), 200
 
     except (TypeError, ValueError):
         db.session.rollback()
 
+        for dosya_yolu in yuklenen_dosya_yollari:
+            if os.path.exists(dosya_yolu):
+                os.remove(dosya_yolu)
+
         return jsonify({
-            "hata": "Fiyat ve stok alanları geçerli bir sayı olmalıdır."
+            "hata": (
+                "Fiyat ve stok alanları "
+                "geçerli bir sayı olmalıdır."
+            )
         }), 400
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({"hata": str(e)}), 500
 
+        for dosya_yolu in yuklenen_dosya_yollari:
+            if os.path.exists(dosya_yolu):
+                os.remove(dosya_yolu)
+
+        return jsonify({
+            "hata": str(e)
+        }), 500
+        
+@market_bp.route(
+    "/urunler/<int:urun_id>",
+    methods=["DELETE"]
+)
+@role_required("market")
+def urun_sil(urun_id):
+    try:
+        market_id = request.args.get(
+            "market_id",
+            1,
+            type=int
+        )
+
+        urun = Urun.query.filter_by(
+            id=urun_id,
+            market_id=market_id
+        ).first()
+
+        if not urun:
+            return jsonify({
+                "hata": "Ürün bulunamadı."
+            }), 404
+
+        urun_market_id = urun.market_id
+
+        siparis_detayi_var_mi = (
+            SiparisDetay.query
+            .filter_by(urun_id=urun.id)
+            .first()
+        )
+
+        if siparis_detayi_var_mi:
+            urun.aktif = False
+            urun.stok_adet = 0
+
+            db.session.commit()
+
+            socketio.emit(
+                "urun_degisikligi",
+                {
+                    "market_id": urun_market_id,
+                    "urun_id": urun.id,
+                    "islem": "silindi"
+                }
+            )
+
+            return jsonify({
+                "mesaj": (
+                    "Ürün geçmiş siparişlerde kullanıldığı "
+                    "için satıştan kaldırıldı."
+                ),
+                "silindi": False,
+                "aktif": False,
+                "urun_id": urun.id
+            }), 200
+
+        FavoriUrun.query.filter_by(
+            urun_id=urun.id
+        ).delete(
+            synchronize_session=False
+        )
+
+        db.session.delete(urun)
+        db.session.commit()
+
+        socketio.emit(
+            "urun_degisikligi",
+            {
+                "market_id": urun.market_id,
+                "urun_id": urun.id,
+                "islem": "silindi"
+            }
+        )
+
+        return jsonify({
+            "mesaj": "Ürün başarıyla silindi.",
+            "silindi": True,
+            "urun_id": urun_id
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+
+        return jsonify({
+            "hata": f"Ürün silinemedi: {str(e)}"
+        }), 500
 
 @market_bp.route("/urunler", methods=["GET"])
 @role_required("market")
@@ -698,8 +1143,63 @@ def siparisler_listele():
         ).all()
 
         sonuc = []
+        gunluk_sira_haritalari = {}
 
         for siparis in siparisler:
+            siparis_zamani_utc = (
+                siparis.olusturma_tarihi
+                .replace(tzinfo=timezone.utc)
+            )
+
+            siparis_zamani_istanbul = (
+                siparis_zamani_utc.astimezone(
+                    ISTANBUL_SAAT_DILIMI
+                )
+            )
+
+            siparis_gunu = siparis_zamani_istanbul.date()
+
+            if siparis_gunu not in gunluk_sira_haritalari:
+                sonraki_gun = (
+                    siparis_gunu + timedelta(days=1)
+                )
+
+                gun_baslangici_utc, gun_bitisi_utc = (
+                    istanbul_tarih_araligini_utc_yap(
+                        siparis_gunu,
+                        sonraki_gun
+                    )
+                )
+
+                gunun_siparis_idleri = (
+                    db.session.query(Siparis.id)
+                    .filter(
+                        Siparis.market_id == market_id,
+                        Siparis.olusturma_tarihi
+                        >= gun_baslangici_utc,
+                        Siparis.olusturma_tarihi
+                        < gun_bitisi_utc
+                    )
+                    .order_by(
+                        Siparis.olusturma_tarihi.asc(),
+                        Siparis.id.asc()
+                    )
+                    .all()
+                )
+
+                gunluk_sira_haritalari[siparis_gunu] = {
+                    siparis_id: sira_no
+                    for sira_no, (siparis_id,) in enumerate(
+                        gunun_siparis_idleri,
+                        start=1
+                    )
+                }
+
+            gunluk_sira_no = (
+                gunluk_sira_haritalari[siparis_gunu]
+                .get(siparis.id, 0)
+            )
+
             kalemler = [
                 {
                     "detay_id": detay.id,
@@ -719,11 +1219,18 @@ def siparisler_listele():
 
             sonuc.append({
                 "id": siparis.id,
+                "gunluk_sira_no": gunluk_sira_no,
+                "siparis_tarihi": siparis_gunu.isoformat(),
                 "musteri_id": siparis.musteri_id,
                 "musteri_ad": (
                     siparis.musteri.ad_soyad
                     if siparis.musteri
                     else "Misafir Müşteri"
+                ),
+                "musteri_adres": (
+                    siparis.musteri.adres
+                    if siparis.musteri
+                    else ""
                 ),
                 "musteri_tel": (
                     siparis.musteri.telefon
@@ -733,6 +1240,12 @@ def siparisler_listele():
                 "durum": siparis.durum,
                 "odeme_yontemi": siparis.odeme_yontemi,
                 "teslimat_yontemi": siparis.teslimat_yontemi,
+                "olusturma_tarihi": (
+                    siparis_zamani_istanbul.isoformat()
+                ),
+                "olusturma_saati": (
+                    siparis_zamani_istanbul.strftime("%H:%M")
+                ),
                 "siparis_notu": siparis.siparis_notu,
                 "toplam_tutar": float(siparis.toplam_tutar),
                 "detaylar": kalemler
@@ -742,77 +1255,6 @@ def siparisler_listele():
 
     except Exception as e:
         return jsonify({"hata": str(e)}), 500
-    
-@market_bp.route(
-    "/siparisler/<int:siparis_id>/detay/<int:detay_id>",
-    methods=["PUT"]
-)
-@role_required("market")
-def siparis_kalem_duzenle(siparis_id, detay_id):
-    try:
-        siparis = Siparis.query.get_or_404(siparis_id)
-
-        if siparis.durum in ["teslim_edildi", "iptal"]:
-            return jsonify({
-                "hata": "Tamamlanmış sipariş düzenlenemez."
-            }), 400
-
-        detay = SiparisDetay.query.get_or_404(detay_id)
-
-        if detay.siparis_id != siparis.id:
-            return jsonify({
-                "hata": "Sipariş kalemi bu siparişe ait değil."
-            }), 400
-
-        data = request.get_json(silent=True) or {}
-        yeni_adet = int(data.get("yeni_adet", 0))
-
-        if yeni_adet < 0:
-            return jsonify({
-                "hata": "Adet negatif olamaz."
-            }), 400
-
-        eski_adet = detay.adet
-        fark = eski_adet - yeni_adet
-
-        if detay.urun:
-            detay.urun.stok_adet += fark
-            detay.urun.aktif = detay.urun.stok_adet > 0
-
-        if yeni_adet == 0:
-            db.session.delete(detay)
-        else:
-            detay.adet = yeni_adet
-
-        db.session.flush()
-
-        kalan_detaylar = SiparisDetay.query.filter_by(
-            siparis_id=siparis.id
-        ).all()
-
-        siparis.toplam_tutar = sum(
-            detay.adet * float(detay.birim_fiyat)
-            for detay in kalan_detaylar
-        )
-
-        db.session.commit()
-
-        return jsonify({
-            "mesaj": "Sipariş kalemi güncellendi.",
-            "toplam_tutar": float(siparis.toplam_tutar)
-        }), 200
-
-    except (TypeError, ValueError):
-        db.session.rollback()
-
-        return jsonify({
-            "hata": "Yeni adet geçerli bir tam sayı olmalıdır."
-        }), 400
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"hata": str(e)}), 500
-
 
 @market_bp.route(
     "/siparisler/<int:siparis_id>/durum",
@@ -822,6 +1264,8 @@ def siparis_kalem_duzenle(siparis_id, detay_id):
 def siparis_durum_guncelle(siparis_id):
     try:
         siparis = Siparis.query.get_or_404(siparis_id)
+        market_id = siparis.market_id
+        stok_degisikligi_urun_idleri = set()    
         data = request.get_json(silent=True) or {}
         yeni_durum = data.get("durum")
 
@@ -851,6 +1295,7 @@ def siparis_durum_guncelle(siparis_id):
                 if detay.urun:
                     detay.urun.stok_adet += detay.adet
                     detay.urun.aktif = detay.urun.stok_adet > 0
+                    stok_degisikligi_urun_idleri.add(detay.urun.id)
 
         siparis.durum = yeni_durum
 
@@ -858,8 +1303,19 @@ def siparis_durum_guncelle(siparis_id):
 
         socketio.emit("siparis_durumu_degisti", {
             "siparis_id": siparis.id,
+            "market_id": market_id,
             "yeni_durum": yeni_durum
         })
+
+        for urun_id in stok_degisikligi_urun_idleri:
+            socketio.emit(
+                "urun_degisikligi",
+                {
+                    "market_id": market_id,
+                    "urun_id": urun_id,
+                    "islem": "stok_guncellendi"
+                }
+            )
 
         return jsonify({
             "mesaj": "Sipariş durumu güncellendi.",
