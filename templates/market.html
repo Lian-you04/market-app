@@ -3,10 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nihat Market Kasa</title>
+<title>Dahir Market Kasa</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <script>
+
+document.documentElement.classList.add(
+  "tema-ilk-yukleme"
+);
+
 (function () {
   const izinliSekmeler = [
     'dashboard',
@@ -67,20 +72,130 @@
 })();
 </script>
 
+<script>
+(function () {
+  let tema = "acik";
+
+  try {
+    const kayitliTema = localStorage.getItem(
+      "market-tema"
+    );
+
+    if (kayitliTema === "koyu") {
+      tema = "koyu";
+    }
+  } catch (e) {
+    tema = "acik";
+  }
+
+  document.documentElement.setAttribute(
+    "data-market-tema",
+    tema
+  );
+})();
+</script>
+
 <style>
   :root {
-    --bg-main: #F8FAFC;
-    --navy-header: #0F172A;
-    --navy-sidebar: #1E293B;
-    --emerald: #10B981;
-    --emerald-dark: #059669;
-    --amber: #F59E0B;
-    --rose: #EF4444;
-    --text-dark: #0F172A;
-    --text-muted: #64748B;
-    --border: #E2E8F0;
-    --card-bg: #FFFFFF;
-  }
+  --bg-main: #F8FAFC;
+  --navy-header: #0F172A;
+  --navy-sidebar: #1E293B;
+
+  --surface-card: #FFFFFF;
+  --surface-soft: #F8FAFC;
+  --surface-muted: #F1F5F9;
+  --surface-hover: #F0FDF4;
+  --input-bg: #FFFFFF;
+
+  --emerald: #10B981;
+  --emerald-dark: #059669;
+  --amber: #F59E0B;
+  --rose: #EF4444;
+
+  --text-dark: #0F172A;
+  --text-muted: #64748B;
+  --border: #E2E8F0;
+  --card-bg: #FFFFFF;
+
+  --shadow-card: rgba(15, 23, 42, 0.06);
+}
+
+html[data-market-tema="koyu"] {
+  --bg-main: #0B1220;
+  --navy-header: #070D19;
+  --navy-sidebar: #101A2B;
+
+  --surface-card: #162235;
+  --surface-soft: #1D2A3D;
+  --surface-muted: #24344D;
+  --surface-hover: #1F3A36;
+  --input-bg: #0F172A;
+
+  --text-dark: #F8FAFC;
+  --text-muted: #A8B7CB;
+  --border: #30435D;
+  --card-bg: #162235;
+
+  --shadow-card: rgba(0, 0, 0, 0.28);
+
+  color-scheme: dark;
+}
+
+html,
+body {
+  background-color: #F8FAFC;
+}
+
+html[data-market-tema="acik"] {
+  background-color: #F8FAFC;
+}
+
+html[data-market-tema="koyu"],
+html[data-market-tema="koyu"] body {
+  background-color: #0B1220;
+}
+
+html[data-market-tema="koyu"] body {
+  background-color: var(--bg-main);
+  color: var(--text-dark);
+}
+
+html[data-market-tema="koyu"] .panel-header,
+html[data-market-tema="koyu"] .footer {
+  background-color: #1E293B !important;
+  color: var(--text-dark) !important;
+}
+
+html[data-market-tema="koyu"] .order-items,
+html[data-market-tema="koyu"] .product-table th {
+  background-color: #0F172A !important;
+  border-color: var(--border) !important;
+}
+
+html[data-market-tema="koyu"] .order-card:hover {
+  background-color: #243244 !important;
+}
+
+html[data-market-tema="koyu"] .status-select,
+html[data-market-tema="koyu"] input:not([type="checkbox"]),
+html[data-market-tema="koyu"] select,
+html[data-market-tema="koyu"] textarea {
+  background-color: #0F172A !important;
+  color: #F8FAFC !important;
+  border-color: #475569 !important;
+}
+
+html[data-market-tema="koyu"] [style*="background: #FFFFFF"],
+html[data-market-tema="koyu"] [style*="background:#FFFFFF"],
+html[data-market-tema="koyu"] [style*="background: #FFF"],
+html[data-market-tema="koyu"] [style*="background:#FFF"],
+html[data-market-tema="koyu"] [style*="background: #F8FAFC"],
+html[data-market-tema="koyu"] [style*="background:#F8FAFC"],
+html[data-market-tema="koyu"] [style*="background: #F1F5F9"],
+html[data-market-tema="koyu"] [style*="background:#F1F5F9"] {
+  background-color: var(--surface-soft) !important;
+  color: var(--text-dark);
+}
 
   * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
   body { background-color: var(--bg-main); color: var(--text-dark); margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
@@ -97,11 +212,61 @@
   .shop-controls { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.06); padding: 6px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
   
   .status-toggle {
-    display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; cursor: pointer;
-    padding: 6px 12px; border-radius: 6px; transition: 0.2s;
-  }
-  .toggle-acik { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); }
-  .toggle-kapali { background: rgba(239, 68, 68, 0.2); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 220px;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 5px 14px rgba(15, 23, 42, 0.16);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+.toggle-acik {
+  background: linear-gradient(
+    135deg,
+    #047857,
+    #10B981
+  );
+  color: #ECFDF5;
+  border-color: #34D399;
+}
+
+.toggle-kapali {
+  background: linear-gradient(
+    135deg,
+    #B91C1C,
+    #EF4444
+  );
+  color: #FFF1F2;
+  border-color: #FB7185;
+}
+
+.status-toggle:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 9px 20px rgba(15, 23, 42, 0.24);
+}
+
+.status-toggle:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.status-toggle:focus-visible {
+  outline: 3px solid rgba(59, 130, 246, 0.45);
+  outline-offset: 3px;
+}
 
   .min-limit-box { font-size: 12px; color: #CBD5E1; display: flex; align-items: center; gap: 6px; border-left: 1px solid rgba(255,255,255,0.15); padding-left: 12px; }
   .min-limit-val { color: var(--amber); font-weight: 800; font-size: 14px; }
@@ -336,18 +501,488 @@
   min-width: 0;
   box-sizing: border-box;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  html,
+  body,
+  .header,
+  .sidebar,
+  .main-content,
+  .panel,
+  .panel-header,
+  .order-card,
+  .order-items,
+  .product-table,
+  .product-table th,
+  .product-table td,
+  .footer,
+  .nav-item,
+  .status-toggle,
+  input,
+  select,
+  textarea,
+  button {
+    transition: none !important;
+  }
+}
+
+html:not(
+  [data-bildirim-ayar-hazir="true"]
+)
+#ayar-bildirim-sesi-kontrolu {
+  visibility: hidden;
+}
+
+html:not(
+  [data-market-durum-hazir="true"]
+)
+#salter-btn,
+html:not(
+  [data-market-durum-hazir="true"]
+)
+.min-limit-box,
+html:not(
+  [data-market-durum-hazir="true"]
+)
+#ayar-market-ad,
+html:not(
+  [data-market-durum-hazir="true"]
+)
+#ayar-market-telefon,
+html:not(
+  [data-market-durum-hazir="true"]
+)
+#ayar-market-adres,
+html:not(
+  [data-market-durum-hazir="true"]
+)
+#ayar-min-siparis,
+html:not(
+  [data-market-durum-hazir="true"]
+)
+#ayar-market-aktif {
+  visibility: hidden;
+}
+
+html:not(
+  [data-bildirim-ayar-hazir="true"]
+)
+#ayar-bildirim-sesi-seviye,
+html:not(
+  [data-bildirim-ayar-hazir="true"]
+)
+#ayar-bildirim-sesi-seviye-deger {
+  visibility: hidden;
+}
+
+html:not(
+  [data-bildirim-ayar-hazir="true"]
+)
+#ayar-bildirim-sesi-detaylari {
+  visibility: hidden;
+}
+
+#ayar-bildirim-sesi-detaylari[hidden] {
+  display: none !important;
+}
+
+html.tema-gecis,
+html.tema-gecis *,
+html.tema-gecis *::before,
+html.tema-gecis *::after {
+  transition:
+    background-color 1.55s ease,
+    background 1.55s ease,
+    color 1.55s ease,
+    border-color 1.55s ease,
+    box-shadow 1.55s ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.tema-gecis,
+  html.tema-gecis *,
+  html.tema-gecis *::before,
+  html.tema-gecis *::after {
+    transition: none !important;
+  }
+}
+
+#ayar-tema-acik,
+#ayar-tema-koyu {
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    filter 0.22s ease,
+    background-color 0.22s ease,
+    color 0.22s ease,
+    border-color 0.22s ease !important;
+}
+
+#ayar-tema-acik:hover,
+#ayar-tema-koyu:hover {
+  transform: translateY(-2px) scale(1.02);
+  filter: brightness(1.08);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+}
+
+#ayar-tema-acik:active,
+#ayar-tema-koyu:active {
+  transform: translateY(0) scale(0.99);
+}
+
+html[data-market-tema="acik"] #ayar-tema-acik,
+html[data-market-tema="koyu"] #ayar-tema-koyu {
+  background-color: var(--emerald-dark) !important;
+  color: #FFFFFF !important;
+  border-color: var(--emerald-dark) !important;
+}
+
+html[data-market-tema="acik"] #ayar-tema-koyu,
+html[data-market-tema="koyu"] #ayar-tema-acik {
+  background-color: var(--card-bg) !important;
+  color: var(--text-dark) !important;
+  border-color: var(--border) !important;
+}
+
+.urun-kategori-etiketi {
+  color: var(--text-dark) !important;
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease;
+}
+
+.urun-bolum-basligi {
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease;
+}
+
+.urun-bolum-sayaci {
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease;
+}
+
+html[data-market-tema="koyu"]
+.urun-kategori-etiketi {
+  background-color: #26364D !important;
+  color: #E2E8F0 !important;
+  border: 1px solid #3A4D67;
+}
+
+html[data-market-tema="koyu"]
+.urun-bolum-basligi {
+  background-color: #162235 !important;
+  border-top-color: #2E405A !important;
+  border-bottom-color: #2E405A !important;
+}
+
+html[data-market-tema="koyu"]
+.urun-bolum-sayaci {
+  background-color: #243244 !important;
+  border: 1px solid #3A4D67;
+}
+
+.btn,
+.btn-primary,
+.btn-danger-soft {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--emerald) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(16, 185, 129, 0.25);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-danger-soft {
+  background-color: #FEE2E2;
+  border: 1px solid #FECACA;
+  color: #B91C1C;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-danger-soft:hover {
+  background-color: #FCA5A5 !important;
+  border-color: #F87171 !important;
+  color: #991B1B !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(239, 68, 68, 0.2);
+}
+
+.btn-danger-soft:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn:focus-visible,
+.btn-danger-soft:focus-visible,
+#ayar-tema-acik:focus-visible,
+#ayar-tema-koyu:focus-visible {
+  outline: 3px solid rgba(59, 130, 246, 0.35);
+  outline-offset: 3px;
+}
+
+.panel {
+  background-color: var(--surface-card) !important;
+  box-shadow: 0 10px 30px var(--shadow-card);
+}
+
+.panel-header,
+.product-table th {
+  background-color: var(--surface-soft) !important;
+}
+
+.order-card:hover {
+  background-color: var(--surface-hover) !important;
+}
+
+.order-items {
+  background-color: var(--surface-muted) !important;
+}
+
+.status-select,
+.product-table select,
+.product-table input,
+#sekme-ayarlar input,
+#sekme-ayarlar select,
+#sekme-ayarlar textarea {
+  background-color: var(--input-bg);
+  color: var(--text-dark);
+  border-color: var(--border);
+}
+
+.footer {
+  background-color: var(--surface-card) !important;
+  color: var(--text-muted);
+}
+
+html[data-market-tema="koyu"]
+#urun-guncelle-modal > div,
+html[data-market-tema="koyu"]
+#urun-detay-modal > div {
+  background-color: var(--surface-card) !important;
+  color: var(--text-dark) !important;
+}
+
+html[data-market-tema="koyu"]
+#urun-guncelle-modal input,
+html[data-market-tema="koyu"]
+#urun-guncelle-modal select,
+html[data-market-tema="koyu"]
+#urun-guncelle-modal textarea,
+html[data-market-tema="koyu"]
+#urun-detay-modal input,
+html[data-market-tema="koyu"]
+#urun-detay-modal select,
+html[data-market-tema="koyu"]
+#urun-detay-modal textarea {
+  background-color: var(--input-bg) !important;
+  color: var(--text-dark) !important;
+  border-color: var(--border) !important;
+}
+
+.urun-durum-etiketi {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  border: 1px solid transparent;
+  transition:
+    transform 0.2s ease,
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.urun-durum-etiketi:hover {
+  transform: translateY(-1px);
+}
+
+.urun-durum-satista {
+  color: #047857;
+  background-color: #ECFDF5;
+  border-color: #A7F3D0;
+}
+
+.urun-durum-tukendi {
+  color: #B91C1C;
+  background-color: #FEF2F2;
+  border-color: #FECACA;
+}
+
+html[data-market-tema="koyu"]
+.urun-durum-satista {
+  color: #6EE7B7 !important;
+  background-color: #123B35 !important;
+  border-color: #1F6B5C !important;
+}
+
+html[data-market-tema="koyu"]
+.urun-durum-tukendi {
+  color: #FDA4AF !important;
+  background-color: #3F1D2B !important;
+  border-color: #7F3044 !important;
+}
+
+.urun-satir {
+  transition:
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.urun-satir:hover {
+  background-color: var(--surface-hover) !important;
+  box-shadow: inset 4px 0 0 var(--emerald);
+}
+
+.urun-gorseli {
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.urun-gorseli:hover {
+  transform: scale(1.06);
+  border-color: var(--emerald) !important;
+  box-shadow: 0 6px 14px rgba(16, 185, 129, 0.22);
+}
+
+input,
+select,
+textarea {
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--emerald) !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--emerald-dark) !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.16);
+}
+
+#urun-guncelle-modal button,
+#urun-detay-modal button {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+
+#urun-guncelle-modal button:hover,
+#urun-detay-modal button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.16);
+}
+
+#urun-guncelle-modal button:active,
+#urun-detay-modal button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+#urun-modal-tum-gorselleri-sil:hover {
+  background-color: #FCA5A5 !important;
+  border-color: #F87171 !important;
+  color: #991B1B !important;
+}
+
+html:not([data-tema-ui-hazir="true"])
+#ayar-tema-acik,
+html:not([data-tema-ui-hazir="true"])
+#ayar-tema-koyu {
+  visibility: hidden;
+}
+
+html.tema-ilk-yukleme,
+html.tema-ilk-yukleme *,
+html.tema-ilk-yukleme::before,
+html.tema-ilk-yukleme::after {
+  transition: none !important;
+  animation: none !important;
+}
+
+.market-durum-ayar-btn {
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text-dark);
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.market-durum-ayar-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
+}
+
+.market-durum-ayar-btn.secili-acik {
+  background: var(--emerald-dark);
+  border-color: var(--emerald-dark);
+  color: #FFFFFF;
+}
+
+.market-durum-ayar-btn.secili-kapali {
+  background: var(--rose);
+  border-color: var(--rose);
+  color: #FFFFFF;
+}
+
 </style>
 </head>
 <body>
 
 <header class="header">
   <div class="header-left">
-    <div class="logo">🏪 Nihat Market<span>Kasa Paneli</span></div>
+    <div class="logo">
+  🏪
+  <strong id="market-logo-ad">Dahir Market</strong>
+  <span>Kasa Paneli</span>
+</div>
     
     <div class="shop-controls">
-      <div id="salter-btn" class="status-toggle toggle-acik" onclick="salteriDegistir()">
-        🟢 Dükkân Siparişe Açık
-      </div>
+      <button
+  id="salter-btn"
+  type="button"
+  class="status-toggle toggle-acik"
+  onclick="salteriDegistir()"
+>
+  🟢 Dükkân Siparişe Açık
+</button>
       <div class="min-limit-box">
         <span>Min. Limit:</span>
         <span id="min-tutar-gosterge" class="min-limit-val">50,00 TL</span>
@@ -1198,9 +1833,464 @@
         <div class="panel-header">
           <h2>Ayarlar</h2>
         </div>
-        <div style="padding: 40px; text-align: center; color: var(--text-muted);">
-          Ayarlar bölümü hazırlanıyor...
-        </div>
+        <div style="
+  padding: 24px;
+  max-width: 820px;
+">
+
+  <div style="
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  ">
+
+    <div>
+      <label
+        for="ayar-market-ad"
+        style="
+          display: block;
+          margin-bottom: 7px;
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--text-dark);
+        "
+      >
+        Market adı
+      </label>
+
+      <input
+        id="ayar-market-ad"
+        type="text"
+        placeholder="Market adını yazın"
+        style="
+          width: 100%;
+          padding: 11px;
+          border: 1px solid var(--border);
+          border-radius: 7px;
+        "
+      >
+    </div>
+
+    <div>
+      <label
+        for="ayar-market-telefon"
+        style="
+          display: block;
+          margin-bottom: 7px;
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--text-dark);
+        "
+      >
+        Telefon
+      </label>
+
+      <input
+        id="ayar-market-telefon"
+        type="tel"
+        placeholder="Telefon numarasını yazın"
+        style="
+          width: 100%;
+          padding: 11px;
+          border: 1px solid var(--border);
+          border-radius: 7px;
+        "
+      >
+    </div>
+
+    <div style="grid-column: 1 / -1;">
+      <label
+        for="ayar-market-adres"
+        style="
+          display: block;
+          margin-bottom: 7px;
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--text-dark);
+        "
+      >
+        Market adresi
+      </label>
+
+      <textarea
+        id="ayar-market-adres"
+        rows="3"
+        placeholder="Market adresini yazın"
+        style="
+          width: 100%;
+          padding: 11px;
+          border: 1px solid var(--border);
+          border-radius: 7px;
+          resize: vertical;
+        "
+      ></textarea>
+    </div>
+
+    <div>
+      <label
+        for="ayar-min-siparis"
+        style="
+          display: block;
+          margin-bottom: 7px;
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--text-dark);
+        "
+      >
+        Minimum sipariş tutarı (TL)
+      </label>
+
+      <input
+        id="ayar-min-siparis"
+        type="number"
+        min="0"
+        step="0.01"
+        placeholder="0.00"
+        style="
+          width: 100%;
+          padding: 11px;
+          border: 1px solid var(--border);
+          border-radius: 7px;
+        "
+      >
+    </div>
+
+    <div style="
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding-top: 28px;
+">
+  <button
+    type="button"
+    class="btn btn-primary"
+    onclick="ayarlarKaydet()"
+  >
+    Ayarları Kaydet
+  </button>
+</div>
+  </div>
+
+  <div style="
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 24px;
+  ">
+    <span
+      id="ayarlar-mesaj"
+      style="
+        font-size: 13px;
+        color: var(--text-muted);
+      "
+    ></span>
+
+  </div>
+
+<div style="
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+">
+
+  <h3 style="
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-dark);
+  ">
+    Market Durumu
+  </h3>
+
+  <p style="
+    margin: 7px 0 14px;
+    font-size: 13px;
+    color: var(--text-muted);
+  ">
+    Müşterilerin yeni sipariş verip veremeyeceğini belirleyin.
+  </p>
+
+  <div style="
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  ">
+
+    <button
+      id="ayar-market-durum-acik"
+      type="button"
+      class="market-durum-ayar-btn"
+      onclick="marketDurumuAyarla(true)"
+    >
+      🟢 Siparişlere Açık
+    </button>
+
+    <button
+      id="ayar-market-durum-kapali"
+      type="button"
+      class="market-durum-ayar-btn"
+      onclick="marketDurumuAyarla(false)"
+    >
+      🔴 Siparişlere Kapalı
+    </button>
+
+  </div>
+
+  <span
+    id="market-durum-mesaj"
+    style="
+      display: block;
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+    "
+  ></span>
+
+</div>
+
+  <div style="
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+">
+
+  <h3 style="
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-dark);
+  ">
+    Görünüm Ayarları
+  </h3>
+
+  <p style="
+    margin: 7px 0 14px;
+    font-size: 13px;
+    color: var(--text-muted);
+  ">
+    Market panelinin görünüm temasını seçin.
+  </p>
+
+  <div style="
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  ">
+
+    <button
+      id="ayar-tema-acik"
+      type="button"
+      onclick="temaSec('acik')"
+      style="
+        padding: 10px 16px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--card-bg);
+        color: var(--text-dark);
+        font-weight: 700;
+        cursor: pointer;
+      "
+    >
+      ☀️ Açık Tema
+    </button>
+
+    <button
+      id="ayar-tema-koyu"
+      type="button"
+      onclick="temaSec('koyu')"
+      style="
+        padding: 10px 16px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--card-bg);
+        color: var(--text-dark);
+        font-weight: 700;
+        cursor: pointer;
+      "
+    >
+      🌙 Koyu Tema
+    </button>
+
+  </div>
+
+  <div
+    id="ayar-tema-mesaj"
+    style="
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+    "
+  ></div>
+
+</div>
+
+<div style="
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+">
+
+  <h3 style="
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-dark);
+  ">
+    Bildirim Ayarları
+  </h3>
+
+  <p style="
+    margin: 7px 0 14px;
+    font-size: 13px;
+    color: var(--text-muted);
+  ">
+    Yeni sipariş geldiğinde çalacak bildirimi yönetin.
+  </p>
+
+  <label id="ayar-bildirim-sesi-kontrolu" style="
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-dark);
+  ">
+    <input
+      id="ayar-bildirim-sesi-acik"
+      type="checkbox"
+      style="
+        width: 18px;
+        height: 18px;
+        accent-color: var(--emerald-dark);
+      "
+    >
+
+    Yeni siparişlerde bildirim sesi çal
+  </label>
+
+<div
+  id="ayar-bildirim-sesi-detaylari"
+  style="width: 100%;"
+>
+
+  <div style="
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+  ">
+
+    <div style="min-width: 240px; flex: 1;">
+      <label
+        for="ayar-bildirim-sesi"
+        style="
+          display: block;
+          margin-bottom: 7px;
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--text-dark);
+        "
+      >
+        Bildirim sesi türü
+      </label>
+
+      <select
+        id="ayar-bildirim-sesi"
+        style="
+          width: 100%;
+          padding: 10px;
+          border: 1px solid var(--border);
+          border-radius: 7px;
+          background: var(--card-bg);
+          color: var(--text-dark);
+        "
+      >
+        <option value="klasik">Klasik zil</option>
+        <option value="yumusak">Yumuşak bildirim</option>
+        <option value="kisa_bip">Kısa bip</option>
+        <option value="cift_bip">Çift bip</option>
+      </select>
+    </div>
+
+    <button
+      id="ayar-bildirim-sesi-dene"
+      type="button"
+      class="btn"
+      style="
+        background: #DBEAFE;
+        color: #1D4ED8;
+        border: 1px solid #93C5FD;
+      "
+    >
+      🔊 Sesi Dene
+    </button>
+
+  </div>
+
+  <div style="
+    margin-top: 18px;
+  ">
+    <div style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    ">
+      <label
+        for="ayar-bildirim-sesi-seviye"
+        style="
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--text-dark);
+        "
+      >
+        Ses seviyesi
+      </label>
+
+      <span
+        id="ayar-bildirim-sesi-seviye-deger"
+        style="
+          min-width: 42px;
+          text-align: right;
+          font-size: 13px;
+          font-weight: 800;
+          color: var(--emerald-dark);
+        "
+      >
+        70%
+      </span>
+    </div>
+
+    <input
+      id="ayar-bildirim-sesi-seviye"
+      type="range"
+      min="0"
+      max="100"
+      step="1"
+      value="70"
+      style="
+        width: 100%;
+        accent-color: var(--emerald-dark);
+        cursor: pointer;
+      "
+    >
+  </div>
+</div>
+  <div
+    id="ayar-bildirim-mesaj"
+    style="
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+    "
+  ></div>
+
+</div>
+
+</div>
       </div>
     </div>
 
@@ -1208,7 +2298,10 @@
 </div>
 
 <footer class="footer">
-  Nihat Market  · Kasa Yönetim Platformu
+  <span id="market-footer-ad">
+    Dahir Market
+  </span>
+  · Kasa Yönetim Platformu
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
@@ -1621,22 +2714,657 @@ async function dashboardEnCokSatanlariYukle() {
   }
 }
 
-async function marketDurumYukle() {
-  const res = await fetch(`/api/market/durum?market_id=${MARKET_ID}`);
-  if (res.ok) {
-    const veri = await res.json();
-    dukkanAktif = veri.aktif;
-    dukkanMinLimit = veri.min_siparis_tutari;
-    const salter = document.getElementById('salter-btn');
-    if (dukkanAktif) {
-      salter.className = 'status-toggle toggle-acik';
-      salter.innerHTML = '🟢 Dükkân Siparişe Açık';
-    } else {
-      salter.className = 'status-toggle toggle-kapali';
-      salter.innerHTML = '🔴 Dükkân Siparişe KAPALI';
-    }
-    document.getElementById('min-tutar-gosterge').textContent = `${dukkanMinLimit.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
+function marketLogoAdiniGuncelle(ad) {
+  const temizAd =
+    (ad || "").trim() || "Dahir Market";
 
+  const logoAd = document.getElementById(
+    "market-logo-ad"
+  );
+
+  if (logoAd) {
+    logoAd.textContent = temizAd;
+  }
+
+  const footerAd = document.getElementById(
+    "market-footer-ad"
+  );
+
+  if (footerAd) {
+    footerAd.textContent = temizAd;
+  }
+}
+
+function marketDurumArayuzeUygula(veri) {
+  if (!veri || typeof veri !== "object") {
+    return;
+  }
+  marketLogoAdiniGuncelle(veri.ad);
+
+  const minTutar = Number(
+    veri.min_siparis_tutari
+  );
+
+  dukkanAktif =
+    veri.aktif === true;
+
+  dukkanMinLimit =
+    Number.isFinite(minTutar)
+      ? minTutar
+      : 0;
+
+  const salter = document.getElementById(
+    "salter-btn"
+  );
+
+  if (salter) {
+    salter.className =
+      dukkanAktif
+        ? "status-toggle toggle-acik"
+        : "status-toggle toggle-kapali";
+
+    salter.innerHTML =
+      dukkanAktif
+        ? "🟢 Dükkân Siparişe Açık"
+        : "🔴 Dükkân Siparişe KAPALI";
+  }
+
+  const minTutarGosterge =
+    document.getElementById(
+      "min-tutar-gosterge"
+    );
+
+  if (minTutarGosterge) {
+    minTutarGosterge.textContent =
+      `${dukkanMinLimit.toLocaleString(
+        "tr-TR",
+        {
+          minimumFractionDigits: 2
+        }
+      )} TL`;
+  }
+
+  const adInput = document.getElementById(
+    "ayar-market-ad"
+  );
+
+  const telefonInput =
+    document.getElementById(
+      "ayar-market-telefon"
+    );
+
+  const adresInput =
+    document.getElementById(
+      "ayar-market-adres"
+    );
+
+  const minSiparisInput =
+    document.getElementById(
+      "ayar-min-siparis"
+    );
+
+  if (adInput) {
+    adInput.value = veri.ad || "";
+  }
+
+  if (telefonInput) {
+    telefonInput.value =
+      veri.telefon || "";
+  }
+
+  if (adresInput) {
+    adresInput.value =
+      veri.adres || "";
+  }
+
+  if (minSiparisInput) {
+    minSiparisInput.value =
+      dukkanMinLimit.toFixed(2);
+  }
+
+  marketDurumuButonlariniGuncelle(
+    dukkanAktif
+  );
+
+}
+
+function marketDurumOnbellektenUygula() {
+  try {
+    const anahtar =
+      `market-durum-onbellek-${MARKET_ID}`;
+
+    const kayit =
+      localStorage.getItem(anahtar);
+
+    if (!kayit) {
+      return false;
+    }
+
+    const veri =
+      JSON.parse(kayit);
+
+    marketDurumArayuzeUygula(veri);
+
+    return true;
+
+  } catch (e) {
+    console.warn(
+      "Market önbelleği okunamadı.",
+      e
+    );
+
+    return false;
+  }
+}
+
+async function marketDurumYukle() {
+  const onbellekHazir =
+    marketDurumOnbellektenUygula();
+
+  if (onbellekHazir) {
+    document.documentElement.setAttribute(
+      "data-market-durum-hazir",
+      "true"
+    );
+  }
+  try {
+    const res = await fetch(
+      `/api/market/durum?market_id=${MARKET_ID}`
+    );
+
+    const veri = await res.json().catch(
+      () => ({})
+    );
+
+    if (!res.ok) {
+      throw new Error(
+        veri.hata || "Market ayarları alınamadı."
+      );
+    }
+
+    marketLogoAdiniGuncelle(veri.ad);
+
+    dukkanAktif = veri.aktif === true;
+    dukkanMinLimit = Number(
+      veri.min_siparis_tutari
+    );
+
+    const salter = document.getElementById(
+      "salter-btn"
+    );
+
+    if (salter) {
+      if (dukkanAktif) {
+        salter.className =
+          "status-toggle toggle-acik";
+        salter.innerHTML =
+          "🟢 Dükkân Siparişe Açık";
+      } else {
+        salter.className =
+          "status-toggle toggle-kapali";
+        salter.innerHTML =
+          "🔴 Dükkân Siparişe KAPALI";
+      }
+    }
+
+    const minTutarGosterge =
+      document.getElementById(
+        "min-tutar-gosterge"
+      );
+
+    if (minTutarGosterge) {
+      minTutarGosterge.textContent =
+        `${dukkanMinLimit.toLocaleString(
+          "tr-TR",
+          {
+            minimumFractionDigits: 2
+          }
+        )} TL`;
+    }
+
+    const adInput = document.getElementById(
+      "ayar-market-ad"
+    );
+
+    const telefonInput = document.getElementById(
+      "ayar-market-telefon"
+    );
+
+    const adresInput = document.getElementById(
+      "ayar-market-adres"
+    );
+
+    const minSiparisInput =
+      document.getElementById(
+        "ayar-min-siparis"
+      );
+
+    if (adInput) {
+      adInput.value = veri.ad || "";
+    }
+
+    if (telefonInput) {
+      telefonInput.value = veri.telefon || "";
+    }
+
+    if (adresInput) {
+      adresInput.value = veri.adres || "";
+    }
+
+    if (minSiparisInput) {
+      minSiparisInput.value =
+        Number(veri.min_siparis_tutari)
+          .toFixed(2);
+    }
+
+    marketDurumuButonlariniGuncelle(
+      dukkanAktif
+    );
+
+    try {
+      localStorage.setItem(
+        `market-durum-onbellek-${MARKET_ID}`,
+        JSON.stringify({
+          ad: veri.ad || "",
+          telefon: veri.telefon || "",
+          adres: veri.adres || "",
+          aktif: veri.aktif === true,
+          min_siparis_tutari:
+            Number(veri.min_siparis_tutari) || 0
+        })
+      );
+    } catch (e) {
+      console.warn(
+        "Market ayarları önbelleğe yazılamadı.",
+        e
+      );
+    }
+
+    } catch (e) {
+    console.error(
+      "Market ayarları yüklenemedi:",
+      e
+    );
+  } finally {
+    document.documentElement.setAttribute(
+      "data-market-durum-hazir",
+      "true"
+    );
+  }
+}
+
+
+async function ayarlarKaydet() {
+  const mesaj = document.getElementById(
+    "ayarlar-mesaj"
+  );
+
+  const adInput = document.getElementById(
+    "ayar-market-ad"
+  );
+
+  const telefonInput = document.getElementById(
+    "ayar-market-telefon"
+  );
+
+  const adresInput = document.getElementById(
+    "ayar-market-adres"
+  );
+
+  const minSiparisInput =
+    document.getElementById(
+      "ayar-min-siparis"
+    );
+
+  const ad = adInput.value.trim();
+  const telefon = telefonInput.value.trim();
+  const adres = adresInput.value.trim();
+  const minMetni =
+    minSiparisInput.value.trim();
+
+  if (!ad || !telefon || !adres) {
+    mesaj.textContent =
+      "Ad, telefon ve adres alanları boş bırakılamaz.";
+    mesaj.style.color = "var(--rose)";
+    return;
+  }
+
+  if (!minMetni) {
+    mesaj.textContent =
+      "Minimum sipariş tutarını girin.";
+    mesaj.style.color = "var(--rose)";
+    return;
+  }
+
+  const minSiparisTutari =
+    Number(minMetni);
+
+  if (
+    !Number.isFinite(minSiparisTutari)
+    || minSiparisTutari < 0
+  ) {
+    mesaj.textContent =
+      "Minimum sipariş tutarı geçerli değil.";
+    mesaj.style.color = "var(--rose)";
+    return;
+  }
+
+  mesaj.textContent =
+    "Ayarlar kaydediliyor...";
+  mesaj.style.color =
+    "var(--text-muted)";
+
+  try {
+    const res = await fetch(
+      "/api/market/durum",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          market_id: MARKET_ID,
+          ad,
+          telefon,
+          adres,
+          min_siparis_tutari:
+            minSiparisTutari
+        })
+      }
+    );
+
+    const veri = await res.json().catch(
+      () => ({})
+    );
+
+    if (!res.ok) {
+      throw new Error(
+        veri.hata || "Ayarlar kaydedilemedi."
+      );
+    }
+
+    await marketDurumYukle();
+
+    mesaj.textContent =
+      "Ayarlar başarıyla kaydedildi.";
+    mesaj.style.color =
+      "var(--emerald-dark)";
+
+  } catch (e) {
+    mesaj.textContent = e.message;
+    mesaj.style.color = "var(--rose)";
+  }
+}
+
+function temaButonlariniGuncelle(tema) {
+  const acikBtn = document.getElementById(
+    "ayar-tema-acik"
+  );
+
+  const koyuBtn = document.getElementById(
+    "ayar-tema-koyu"
+  );
+
+  if (!acikBtn || !koyuBtn) {
+    return;
+  }
+
+  const acikSecili = tema === "acik";
+
+  acikBtn.style.backgroundColor = acikSecili
+    ? "var(--emerald-dark)"
+    : "var(--card-bg)";
+
+  acikBtn.style.color = acikSecili
+    ? "#FFFFFF"
+    : "var(--text-dark)";
+
+  acikBtn.style.borderColor = acikSecili
+    ? "var(--emerald-dark)"
+    : "var(--border)";
+
+  koyuBtn.style.backgroundColor = !acikSecili
+    ? "var(--emerald-dark)"
+    : "var(--card-bg)";
+
+  koyuBtn.style.color = !acikSecili
+    ? "#FFFFFF"
+    : "var(--text-dark)";
+
+  koyuBtn.style.borderColor = !acikSecili
+    ? "var(--emerald-dark)"
+    : "var(--border)";
+}
+
+
+function temaUygula(
+  tema,
+  kaydet = true
+) {
+  const gecerliTema =
+    tema === "koyu"
+      ? "koyu"
+      : "acik";
+
+  const kok =
+    document.documentElement;
+
+  const mevcutTema =
+    kok.getAttribute(
+      "data-market-tema"
+    ) || "acik";
+
+  window.clearTimeout(
+    window.marketTemaGecisZamani
+  );
+
+  if (
+    mevcutTema === gecerliTema
+  ) {
+    temaButonlariniGuncelle(
+      gecerliTema
+    );
+
+    return;
+  }
+
+  kok.classList.remove(
+    "tema-gecis"
+  );
+
+  void kok.offsetWidth;
+
+  kok.classList.add(
+    "tema-gecis"
+  );
+
+  kok.setAttribute(
+    "data-market-tema",
+    gecerliTema
+  );
+
+  if (kaydet) {
+    try {
+      localStorage.setItem(
+        "market-tema",
+        gecerliTema
+      );
+    } catch (e) {
+      console.warn(
+        "Tema tercihi kaydedilemedi.",
+        e
+      );
+    }
+  }
+
+  temaButonlariniGuncelle(
+    gecerliTema
+  );
+
+  window.marketTemaGecisZamani =
+    window.setTimeout(() => {
+      kok.classList.remove(
+        "tema-gecis"
+      );
+    }, 1600);
+}
+
+function temaSec(tema) {
+  temaUygula(tema);
+
+  const mesaj = document.getElementById(
+    "ayar-tema-mesaj"
+  );
+
+  if (!mesaj) {
+    return;
+  }
+
+  mesaj.textContent =
+    tema === "koyu"
+      ? "Koyu tema uygulandı."
+      : "Açık tema uygulandı.";
+
+  mesaj.style.color =
+    "var(--emerald-dark)";
+}
+
+function temaAyarlariniBaslat() {
+  const kok = document.documentElement;
+
+  const mevcutTema =
+    kok.getAttribute("data-market-tema") || "acik";
+
+  kok.setAttribute(
+    "data-market-tema",
+    mevcutTema
+  );
+
+  temaButonlariniGuncelle(
+    mevcutTema
+  );
+
+  kok.classList.remove(
+    "tema-gecis"
+  );
+
+  requestAnimationFrame(() => {
+    kok.setAttribute(
+      "data-tema-ui-hazir",
+      "true"
+    );
+
+    kok.classList.remove(
+      "tema-ilk-yukleme"
+    );
+  });
+}
+
+function marketDurumuButonlariniGuncelle(
+  aktif
+) {
+  const acikBtn =
+    document.getElementById(
+      "ayar-market-durum-acik"
+    );
+
+  const kapaliBtn =
+    document.getElementById(
+      "ayar-market-durum-kapali"
+    );
+
+  if (acikBtn) {
+    acikBtn.classList.toggle(
+      "secili-acik",
+      aktif === true
+    );
+
+    acikBtn.setAttribute(
+      "aria-pressed",
+      String(aktif === true)
+    );
+  }
+
+  if (kapaliBtn) {
+    kapaliBtn.classList.toggle(
+      "secili-kapali",
+      aktif === false
+    );
+
+    kapaliBtn.setAttribute(
+      "aria-pressed",
+      String(aktif === false)
+    );
+  }
+}
+
+async function marketDurumuAyarla(
+  yeniDurum
+) {
+  const mesaj =
+    document.getElementById(
+      "market-durum-mesaj"
+    );
+
+  const soru = yeniDurum
+    ? "Market online siparişlere açılsın mı?"
+    : "Market online siparişlere kapatılsın mı?";
+
+  if (!confirm(soru)) {
+    return;
+  }
+
+  if (mesaj) {
+    mesaj.textContent =
+      "Market durumu güncelleniyor...";
+    mesaj.style.color =
+      "var(--text-muted)";
+  }
+
+  try {
+    const res = await fetch(
+      "/api/market/durum",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body: JSON.stringify({
+          market_id: MARKET_ID,
+          aktif: yeniDurum
+        })
+      }
+    );
+
+    const veri = await res.json().catch(
+      () => ({})
+    );
+
+    if (!res.ok) {
+      throw new Error(
+        veri.hata
+        || "Market durumu güncellenemedi."
+      );
+    }
+
+    await marketDurumYukle();
+
+    if (mesaj) {
+      mesaj.textContent = yeniDurum
+        ? "Market siparişe açıldı."
+        : "Market siparişe kapatıldı.";
+
+      mesaj.style.color =
+        "var(--emerald-dark)";
+    }
+
+  } catch (e) {
+    if (mesaj) {
+      mesaj.textContent = e.message;
+      mesaj.style.color =
+        "var(--rose)";
+    }
   }
 }
 
@@ -1663,7 +3391,163 @@ async function limitDegistir() {
   }
 }
 
-function zilSesiCal() {
+function bildirimSesiAyarlariniOku() {
+  let acik = true;
+  let tur = "klasik";
+  let seviye = 70;
+
+  try {
+    const sesAcikKaydi =
+      localStorage.getItem(
+        "market-bildirim-sesi-acik"
+      );
+
+    const sesTuruKaydi =
+      localStorage.getItem(
+        "market-bildirim-sesi-turu"
+      );
+
+    const sesSeviyeKaydi =
+      localStorage.getItem(
+        "market-bildirim-sesi-seviyesi"
+  );
+
+    if (sesAcikKaydi === "false") {
+      acik = false;
+    }
+
+    const gecerliSesler = [
+      "klasik",
+      "yumusak",
+      "kisa_bip",
+      "cift_bip"
+    ];
+
+    if (sesSeviyeKaydi !== null) {
+  const sayi = Number(
+    sesSeviyeKaydi
+  );
+
+  if (Number.isFinite(sayi)) {
+    seviye = Math.min(
+      100,
+      Math.max(0, sayi)
+    );
+  }
+}
+
+    if (
+      gecerliSesler.includes(
+        sesTuruKaydi
+      )
+    ) {
+      tur = sesTuruKaydi;
+    }
+
+  } catch (e) {
+    console.warn(
+      "Bildirim sesi ayarı okunamadı.",
+      e
+    );
+  }
+
+  return {
+    acik,
+    tur,
+    seviye
+  };
+}
+
+
+function zilSesiCal(
+  sesTuru = null,
+  zorlaCal = false
+) {
+  const ayarlar =
+    bildirimSesiAyarlariniOku();
+
+  if (!ayarlar.acik && !zorlaCal) {
+    return;
+  }
+
+  if (ayarlar.seviye <= 0) {
+  return;
+}
+
+  const gecerliSesler = [
+    "klasik",
+    "yumusak",
+    "kisa_bip",
+    "cift_bip"
+  ];
+
+  const secilenSes =
+    gecerliSesler.includes(sesTuru)
+      ? sesTuru
+      : ayarlar.tur;
+
+  const sesModelleri = {
+    klasik: [
+      {
+        frekans: 659.25,
+        gecikme: 0.00,
+        sure: 0.35,
+        seviye: 0.25
+      },
+      {
+        frekans: 783.99,
+        gecikme: 0.18,
+        sure: 0.40,
+        seviye: 0.23
+      },
+      {
+        frekans: 1046.50,
+        gecikme: 0.38,
+        sure: 0.55,
+        seviye: 0.21
+      }
+    ],
+
+    yumusak: [
+      {
+        frekans: 523.25,
+        gecikme: 0.00,
+        sure: 0.50,
+        seviye: 0.16
+      },
+      {
+        frekans: 659.25,
+        gecikme: 0.24,
+        sure: 0.60,
+        seviye: 0.14
+      }
+    ],
+
+    kisa_bip: [
+      {
+        frekans: 880.00,
+        gecikme: 0.00,
+        sure: 0.28,
+        seviye: 0.20
+      }
+    ],
+
+    cift_bip: [
+      {
+        frekans: 880.00,
+        gecikme: 0.00,
+        sure: 0.25,
+        seviye: 0.19
+      },
+      {
+        frekans: 1046.50,
+        gecikme: 0.22,
+        sure: 0.30,
+        seviye: 0.17
+      }
+    ]
+  };
+
   try {
     const AudioContextSinifi = (
       window.AudioContext
@@ -1675,62 +3559,75 @@ function zilSesiCal() {
     }
 
     const ctx = new AudioContextSinifi();
+    const notaListesi =
+      sesModelleri[secilenSes];
 
     const sesleriCal = () => {
-      const baslangic = ctx.currentTime + 0.02;
+      const baslangic =
+        ctx.currentTime + 0.02;
 
-      const notaCal = (
-        frekans,
-        gecikme,
-        sure,
-        seviye
-      ) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
+      notaListesi.forEach(nota => {
+        const hedefSeviye = Math.max(
+          nota.seviye
+            * (ayarlar.seviye / 100),
+           0.0001
+        );
 
-        osc.type = 'sine';
+        const osc =
+          ctx.createOscillator();
+
+        const gain =
+          ctx.createGain();
+
+        osc.type = "sine";
+
         osc.frequency.setValueAtTime(
-          frekans,
-          baslangic + gecikme
+          nota.frekans,
+          baslangic + nota.gecikme
         );
 
         gain.gain.setValueAtTime(
           0.0001,
-          baslangic + gecikme
+          baslangic + nota.gecikme
         );
 
         gain.gain.exponentialRampToValueAtTime(
-          seviye,
-          baslangic + gecikme + 0.03
+          hedefSeviye,
+          baslangic + nota.gecikme + 0.03
         );
 
         gain.gain.exponentialRampToValueAtTime(
           0.0001,
-          baslangic + gecikme + sure
+          baslangic
+          + nota.gecikme
+          + nota.sure
         );
 
         osc.connect(gain);
         gain.connect(ctx.destination);
 
-        osc.start(baslangic + gecikme);
-        osc.stop(baslangic + gecikme + sure);
-      };
+        osc.start(
+          baslangic + nota.gecikme
+        );
 
-      notaCal(659.25, 0.00, 0.35, 0.25);
-      notaCal(783.99, 0.18, 0.40, 0.23);
-      notaCal(1046.50, 0.38, 0.55, 0.21);
+        osc.stop(
+          baslangic
+          + nota.gecikme
+          + nota.sure
+        );
+      });
 
       setTimeout(() => {
         ctx.close().catch(() => {});
       }, 1400);
     };
 
-    if (ctx.state === 'suspended') {
+    if (ctx.state === "suspended") {
       ctx.resume()
         .then(sesleriCal)
-        .catch((hata) => {
+        .catch(hata => {
           console.error(
-            'Bildirim sesi başlatılamadı:',
+            "Bildirim sesi başlatılamadı:",
             hata
           );
         });
@@ -1740,10 +3637,202 @@ function zilSesiCal() {
 
   } catch (e) {
     console.error(
-      'Bildirim sesi çalınamadı:',
+      "Bildirim sesi çalınamadı:",
       e
     );
   }
+}
+
+function bildirimSesiDetaylariniGuncelle(
+  acik
+) {
+  const detaylar =
+    document.getElementById(
+      "ayar-bildirim-sesi-detaylari"
+    );
+
+  if (!detaylar) {
+    return;
+  }
+
+  detaylar.hidden = !acik;
+
+  detaylar.setAttribute(
+    "aria-hidden",
+    String(!acik)
+  );
+
+  const kontrolIdleri = [
+    "ayar-bildirim-sesi",
+    "ayar-bildirim-sesi-seviye",
+    "ayar-bildirim-sesi-dene"
+  ];
+
+  kontrolIdleri.forEach(id => {
+    const kontrol =
+      document.getElementById(id);
+
+    if (kontrol) {
+      kontrol.disabled = !acik;
+    }
+  });
+}
+
+function bildirimSesiAyarlariniBaslat() {
+  const sesAcikInput =
+    document.getElementById(
+      "ayar-bildirim-sesi-acik"
+    );
+
+  const sesTuruSelect =
+    document.getElementById(
+      "ayar-bildirim-sesi"
+    );
+  const sesSeviyeInput =
+    document.getElementById(
+      "ayar-bildirim-sesi-seviye"
+  );
+
+  const sesSeviyeDeger =
+    document.getElementById(
+      "ayar-bildirim-sesi-seviye-deger"
+  );
+  const sesiDeneBtn =
+    document.getElementById(
+      "ayar-bildirim-sesi-dene"
+    );
+
+  const mesaj =
+    document.getElementById(
+      "ayar-bildirim-mesaj"
+    );
+
+  if (
+  !sesAcikInput
+  || !sesTuruSelect
+  || !sesSeviyeInput
+  || !sesSeviyeDeger
+  || !sesiDeneBtn
+) {
+  return;
+}
+
+  const ayarlar =
+    bildirimSesiAyarlariniOku();
+
+  sesAcikInput.checked =
+    ayarlar.acik;
+
+bildirimSesiDetaylariniGuncelle(
+  sesAcikInput.checked
+);
+
+  sesTuruSelect.value =
+    ayarlar.tur;
+
+  sesSeviyeInput.value =
+  String(ayarlar.seviye);
+
+  sesSeviyeDeger.textContent =
+  `${ayarlar.seviye}%`;
+
+  sesAcikInput.addEventListener(
+    "change",
+    () => {
+      localStorage.setItem(
+        "market-bildirim-sesi-acik",
+        String(sesAcikInput.checked)
+      );
+
+      bildirimSesiDetaylariniGuncelle(
+       sesAcikInput.checked
+      );
+
+      if (mesaj) {
+        mesaj.textContent =
+          sesAcikInput.checked
+            ? "Bildirim sesi açıldı."
+            : "Bildirim sesi kapatıldı.";
+
+        mesaj.style.color =
+          "var(--emerald-dark)";
+      }
+    }
+  );
+
+  sesTuruSelect.addEventListener(
+    "change",
+    () => {
+      localStorage.setItem(
+        "market-bildirim-sesi-turu",
+        sesTuruSelect.value
+      );
+
+      if (mesaj) {
+        mesaj.textContent =
+          "Bildirim sesi değiştirildi.";
+
+        mesaj.style.color =
+          "var(--emerald-dark)";
+      }
+    }
+  );
+
+sesSeviyeInput.addEventListener(
+  "input",
+  () => {
+    const seviye = Math.min(
+      100,
+      Math.max(
+        0,
+        Number(sesSeviyeInput.value) || 0
+      )
+    );
+
+    sesSeviyeInput.value =
+      String(seviye);
+
+    sesSeviyeDeger.textContent =
+      `${seviye}%`;
+
+    localStorage.setItem(
+      "market-bildirim-sesi-seviyesi",
+      String(seviye)
+    );
+
+    if (mesaj) {
+      mesaj.textContent =
+        `Ses seviyesi %${seviye} olarak ayarlandı.`;
+
+      mesaj.style.color =
+        "var(--emerald-dark)";
+    }
+  }
+);
+
+  sesiDeneBtn.addEventListener(
+    "click",
+    () => {
+      zilSesiCal(
+        sesTuruSelect.value,
+        true
+      );
+
+      if (mesaj) {
+        mesaj.textContent =
+          "Seçilen bildirim sesi çalındı.";
+
+        mesaj.style.color =
+          "var(--emerald-dark)";
+      }
+    }
+  );
+document.documentElement.setAttribute(
+  "data-bildirim-ayar-hazir",
+  "true"
+);
+
+
 }
 
 async function siparisleriYukle() {
@@ -1801,7 +3890,7 @@ async function siparisleriYukle() {
 
     const whatsappMesaji = (
       `Merhaba ${s.musteri_ad}, `
-      + `Nihat Market'ten verdiğiniz `
+      + `Dahir Market'ten verdiğiniz `
       + `${s.id} nolu siparişiniz hakkında...`
     );
 
@@ -3096,7 +5185,7 @@ if (durumSelect) {
     const stokVar = gorunenStokAdedi > 0;
 
     return `
-      <tr>
+      <tr calass="urun-satir">
         <td style="
   vertical-align: middle;
 ">
@@ -3106,6 +5195,7 @@ if (durumSelect) {
     gap: 12px;
   ">
           <img
+  class="urun-gorseli"
   src="${htmlMetniKacir(resimUrl)}"
   alt="${htmlMetniKacir(u.ad)}"
   onclick="urunDetayKartAc(${u.id})"
@@ -3150,7 +5240,9 @@ if (durumSelect) {
         </td>
 
         <td>
-          <span style="
+          <span
+            class="urun-kategori-etiketi"
+            style="
             background: #F1F5F9;
             padding: 5px 9px;
             border-radius: 5px;
@@ -3182,16 +5274,18 @@ if (durumSelect) {
         </td>
 
         <td>
-          <span style="
-            color: ${
-              stokVar
-                ? 'var(--emerald-dark)'
-                : 'var(--rose)'
-            };
-            font-weight: 700;
-          ">
-            ${stokVar ? '● Satışta' : '○ Tükendi'}
-          </span>
+          <span
+  class="
+    urun-durum-etiketi
+    ${
+      stokVar
+        ? 'urun-durum-satista'
+        : 'urun-durum-tukendi'
+    }
+  "
+>
+  ${stokVar ? '● Satışta' : '○ Tükendi'}
+</span>
         </td>
 
         <td style="
@@ -3213,6 +5307,7 @@ if (durumSelect) {
 
           <button
             type="button"
+            class="btn-danger-soft"
             onclick="urunSil(${u.id})"
             style="
               border: 1px solid #FECACA;
@@ -3265,6 +5360,7 @@ if (durumSelect) {
 
     satir.innerHTML = `
       <td
+        class="urun-bolum-basligi"
         colspan="6"
         style="
           padding: 14px 16px;
@@ -3277,7 +5373,9 @@ if (durumSelect) {
         "
       >
         ${baslik}
-        <span style="
+        <span
+        class="urun-bolum-sayaci"
+        style="
           margin-left: 8px;
           padding: 3px 8px;
           border-radius: 999px;
@@ -3567,6 +5665,8 @@ async function cikisYap() {
 
 setInterval(saatGuncelle, 1000); saatGuncelle();
 aktifSekmeyiGeriYukle();
+temaAyarlariniBaslat();
+bildirimSesiAyarlariniBaslat();
 marketDurumYukle();
 dashboardOzetYukle();
 dashboardGrafikYukle(

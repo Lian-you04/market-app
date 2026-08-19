@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nihat Market - Müşteri</title>
+<title>Dahir Market - Müşteri</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -207,7 +207,15 @@
 
 <header class="header">
   <div class="header-container">
-    <a href="#" class="brand-logo" onclick="kategoriFiltrele('','')">Nihat<span>Market</span></a>
+    <a
+  href="#"
+  class="brand-logo"
+  onclick="kategoriFiltrele('','')"
+>
+  <span id="musteri-market-logo-ad">
+    Dahir Market
+  </span>
+</a>
 
     <div class="search-bar">
       <input type="text" id="search-input" placeholder="Ürün, kategori veya marka ara..." onkeyup="if(event.key==='Enter') urunAra()">
@@ -428,12 +436,33 @@ let marketAktif = true;
 let marketMinLimit = 50.0;
 let marketMaksKm = 3.0;
 
+function musteriMarketLogoAdiniGuncelle(ad) {
+  const temizAd =
+    (ad || "").trim() || "Dahir Market";
+
+  const logoAd = document.getElementById(
+    "musteri-market-logo-ad"
+  );
+
+  if (logoAd) {
+    logoAd.textContent = temizAd;
+  }
+
+  const footerAd = document.getElementById(
+    "musteri-footer-ad"
+  );
+
+  if (footerAd) {
+    footerAd.textContent = temizAd;
+  }
+}
 
 async function baslat() {
   try {
     const durRes = await fetch(`/api/musteri/market-durum?market_id=${MARKET_ID}`);
     if (durRes.ok) {
       const mVeri = await durRes.json();
+      musteriMarketLogoAdiniGuncelle(mVeri.ad);
       marketAktif = mVeri.aktif;
       marketMinLimit = mVeri.min_siparis_tutari || 50.0;
       if (!marketAktif) {
@@ -1276,14 +1305,26 @@ function sepetiDogrula() {
 baslat();
 const socket = io();
 
-socket.on("siparis_durumu_degisti", (veri) => {
-  console.log("📦 Sipariş durumunuz canlı güncellendi:", veri);
-  
-  const modal = document.getElementById('siparislerim-modal');
-  if (modal && !modal.classList.contains('hidden')) {
-    siparislerimModalAc();
+socket.on(
+  "siparis_durumu_degisti",
+  (veri) => {
+    console.log(
+      "📦 Sipariş durumunuz canlı güncellendi:",
+      veri
+    );
+
+    const modal = document.getElementById(
+      "siparislerim-modal"
+    );
+
+    if (
+      modal
+      && !modal.classList.contains("hidden")
+    ) {
+      siparislerimModalAc();
+    }
   }
-});
+);
 
 socket.on(
   "urun_degisikligi",
@@ -1295,10 +1336,9 @@ socket.on(
       return;
     }
 
-    const aktifKategori = (
+    const aktifKategori =
       document.body.dataset.aktifKategori
-      || ''
-    );
+      || "";
 
     try {
       await urunleriYukle(
@@ -1310,6 +1350,46 @@ socket.on(
         hata
       );
     }
+  }
+);
+
+socket.on(
+  "market_durumu_degisti",
+  async (veri) => {
+    if (
+      Number(veri.market_id)
+      !== Number(MARKET_ID)
+    ) {
+      return;
+    }
+
+    musteriMarketLogoAdiniGuncelle(
+      veri.ad
+    );
+
+    marketAktif =
+      veri.aktif === true;
+
+    marketMinLimit =
+      Number(veri.min_siparis_tutari)
+      || 50.0;
+
+    const shopBanner =
+      document.getElementById(
+        "shop-banner"
+      );
+
+    if (shopBanner) {
+      shopBanner.style.display =
+        marketAktif
+          ? "none"
+          : "block";
+    }
+
+    await urunleriYukle(
+      document.body.dataset.aktifKategori
+      || ""
+    );
   }
 );
 </script>

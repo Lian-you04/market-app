@@ -71,67 +71,199 @@ def resim_uzantisi_gonderilebilir_mi(dosya_adi):
 @role_required("market")
 def market_durum_getir():
     try:
-        market_id = request.args.get("market_id", 1, type=int)
+        market_id = request.args.get(
+            "market_id",
+            1,
+            type=int
+        )
+
         market = Market.query.get_or_404(market_id)
 
         return jsonify({
             "id": market.id,
             "ad": market.ad,
+            "telefon": market.telefon,
             "adres": market.adres,
             "aktif": market.aktif,
-            "min_siparis_tutari": float(market.min_siparis_tutari)
+            "min_siparis_tutari": float(
+                market.min_siparis_tutari
+            )
         }), 200
 
     except Exception as e:
-        return jsonify({"hata": str(e)}), 500
+        return jsonify({
+            "hata": str(e)
+        }), 500
 
 
 @market_bp.route("/durum", methods=["PUT"])
 @role_required("market")
 def market_durum_guncelle():
     try:
-        data = request.get_json(silent=True) or {}
-        market_id = data.get("market_id", 1)
+        data = request.get_json(
+            silent=True
+        )
 
-        market = Market.query.get_or_404(market_id)
+        if not isinstance(data, dict):
+            return jsonify({
+                "hata": (
+                    "Geçerli bir JSON verisi "
+                    "gönderilmelidir."
+                )
+            }), 400
 
-        if "aktif" in data:
-            market.aktif = bool(data["aktif"])
+        market_id = int(
+            data.get("market_id", 1)
+        )
 
-        if "min_siparis_tutari" in data:
-            yeni_limit = float(data["min_siparis_tutari"])
+        market = Market.query.get_or_404(
+            market_id
+        )
 
-            if yeni_limit < 0:
+        yeni_ad = market.ad
+        yeni_telefon = market.telefon
+        yeni_adres = market.adres
+        yeni_aktif = market.aktif
+        yeni_minimum_tutar = (
+            float(market.min_siparis_tutari)
+        )
+
+        if "ad" in data:
+            yeni_ad = str(
+                data["ad"]
+            ).strip()
+
+            if not yeni_ad:
                 return jsonify({
-                    "hata": "Minimum sipariş tutarı negatif olamaz."
+                    "hata": (
+                        "Market adı boş olamaz."
+                    )
                 }), 400
 
-            market.min_siparis_tutari = yeni_limit
+        if "telefon" in data:
+            yeni_telefon = str(
+                data["telefon"]
+            ).strip()
+
+            if not yeni_telefon:
+                return jsonify({
+                    "hata": (
+                        "Telefon alanı boş olamaz."
+                    )
+                }), 400
+
+        if "adres" in data:
+            yeni_adres = str(
+                data["adres"]
+            ).strip()
+
+            if not yeni_adres:
+                return jsonify({
+                    "hata": (
+                        "Adres alanı boş olamaz."
+                    )
+                }), 400
+
+        if "aktif" in data:
+            ham_aktif = data["aktif"]
+
+            if isinstance(ham_aktif, bool):
+                yeni_aktif = ham_aktif
+
+            elif isinstance(ham_aktif, str):
+                aktif_metni = (
+                    ham_aktif.strip().lower()
+                )
+
+                if aktif_metni == "true":
+                    yeni_aktif = True
+
+                elif aktif_metni == "false":
+                    yeni_aktif = False
+
+                else:
+                    return jsonify({
+                        "hata": (
+                            "Aktif alanı true veya "
+                            "false olmalıdır."
+                        )
+                    }), 400
+
+            else:
+                return jsonify({
+                    "hata": (
+                        "Aktif alanı true veya "
+                        "false olmalıdır."
+                    )
+                }), 400
+
+        if "min_siparis_tutari" in data:
+            yeni_minimum_tutar = float(
+                data["min_siparis_tutari"]
+            )
+
+            if yeni_minimum_tutar < 0:
+                return jsonify({
+                    "hata": (
+                        "Minimum sipariş tutarı "
+                        "negatif olamaz."
+                    )
+                }), 400
+
+        market.ad = yeni_ad
+        market.telefon = yeni_telefon
+        market.adres = yeni_adres
+        market.aktif = yeni_aktif
+        market.min_siparis_tutari = (
+            yeni_minimum_tutar
+        )
 
         db.session.commit()
 
-        socketio.emit("market_durumu_degisti", {
-            "market_id": market.id,
-            "aktif": market.aktif,
-            "min_siparis_tutari": float(market.min_siparis_tutari)
-        })
+        socketio.emit(
+            "market_durumu_degisti",
+            {
+                "market_id": market.id,
+                "ad": market.ad,
+                "telefon": market.telefon,
+                "adres": market.adres,
+                "aktif": market.aktif,
+                "min_siparis_tutari": float(
+                    market.min_siparis_tutari
+                )
+            }
+        )
 
         return jsonify({
-            "mesaj": "Market ayarları güncellendi.",
+            "mesaj": (
+                "Market ayarları güncellendi."
+            ),
+            "id": market.id,
+            "ad": market.ad,
+            "telefon": market.telefon,
+            "adres": market.adres,
             "aktif": market.aktif,
-            "min_siparis_tutari": float(market.min_siparis_tutari)
+            "min_siparis_tutari": float(
+                market.min_siparis_tutari
+            )
         }), 200
 
     except (TypeError, ValueError):
         db.session.rollback()
 
         return jsonify({
-            "hata": "Minimum sipariş tutarı geçerli bir sayı olmalıdır."
+            "hata": (
+                "Market ayarlarında geçersiz "
+                "bir veri bulundu."
+            )
         }), 400
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({"hata": str(e)}), 500
+
+        return jsonify({
+            "hata": str(e)
+        }), 500
 
 @market_bp.route("/dashboard-ozet", methods=["GET"])
 @role_required("market")
