@@ -962,6 +962,70 @@ html.tema-ilk-yukleme::after {
   color: #FFFFFF;
 }
 
+.dashboard-grafik-mod-btn {
+  border: 1px solid var(--border);
+  background: var(--surface-card);
+  color: var(--text-dark);
+  border-radius: 9px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.dashboard-grafik-mod-btn:hover {
+  transform: translateY(-2px);
+  background: var(--surface-hover);
+  box-shadow: 0 6px 14px rgba(
+    15,
+    23,
+    42,
+    0.14
+  );
+}
+
+.dashboard-grafik-mod-btn.aktif {
+  color: #FFFFFF !important;
+}
+
+.dashboard-grafik-mod-btn[data-mod="tamamlanan"].aktif {
+  background: #059669 !important;
+  border-color: #059669 !important;
+  box-shadow: 0 6px 16px rgba(
+    5,
+    150,
+    105,
+    0.28
+  );
+}
+
+.dashboard-grafik-mod-btn[data-mod="iptal"].aktif {
+  background: #DC2626 !important;
+  border-color: #DC2626 !important;
+  box-shadow: 0 6px 16px rgba(
+    220,
+    38,
+    38,
+    0.25
+  );
+}
+
+.dashboard-grafik-mod-btn[data-mod="birlesik"].aktif {
+  background: #4F46E5 !important;
+  border-color: #4F46E5 !important;
+  box-shadow: 0 6px 16px rgba(
+    79,
+    70,
+    229,
+    0.28
+  );
+}
+
 </style>
 </head>
 <body>
@@ -1057,241 +1121,244 @@ html.tema-ilk-yukleme::after {
 
 
     <!-- DASHBOARD ÖZET KARTLARI -->
+<div style="
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  padding: 24px;
+">
+
+  <!-- DÖNEMSEL TOPLAM SİPARİŞ -->
+  <div style="
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  ">
     <div style="
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 16px;
-      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
     ">
-
-      <!-- BUGÜNKÜ SİPARİŞ -->
-      <div style="
-        background: #FFFFFF;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 20px;
-      ">
-        <div style="
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 16px;
-        ">
-          <span style="
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-muted);
-          ">
-            Bugünkü Sipariş
-          </span>
-
-          <span style="
-            width: 42px;
-            height: 42px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #E0F2FE;
-            border-radius: 10px;
-            font-size: 20px;
-          ">
-            📦
-          </span>
-        </div>
-
-        <div
-          id="dashboard-bugunku-siparis"
-          style="
-            font-size: 30px;
-            font-weight: 800;
-            color: var(--text-dark);
-          "
-        >
-          0
-        </div>
-
-        <div style="
-          font-size: 12px;
+      <span
+        id="dashboard-bugunku-siparis-basligi"
+        style="
+          font-size: 13px;
+          font-weight: 700;
           color: var(--text-muted);
-          margin-top: 6px;
-        ">
-          Bugün oluşturulan tüm siparişler
-        </div>
-      </div>
+        "
+      >
+        Bugünkü Sipariş
+      </span>
 
-
-      <!-- BEKLEYEN SİPARİŞ -->
-      <div style="
-        background: #FFFFFF;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 20px;
+      <span style="
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #E0F2FE;
+        border-radius: 10px;
+        font-size: 20px;
       ">
-        <div style="
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 16px;
-        ">
-          <span style="
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-muted);
-          ">
-            Bekleyen Sipariş
-          </span>
-
-          <span style="
-            width: 42px;
-            height: 42px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #FEF3C7;
-            border-radius: 10px;
-            font-size: 20px;
-          ">
-            ⏳
-          </span>
-        </div>
-
-        <div
-          id="dashboard-bekleyen-siparis"
-          style="
-            font-size: 30px;
-            font-weight: 800;
-            color: var(--amber);
-          "
-        >
-          0
-        </div>
-
-        <div style="
-          font-size: 12px;
-          color: var(--text-muted);
-          margin-top: 6px;
-        ">
-          İşlem bekleyen aktif siparişler
-        </div>
-      </div>
-
-
-      <!-- TAMAMLANAN SİPARİŞ -->
-      <div style="
-        background: #FFFFFF;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 20px;
-      ">
-        <div style="
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 16px;
-        ">
-          <span style="
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-muted);
-          ">
-            Tamamlanan Sipariş
-          </span>
-
-          <span style="
-            width: 42px;
-            height: 42px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #D1FAE5;
-            border-radius: 10px;
-            font-size: 20px;
-          ">
-            ✅
-          </span>
-        </div>
-
-        <div
-          id="dashboard-tamamlanan-siparis"
-          style="
-            font-size: 30px;
-            font-weight: 800;
-            color: var(--emerald-dark);
-          "
-        >
-          0
-        </div>
-
-        <div style="
-          font-size: 12px;
-          color: var(--text-muted);
-          margin-top: 6px;
-        ">
-          Bugün teslim edilen siparişler
-        </div>
-      </div>
-
-
-      <!-- BUGÜNKÜ CİRO -->
-      <div style="
-        background: #FFFFFF;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 20px;
-      ">
-        <div style="
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 16px;
-        ">
-          <span
-            id="dashboard-ciro-basligi"
-            style="
-              font-size: 13px;
-              font-weight: 700;
-              color: var(--text-muted);
-            "
-          >
-            Bugünkü Ciro
-          </span>
-
-          <span style="
-            width: 42px;
-            height: 42px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #EDE9FE;
-            border-radius: 10px;
-            font-size: 20px;
-          ">
-            💰
-          </span>
-        </div>
-
-        <div
-          id="dashboard-bugunku-ciro"
-          style="
-            font-size: 30px;
-            font-weight: 800;
-            color: #7C3AED;
-          "
-        >
-          0,00 TL
-        </div>
-
-        <div style="
-          font-size: 12px;
-          color: var(--text-muted);
-          margin-top: 6px;
-        ">
-          Teslim edilen siparişlerin toplamı
-        </div>
-      </div>
-
+        📦
+      </span>
     </div>
-    <!-- DASHBOARD ÖZET KARTLARI SONU -->
+
+    <div
+      id="dashboard-bugunku-siparis"
+      style="
+        font-size: 30px;
+        font-weight: 800;
+        color: var(--text-dark);
+      "
+    >
+      0
+    </div>
+
+    <div style="
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    ">
+      Seçilen dönemde oluşturulan tüm siparişler
+    </div>
+  </div>
+
+
+  <!-- İPTAL EDİLEN SİPARİŞ -->
+  <div style="
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  ">
+    <div style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    ">
+      <span style="
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-muted);
+      ">
+        İptal Edilen Sipariş
+      </span>
+
+      <span style="
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #FEE2E2;
+        border-radius: 10px;
+        font-size: 20px;
+      ">
+        ❌
+      </span>
+    </div>
+
+    <div
+      id="dashboard-iptal-edilen-siparis"
+      style="
+        font-size: 30px;
+        font-weight: 800;
+        color: var(--rose);
+      "
+    >
+      0
+    </div>
+
+    <div style="
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    ">
+      Seçilen dönemde iptal edilen siparişler
+    </div>
+  </div>
+
+
+  <!-- TAMAMLANAN SİPARİŞ -->
+  <div style="
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  ">
+    <div style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    ">
+      <span style="
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-muted);
+      ">
+        Tamamlanan Sipariş
+      </span>
+
+      <span style="
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #D1FAE5;
+        border-radius: 10px;
+        font-size: 20px;
+      ">
+        ✅
+      </span>
+    </div>
+
+    <div
+      id="dashboard-tamamlanan-siparis"
+      style="
+        font-size: 30px;
+        font-weight: 800;
+        color: var(--emerald-dark);
+      "
+    >
+      0
+    </div>
+
+    <div style="
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    ">
+      Seçilen dönemde teslim edilen siparişler
+    </div>
+  </div>
+
+
+  <!-- DÖNEMSEL CİRO -->
+  <div style="
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  ">
+    <div style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    ">
+      <span
+        id="dashboard-ciro-basligi"
+        style="
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--text-muted);
+        "
+      >
+        Bugünkü Ciro
+      </span>
+
+      <span style="
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #EDE9FE;
+        border-radius: 10px;
+        font-size: 20px;
+      ">
+        💰
+      </span>
+    </div>
+
+    <div
+      id="dashboard-bugunku-ciro"
+      style="
+        font-size: 30px;
+        font-weight: 800;
+        color: #7C3AED;
+      "
+    >
+      0,00 TL
+    </div>
+
+    <div style="
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    ">
+      Seçilen dönemde teslim edilen siparişlerin toplamı
+    </div>
+  </div>
+
+</div>
+<!-- DASHBOARD ÖZET KARTLARI SONU -->
 
 
     <!-- SİPARİŞ GRAFİĞİ -->
@@ -1383,6 +1450,57 @@ html.tema-ilk-yukleme::after {
           width: 100%;
           height: 320px;
         ">
+        <div
+  id="dashboard-grafik-modlari"
+  style="
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  "
+>
+  <button
+    type="button"
+    class="btn dashboard-grafik-mod-btn"
+    data-mod="tamamlanan"
+    onclick="
+      dashboardGrafikModuDegistir(
+        'tamamlanan',
+        this
+      )
+    "
+  >
+    ✅ Tamamlananlar
+  </button>
+
+  <button
+    type="button"
+    class="btn dashboard-grafik-mod-btn"
+    data-mod="iptal"
+    onclick="
+      dashboardGrafikModuDegistir(
+        'iptal',
+        this
+      )
+    "
+  >
+    ❌ İptal Edilenler
+  </button>
+
+  <button
+    type="button"
+    class="btn btn-primary dashboard-grafik-mod-btn"
+    data-mod="birlesik"
+    onclick="
+      dashboardGrafikModuDegistir(
+        'birlesik',
+        this
+      )
+    "
+  >
+    📊 Birlikte
+  </button>
+</div>
           <canvas id="dashboard-siparis-grafik"></canvas>
         </div>
 
@@ -1461,6 +1579,156 @@ html.tema-ilk-yukleme::after {
           <h2>Anlık Sipariş Ekranı</h2>
           <span style="font-size: 12px; color: var(--text-muted);">Siparişler 8 saniyede bir otomatik yenilenir</span>
         </div>
+                <div
+          id="siparis-gorunum-sekmeleri"
+          style="
+            display: flex;
+            gap: 8px;
+            padding: 16px 20px 0;
+            border-bottom: 1px solid var(--border);
+          "
+        >
+          <button
+            id="siparis-sekme-aktif"
+            type="button"
+            class="btn btn-primary"
+            onclick="
+              siparisGorunumuDegistir(
+                'aktif',
+                this
+              )
+            "
+            aria-pressed="true"
+          >
+            📦 Aktif Siparişler
+          </button>
+
+          <button
+            id="siparis-sekme-gecmis"
+            type="button"
+            class="btn"
+            onclick="
+              siparisGorunumuDegistir(
+                'gecmis',
+                this
+              )
+            "
+            aria-pressed="false"
+          >
+            🗂️ Geçmiş Siparişler
+          </button>
+        </div>
+                <div
+          id="gecmis-siparis-filtreleri"
+          class="hidden"
+          style="
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+          "
+        >
+          <div style="
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+          ">
+            <button
+              id="gecmis-filtre-tumu"
+              type="button"
+              class="btn btn-primary"
+              onclick="
+                gecmisSiparisFiltresiDegistir(
+                  'tumu',
+                  this
+                )
+              "
+              aria-pressed="true"
+            >
+              📋 Tümü
+            </button>
+
+            <button
+              id="gecmis-filtre-teslim"
+              type="button"
+              class="btn"
+              onclick="
+                gecmisSiparisFiltresiDegistir(
+                  'teslim_edildi',
+                  this
+                )
+              "
+              aria-pressed="false"
+            >
+              ✅ Teslim Edilen
+            </button>
+
+            <button
+              id="gecmis-filtre-iptal"
+              type="button"
+              class="btn"
+              onclick="
+                gecmisSiparisFiltresiDegistir(
+                  'iptal',
+                  this
+                )
+              "
+              aria-pressed="false"
+            >
+              ❌ İptal Edilen
+            </button>
+          </div>
+
+          <div style="
+            position: relative;
+            max-width: 520px;
+          ">
+            <input
+              id="gecmis-siparis-arama"
+              type="search"
+              value=""
+              autocomplete="off"
+              placeholder="Müşteri adıyla geçmiş sipariş ara..."
+              oninput="
+                gecmisSiparisAramasiniUygula(
+                  this.value
+                )
+              "
+              style="
+                width: 100%;
+                padding: 11px 13px;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                background: var(--input-bg);
+                color: var(--text-dark);
+                font-size: 13px;
+                outline: none;
+              "
+            />
+
+            <div
+              id="gecmis-siparis-onerileri"
+              style="
+                display: none;
+                position: absolute;
+                z-index: 20;
+                top: calc(100% + 6px);
+                left: 0;
+                right: 0;
+                padding: 8px;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                background: var(--surface-card);
+                box-shadow: 0 10px 24px rgba(
+                  15,
+                  23,
+                  42,
+                  0.16
+                );
+              "
+            ></div>
+          </div>
+        </div>
         <div id="siparis-listesi">
   <div
     class="siparis-yukleniyor"
@@ -1483,6 +1751,25 @@ html.tema-ilk-yukleme::after {
     align-items: center;
     gap: 10px;
   ">
+
+<input
+  id="urun-arama"
+  type="search"
+  autocomplete="off"
+  placeholder="Ürün adı ara..."
+  aria-label="Ürün adı ara"
+  oninput="urunAramasiniUygula(this.value)"
+  style="
+    min-width: 220px;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--surface);
+    color: var(--text-dark);
+    font-weight: 600;
+    outline: none;
+  "
+>
 
   <select
   id="urun-durum-filtresi"
@@ -2309,6 +2596,24 @@ html.tema-ilk-yukleme::after {
 <script>
 const MARKET_ID = 1;
 let sonSiparisSayisi = -1;
+let siparisGorunumu = (
+  sessionStorage.getItem(
+    "marketSiparisGorunumu"
+  ) || "aktif"
+);
+let gecmisSiparisFiltresi = (
+  sessionStorage.getItem(
+    "marketGecmisSiparisFiltresi"
+  ) || "tumu"
+);
+
+let gecmisSiparisArama = (
+  sessionStorage.getItem(
+    "marketGecmisSiparisArama"
+  ) || ""
+);
+
+let gecmisSiparisler = [];
 let dukkanAktif = true;
 let dukkanMinLimit = 50.0;
 let dashboardGrafik = null;
@@ -2316,6 +2621,11 @@ let dashboardGrafikDonemi = (
   document.documentElement.getAttribute(
     'data-market-grafik-donemi'
   ) || 'gunluk'
+);
+let dashboardGrafikModu = (
+  sessionStorage.getItem(
+    "marketGrafikModu"
+  ) || "birlesik"
 );
 
 
@@ -2395,153 +2705,368 @@ function aktifSekmeyiGeriYukle() {
   );
 }
 
-async function dashboardOzetYukle() {
-  try {
-    const res = await fetch(
-      `/api/market/dashboard-ozet?market_id=${MARKET_ID}`
-    );
+async function dashboardOzetYukle(
+  donem = dashboardGrafikDonemi
+) {
+  const izinliDonemler = [
+    "gunluk",
+    "haftalik",
+    "aylik",
+    "yillik"
+  ];
 
-    if (!res.ok) {
-      throw new Error('Dashboard bilgileri alınamadı.');
-    }
-
-    const veri = await res.json();
-
-    document.getElementById(
-      'dashboard-bugunku-siparis'
-    ).textContent = veri.bugunku_siparis ?? 0;
-
-    document.getElementById(
-      'dashboard-bekleyen-siparis'
-    ).textContent = veri.bekleyen_siparis ?? 0;
-
-    document.getElementById(
-      'dashboard-tamamlanan-siparis'
-    ).textContent = veri.tamamlanan_siparis ?? 0;
-
-  } catch (e) {
-    console.error('Dashboard yükleme hatası:', e);
+  if (!izinliDonemler.includes(donem)) {
+    donem = "gunluk";
   }
-}
 
-async function dashboardGrafikYukle(donem = 'haftalik') {
   try {
     const res = await fetch(
-      `/api/market/dashboard-grafik?market_id=${MARKET_ID}&donem=${donem}`
+      `/api/market/dashboard-ozet` +
+      `?market_id=${MARKET_ID}` +
+      `&donem=${encodeURIComponent(donem)}`,
+      {
+        cache: "no-store"
+      }
+    );
+
+    const veri = await res.json().catch(
+      () => ({})
     );
 
     if (!res.ok) {
-      throw new Error('Grafik bilgileri alınamadı.');
+      throw new Error(
+        veri.hata
+        || "Dashboard bilgileri alınamadı."
+      );
     }
 
-    const veri = await res.json();
+    const metinGuncelle = (
+      id,
+      deger
+    ) => {
+      const alan = document.getElementById(id);
 
-    const ciroBasligi = document.getElementById(
-      'dashboard-ciro-basligi'
+      if (alan) {
+        alan.textContent = deger;
+      }
+    };
+
+    metinGuncelle(
+      "dashboard-bugunku-siparis",
+      veri.donem_siparis ?? 0
     );
 
-    const ciroTutari = document.getElementById(
-      'dashboard-bugunku-ciro'
+    metinGuncelle(
+      "dashboard-tamamlanan-siparis",
+      veri.tamamlanan_siparis ?? 0
     );
 
-    if (ciroBasligi) {
-      ciroBasligi.textContent = veri.ciro_basligi || 'Ciro';
-    }
+    metinGuncelle(
+      "dashboard-iptal-edilen-siparis",
+      veri.iptal_edilen_siparis ?? 0
+    );
 
-    if (ciroTutari) {
-      ciroTutari.textContent = `${Number(
-        veri.ciro || 0
-      ).toLocaleString('tr-TR', {
+    metinGuncelle(
+      "dashboard-bugunku-siparis-basligi",
+      veri.siparis_basligi
+      || "Sipariş"
+    );
+
+    metinGuncelle(
+      "dashboard-ciro-basligi",
+      veri.ciro_basligi
+      || "Ciro"
+    );
+
+    metinGuncelle(
+      "dashboard-bugunku-ciro",
+      `${Number(
+        veri.ciro ?? 0
+      ).toLocaleString("tr-TR", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
-      })} TL`;
-    }
-
-    const canvas = document.getElementById(
-      'dashboard-siparis-grafik'
+      })} TL`
     );
-
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-
-    if (dashboardGrafik) {
-      dashboardGrafik.destroy();
-    }
-
-    dashboardGrafik = new Chart(ctx, {
-      type: 'line',
-
-      data: {
-        labels: veri.labels,
-
-        datasets: [{
-          label: 'Sipariş Sayısı',
-          data: veri.veriler,
-          borderColor: '#059669',
-          backgroundColor: 'rgba(5, 150, 105, 0.10)',
-          borderWidth: 3,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          pointBackgroundColor: '#059669',
-          fill: true,
-          tension: 0.35
-        }]
-      },
-
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-
-        interaction: {
-          mode: 'index',
-          intersect: false
-        },
-
-        plugins: {
-          legend: {
-            display: false
-          },
-
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return `${context.parsed.y} sipariş`;
-              }
-            }
-          }
-        },
-
-        scales: {
-          y: {
-            beginAtZero: true,
-
-            ticks: {
-              precision: 0
-            },
-
-            grid: {
-              color: 'rgba(148, 163, 184, 0.15)'
-            }
-          },
-
-          x: {
-            grid: {
-              display: false
-            }
-          }
-        }
-      }
-    });
 
   } catch (e) {
     console.error(
-      'Dashboard grafik yükleme hatası:',
+      "Dashboard özet yükleme hatası:",
       e
     );
   }
 }
 
+async function dashboardGrafikYukle(
+  donem = dashboardGrafikDonemi
+) {
+  const izinliModlar = [
+    "tamamlanan",
+    "iptal",
+    "birlesik"
+  ];
+
+  if (
+    !izinliModlar.includes(
+      dashboardGrafikModu
+    )
+  ) {
+    dashboardGrafikModu = "birlesik";
+  }
+
+  dashboardGrafikModuButonlariniGuncelle();
+
+  try {
+    const res = await fetch(
+      `/api/market/dashboard-grafik` +
+      `?market_id=${MARKET_ID}` +
+      `&donem=${donem}`,
+      {
+        cache: "no-store"
+      }
+    );
+
+    const veri = await res.json().catch(
+      () => ({})
+    );
+
+    if (!res.ok) {
+      throw new Error(
+        veri.hata
+        || "Grafik bilgileri alınamadı."
+      );
+    }
+
+    const ciroBasligi =
+      document.getElementById(
+        "dashboard-ciro-basligi"
+      );
+
+    const ciroTutari =
+      document.getElementById(
+        "dashboard-bugunku-ciro"
+      );
+
+    if (ciroBasligi) {
+      ciroBasligi.textContent =
+        veri.ciro_basligi || "Ciro";
+    }
+
+    if (ciroTutari) {
+      ciroTutari.textContent =
+        `${Number(
+          veri.ciro || 0
+        ).toLocaleString("tr-TR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        })} TL`;
+    }
+
+    const canvas =
+      document.getElementById(
+        "dashboard-siparis-grafik"
+      );
+
+    if (!canvas) {
+      return;
+    }
+
+    const tamamlananVeriler =
+      Array.isArray(
+        veri.tamamlanan_veriler
+      )
+        ? veri.tamamlanan_veriler
+        : [];
+
+    const iptalVeriler =
+      Array.isArray(
+        veri.iptal_veriler
+      )
+        ? veri.iptal_veriler
+        : [];
+
+    const ortakAyarlar = {
+      borderWidth: 3,
+      pointRadius: 4,
+      pointHoverRadius: 7,
+      tension: 0.35,
+      fill: false
+    };
+
+    let datasets = [];
+
+    if (
+      dashboardGrafikModu
+      === "tamamlanan"
+    ) {
+      datasets = [{
+        label: "Tamamlanan Siparişler",
+        data: tamamlananVeriler,
+        borderColor: "#059669",
+        backgroundColor: "#059669",
+        pointBackgroundColor: "#059669",
+        ...ortakAyarlar
+      }];
+    }
+
+    else if (
+      dashboardGrafikModu
+      === "iptal"
+    ) {
+      datasets = [{
+        label: "İptal Edilen Siparişler",
+        data: iptalVeriler,
+        borderColor: "#DC2626",
+        backgroundColor: "#DC2626",
+        pointBackgroundColor: "#DC2626",
+        ...ortakAyarlar
+      }];
+    }
+
+    else {
+      datasets = [
+        {
+          label: "Tamamlanan Siparişler",
+          data: tamamlananVeriler,
+          borderColor: "#059669",
+          backgroundColor: "#059669",
+          pointBackgroundColor: "#059669",
+          ...ortakAyarlar
+        },
+        {
+          label: "İptal Edilen Siparişler",
+          data: iptalVeriler,
+          borderColor: "#DC2626",
+          backgroundColor: "#DC2626",
+          pointBackgroundColor: "#DC2626",
+          ...ortakAyarlar
+        }
+      ];
+    }
+
+    const ctx = canvas.getContext("2d");
+
+    if (dashboardGrafik) {
+      dashboardGrafik.destroy();
+    }
+
+    dashboardGrafik = new Chart(
+      ctx,
+      {
+        type: "line",
+
+        data: {
+          labels: veri.labels,
+          datasets: datasets
+        },
+
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+
+          interaction: {
+            mode: "index",
+            intersect: false
+          },
+
+          plugins: {
+            legend: {
+              display: true,
+              position: "top"
+            },
+
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return (
+                    `${context.dataset.label}: `
+                    + `${context.parsed.y} sipariş`
+                  );
+                }
+              }
+            }
+          },
+
+          scales: {
+            y: {
+              beginAtZero: true,
+
+              ticks: {
+                precision: 0
+              },
+
+              grid: {
+                color:
+                  "rgba(148, 163, 184, 0.15)"
+              }
+            },
+
+            x: {
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      }
+    );
+
+  } catch (e) {
+    console.error(
+      "Dashboard grafik yükleme hatası:",
+      e
+    );
+  }
+}
+
+function dashboardGrafikModuButonlariniGuncelle() {
+  document.querySelectorAll(
+    ".dashboard-grafik-mod-btn"
+  ).forEach((buton) => {
+    const aktifMi = (
+      buton.dataset.mod
+      === dashboardGrafikModu
+    );
+
+    buton.classList.toggle(
+      "btn-primary",
+      aktifMi
+    );
+
+    buton.classList.toggle(
+      "aktif",
+      aktifMi
+    );
+  });
+}
+
+
+function dashboardGrafikModuDegistir(
+  mod,
+  buton
+) {
+  const izinliModlar = [
+    "tamamlanan",
+    "iptal",
+    "birlesik"
+  ];
+
+  if (!izinliModlar.includes(mod)) {
+    mod = "birlesik";
+  }
+
+  dashboardGrafikModu = mod;
+
+  sessionStorage.setItem(
+    "marketGrafikModu",
+    mod
+  );
+
+  dashboardGrafikModuButonlariniGuncelle();
+
+  dashboardGrafikYukle(
+    dashboardGrafikDonemi
+  );
+}
 
 function dashboardGrafikDonemDegistir(donem, buton) {
   const izinliDonemler = [
@@ -2578,6 +3103,7 @@ function dashboardGrafikDonemDegistir(donem, buton) {
   }
 
   dashboardGrafikYukle(donem);
+  dashboardOzetYukle(donem);
 }
 
 async function dashboardEnCokSatanlariYukle() {
@@ -3836,84 +4362,239 @@ document.documentElement.setAttribute(
 }
 
 async function siparisleriYukle() {
-  const res = await fetch(`/api/market/siparisler?market_id=${MARKET_ID}`);
-  const list = await res.json();
-  
-  const bekleyen = list.filter(s => s.durum === 'bekliyor').length;
-  document.getElementById('bekleyen-sayisi').textContent = bekleyen;
+  siparisGorunumuButonlariniGuncelle();
 
-  if (sonSiparisSayisi !== -1 && bekleyen > sonSiparisSayisi) { zilSesiCal(); }
+  const res = await fetch(
+    `/api/market/siparisler`
+    + `?market_id=${MARKET_ID}`
+    + `&gorunum=${siparisGorunumu}`
+  );
+
+  const list = await res.json();
+
+  let gosterilecekListe = list;
+
+if (
+  siparisGorunumu === "gecmis"
+) {
+  gecmisSiparisler = list;
+
+  if (
+    gecmisSiparisFiltresi
+    !== "tumu"
+  ) {
+    gosterilecekListe =
+      gosterilecekListe.filter(
+        s =>
+          s.durum
+          === gecmisSiparisFiltresi
+      );
+  }
+
+  const aramaMetni =
+    siparisAramaMetniniNormalleştir(
+      gecmisSiparisArama
+    );
+
+  if (aramaMetni) {
+  const benzerMusteriler =
+    gecmisSiparisBenzerMusterileriBul(
+      gecmisSiparisArama
+    );
+
+  const benzerMusteriIdleri =
+    new Set(
+      benzerMusteriler.map(
+        (musteri) =>
+          String(musteri.id)
+      )
+    );
+
+  gosterilecekListe =
+    gosterilecekListe.filter(
+      (siparis) => {
+        if (
+          siparis.musteri_id === null
+          || siparis.musteri_id === undefined
+        ) {
+          return false;
+        }
+
+        return benzerMusteriIdleri.has(
+          String(siparis.musteri_id)
+        );
+      }
+    );
+}
+}
+
+if (
+  siparisGorunumu === "gecmis"
+) {
+  gecmisSiparisOnerisiniGuncelle();
+} else {
+  gecmisSiparisOnerisiniGizle();
+}
+
+  let aktifListe = list;
+
+  if (
+    siparisGorunumu === "gecmis"
+  ) {
+    const aktifRes = await fetch(
+      `/api/market/siparisler`
+      + `?market_id=${MARKET_ID}`
+      + `&gorunum=aktif`
+    );
+
+    aktifListe = aktifRes.ok
+      ? await aktifRes.json()
+      : [];
+  }
+
+  const bekleyen = aktifListe.filter(
+    s => s.durum === "bekliyor"
+  ).length;
+
+  document.getElementById(
+    "bekleyen-sayisi"
+  ).textContent = bekleyen;
+
+  if (
+    sonSiparisSayisi !== -1
+    && bekleyen > sonSiparisSayisi
+  ) {
+    zilSesiCal();
+  }
+
   sonSiparisSayisi = bekleyen;
 
-  const alan = document.getElementById('siparis-listesi');
-  if (list.length === 0) {
-    alan.innerHTML = '<div style="padding: 50px; text-align: center; color: var(--text-muted);">Henüz alınmış bir sipariş bulunmuyor.</div>';
+  const alan = document.getElementById(
+    "siparis-listesi"
+  );
+
+  if (gosterilecekListe.length === 0) {
+    alan.innerHTML = `
+      <div style="
+        padding: 50px;
+        text-align: center;
+        color: var(--text-muted);
+      ">
+        ${
+          siparisGorunumu === "gecmis"
+            ? "Henüz geçmiş sipariş bulunmuyor."
+            : "Henüz alınmış bir sipariş bulunmuyor."
+        }
+      </div>
+    `;
+
     return;
   }
 
-  alan.innerHTML = list.map(s => {
-    const rozet = s.teslimat_yontemi === 'gel_al'
-      ? '<span class="delivery-badge badge-gelal">🛍️ GEL-AL (DÜKKANDAN ALACAK)</span>'
-      : '<span class="delivery-badge badge-adrese">🛵 ADRESE TESLİM (KAPIMA GETİR)</span>';
+  alan.innerHTML = gosterilecekListe.map(s => {
+    const rozet =
+      s.teslimat_yontemi === "gel_al"
+        ? `
+          <span class="delivery-badge badge-gelal">
+            🛍️ GEL-AL (DÜKKANDAN ALACAK)
+          </span>
+        `
+        : `
+          <span class="delivery-badge badge-adrese">
+            🛵 ADRESE TESLİM (KAPIMA GETİR)
+          </span>
+        `;
 
     const safTel = s.musteri_tel
-      ? s.musteri_tel.replace(/[^0-9]/g, '')
-      : '';
+      ? s.musteri_tel.replace(
+          /[^0-9]/g,
+          ""
+        )
+      : "";
 
     let whatsappTel = safTel;
 
-    if (whatsappTel.startsWith('00')) {
+    if (whatsappTel.startsWith("00")) {
       whatsappTel = whatsappTel.substring(2);
     }
 
-    if (whatsappTel.startsWith('0')) {
+    if (whatsappTel.startsWith("0")) {
       whatsappTel = `90${whatsappTel.substring(1)}`;
     } else if (
       whatsappTel
-      && !whatsappTel.startsWith('90')
+      && !whatsappTel.startsWith("90")
     ) {
       whatsappTel = `90${whatsappTel}`;
     }
 
     const gunlukSiraNo = String(
       s.gunluk_sira_no || 0
-    ).padStart(3, '0');
+    ).padStart(3, "0");
 
     const siparisTarihi = s.siparis_tarihi
       ? new Date(
           `${s.siparis_tarihi}T00:00:00`
-        ).toLocaleDateString('tr-TR', {
-          day: 'numeric',
-          month: 'long'
-        })
-      : '';
+        ).toLocaleDateString(
+          "tr-TR",
+          {
+            day: "numeric",
+            month: "long"
+          }
+        )
+      : "";
 
-    const whatsappMesaji = (
+    const whatsappMesaji =
       `Merhaba ${s.musteri_ad}, `
       + `Dahir Market'ten verdiğiniz `
-      + `${s.id} nolu siparişiniz hakkında...`
-    );
+      + `${s.id} nolu siparişiniz hakkında...`;
 
     const wpLink = whatsappTel
       ? (
           `https://wa.me/${whatsappTel}`
-          + `?text=${encodeURIComponent(whatsappMesaji)}`
+          + `?text=${encodeURIComponent(
+              whatsappMesaji
+            )}`
         )
-      : '#';
-    const kalemler = s.detaylar.map(d => `
-      <div class="item-row">
-        <span><b>${d.adet} adet</b> × ${d.ad}</span>
-        <div style="display:flex; align-items:center; gap:12px;">
-          <span style="font-weight:700;">${d.satir_toplam.toLocaleString('tr-TR', {minimumFractionDigits:2})} TL</span>
-          ${s.durum !== 'teslim_edildi' && s.durum !== 'iptal' ? `
-          ` : ''}
+      : "#";
+
+    const kalemler = s.detaylar.map(
+      d => `
+        <div class="item-row">
+          <span>
+            <b>${d.adet} adet</b> × ${d.ad}
+          </span>
+
+          <div style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+          ">
+            <span style="
+              font-weight: 700;
+            ">
+              ${d.satir_toplam.toLocaleString(
+                "tr-TR",
+                {
+                  minimumFractionDigits: 2
+                }
+              )} TL
+            </span>
+
+            ${
+              s.durum !== "teslim_edildi"
+              && s.durum !== "iptal"
+                ? ""
+                : ""
+            }
+          </div>
         </div>
-      </div>
-    `).join('');
+      `
+    ).join("");
 
     return `
       <div class="order-card">
         <div class="order-top">
+
           <div>
             <div style="
               display: flex;
@@ -3936,7 +4617,9 @@ async function siparisleriYukle() {
                 font-size: 12px;
                 font-weight: 700;
               ">
-                ${siparisTarihi} · ${s.olusturma_saati || '--:--'}
+                ${siparisTarihi}
+                ·
+                ${s.olusturma_saati || "--:--"}
               </span>
             </div>
 
@@ -3947,87 +4630,651 @@ async function siparisleriYukle() {
             ">
               Kayıt no: ${s.id}
             </div>
-            <div style="margin-top: 8px;">${rozet}</div>
+
+            <div style="
+              margin-top: 8px;
+            ">
+              ${rozet}
+            </div>
+
             <div class="order-customer">
-  <div>
-    👤 Müşteri:
-    <b>${s.musteri_ad}</b>
-    <span style="color: var(--text-muted);">
-      (${s.musteri_tel})
-    </span>
+              <div>
+                👤 Müşteri:
+                <b>${s.musteri_ad}</b>
 
-    <span class="contact-bar">
-      <a
-        href="${wpLink}"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="btn-wp"
-      >
-        💬 WhatsApp
-      </a>
+                <span style="
+                  color: var(--text-muted);
+                ">
+                  (${s.musteri_tel})
+                </span>
 
-      <a
-        href="tel:${s.musteri_tel}"
-        class="btn-call"
-      >
-        📞 Ara
-      </a>
-    </span>
-  </div>
+                <span class="contact-bar">
+                  <a
+                    href="${wpLink}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="btn-wp"
+                  >
+                    💬 WhatsApp
+                  </a>
 
-  <div style="margin-top: 7px;">
-    📍 <b>Teslimat adresi:</b>
-    ${s.musteri_adres || 'Adres bilgisi bulunmuyor'}
-  </div>
+                  <a
+                    href="tel:${s.musteri_tel}"
+                    class="btn-call"
+                  >
+                    📞 Ara
+                  </a>
+                </span>
+              </div>
 
-  <div style="margin-top: 7px;">
-    💳 <b>Ödeme:</b>
-    ${
-      s.odeme_yontemi === 'nakit'
-        ? 'Nakit ödeme'
-        : 'Kredi/Banka kartı ile ödeme'
-    }
-  </div>
+              <div style="
+                margin-top: 7px;
+              ">
+                📍 <b>Teslimat adresi:</b>
+                ${
+                  s.musteri_adres
+                  || "Adres bilgisi bulunmuyor"
+                }
+              </div>
 
-  ${
-    s.siparis_notu
-      ? `
-        <div style="
-          margin-top: 7px;
-          padding: 8px 10px;
-          border-radius: 6px;
-          background: #FFFBEB;
-          color: #B45309;
-          font-weight: 600;
-        ">
-          📝 <b>Sipariş notu:</b>
-          ${s.siparis_notu}
+              <div style="
+                margin-top: 7px;
+              ">
+                💳 <b>Ödeme:</b>
+                ${
+                  s.odeme_yontemi === "nakit"
+                    ? "Nakit ödeme"
+                    : "Kredi/Banka kartı ile ödeme"
+                }
+              </div>
+
+              ${
+                s.siparis_notu
+                  ? `
+                    <div style="
+                      margin-top: 7px;
+                      padding: 8px 10px;
+                      border-radius: 6px;
+                      background: #FFFBEB;
+                      color: #B45309;
+                      font-weight: 600;
+                    ">
+                      📝 <b>Sipariş notu:</b>
+                      ${s.siparis_notu}
+                    </div>
+                  `
+                  : ""
+              }
+            </div>
+          </div>
+
+          <div style="
+            text-align: right;
+          ">
+            <div style="
+              font-size: 22px;
+              font-weight: 800;
+              color: var(--emerald-dark);
+              margin-bottom: 8px;
+            ">
+              ${s.toplam_tutar.toLocaleString(
+                "tr-TR",
+                {
+                  minimumFractionDigits: 2
+                }
+              )} TL
+            </div>
+
+            ${
+  siparisGorunumu === "aktif"
+    ? `
+      <div style="
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      ">
+        <button
+          onclick="
+            durumDegistir(
+              ${s.id},
+              'teslim_edildi'
+            )
+          "
+          style="
+            background: #10B981;
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+          "
+        >
+          ✅ Teslim Et
+        </button>
+
+        <button
+          onclick="
+            durumDegistir(
+              ${s.id},
+              'iptal'
+            )
+          "
+          style="
+            background: #FEE2E2;
+            color: #DC2626;
+            border: 1px solid #FECACA;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+          "
+        >
+          ❌ İptal Et
+        </button>
+      </div>
+    `
+    : `
+      <div style="
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 9px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 800;
+        ${
+          s.durum === "iptal"
+            ? `
+              background: #FEE2E2;
+              color: #B91C1C;
+            `
+            : `
+              background: #D1FAE5;
+              color: #047857;
+            `
+        }
+      ">
+        ${
+          s.durum === "iptal"
+            ? "❌ İptal Edildi"
+            : "✅ Teslim Edildi"
+        }
+      </div>
+    `
+}
+          </div>
+
         </div>
-      `
-      : ''
-  }
-</div>
-          </div>
-          
-          <div style="text-align: right;">
-            <div style="font-size: 22px; font-weight: 800; color: var(--emerald-dark); margin-bottom: 8px;">
-              ${s.toplam_tutar.toLocaleString('tr-TR', {minimumFractionDigits:2})} TL
-          </div>
-           <div style="display:flex; flex-direction:column; gap:8px;">
-             <button onclick="durumDegistir(${s.id}, 'teslim_edildi')" style="background:#10B981; color:white; border:none; padding:10px 14px; border-radius:8px; font-weight:800; cursor:pointer;">
-               ✅ Teslim Et
-             </button>
 
-             <button onclick="durumDegistir(${s.id}, 'iptal')" style="background:#FEE2E2; color:#DC2626; border:1px solid #FECACA; padding:10px 14px; border-radius:8px; font-weight:800; cursor:pointer;">
-               ❌ İptal Et
-             </button>
-           </div>
-          </div>
+        <div class="order-items">
+          ${kalemler}
         </div>
-        <div class="order-items">${kalemler}</div>
       </div>
     `;
-  }).join('');
+  }).join("");
+}
+
+function siparisGorunumuButonlariniGuncelle() {
+  const aktifButon = document.getElementById(
+    "siparis-sekme-aktif"
+  );
+
+  const gecmisButon = document.getElementById(
+    "siparis-sekme-gecmis"
+  );
+
+  const filtreAlani = document.getElementById(
+    "gecmis-siparis-filtreleri"
+  );
+
+  if (aktifButon) {
+    const aktifMi = (
+      siparisGorunumu === "aktif"
+    );
+
+    aktifButon.classList.toggle(
+      "btn-primary",
+      aktifMi
+    );
+
+    aktifButon.setAttribute(
+      "aria-pressed",
+      String(aktifMi)
+    );
+  }
+
+  if (gecmisButon) {
+    const gecmisMi = (
+      siparisGorunumu === "gecmis"
+    );
+
+    gecmisButon.classList.toggle(
+      "btn-primary",
+      gecmisMi
+    );
+
+    gecmisButon.setAttribute(
+      "aria-pressed",
+      String(gecmisMi)
+    );
+  }
+
+  if (filtreAlani) {
+    filtreAlani.classList.toggle(
+      "hidden",
+      siparisGorunumu !== "gecmis"
+    );
+  }
+
+  if (
+    siparisGorunumu === "gecmis"
+  ) {
+    const aramaInput =
+      document.getElementById(
+        "gecmis-siparis-arama"
+      );
+
+    if (aramaInput) {
+      aramaInput.value =
+        gecmisSiparisArama;
+    }
+
+    gecmisSiparisFiltreButonlariniGuncelle();
+  }
+}
+
+function gecmisSiparisFiltreButonlariniGuncelle() {
+  const filtreler = [
+    "tumu",
+    "teslim_edildi",
+    "iptal"
+  ];
+
+  filtreler.forEach((filtre) => {
+    const buton = document.getElementById(
+      filtre === "tumu"
+        ? "gecmis-filtre-tumu"
+        : filtre === "teslim_edildi"
+          ? "gecmis-filtre-teslim"
+          : "gecmis-filtre-iptal"
+    );
+
+    if (!buton) {
+      return;
+    }
+
+    const aktifMi = (
+      gecmisSiparisFiltresi === filtre
+    );
+
+    buton.classList.toggle(
+      "btn-primary",
+      aktifMi
+    );
+
+    buton.setAttribute(
+      "aria-pressed",
+      String(aktifMi)
+    );
+  });
+}
+
+
+function gecmisSiparisFiltresiDegistir(
+  filtre
+) {
+  if (
+    ![
+      "tumu",
+      "teslim_edildi",
+      "iptal"
+    ].includes(filtre)
+  ) {
+    filtre = "tumu";
+  }
+
+  gecmisSiparisFiltresi = filtre;
+
+  sessionStorage.setItem(
+    "marketGecmisSiparisFiltresi",
+    filtre
+  );
+
+  gecmisSiparisFiltreButonlariniGuncelle();
+
+  siparisleriYukle();
+}
+
+
+function siparisAramaMetniniNormalleştir(
+  metin
+) {
+  return String(metin || "")
+    .toLocaleLowerCase("tr-TR")
+    .normalize("NFD")
+    .replace(
+      /[\u0300-\u036f]/g,
+      ""
+    )
+    .replace(/ı/g, "i")
+    .replace(
+      /[^a-z0-9\s]/g,
+      " "
+    )
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function gecmisSiparisOnerisiniGizle() {
+  const alan = document.getElementById(
+    "gecmis-siparis-onerileri"
+  );
+
+  if (!alan) {
+    return;
+  }
+
+  alan.innerHTML = "";
+  alan.style.display = "none";
+}
+
+
+function siparisLevenshteinMesafesi(
+  birinci,
+  ikinci
+) {
+  const a = String(birinci || "");
+  const b = String(ikinci || "");
+
+  let oncekiSatir = Array.from(
+    { length: b.length + 1 },
+    (_, index) => index
+  );
+
+  for (
+    let i = 1;
+    i <= a.length;
+    i++
+  ) {
+    const mevcutSatir = [i];
+
+    for (
+      let j = 1;
+      j <= b.length;
+      j++
+    ) {
+      const maliyet =
+        a[i - 1] === b[j - 1]
+          ? 0
+          : 1;
+
+      mevcutSatir[j] = Math.min(
+        mevcutSatir[j - 1] + 1,
+        oncekiSatir[j] + 1,
+        oncekiSatir[j - 1] + maliyet
+      );
+    }
+
+    oncekiSatir = mevcutSatir;
+  }
+
+  return oncekiSatir[b.length];
+}
+
+
+function gecmisSiparisBenzerMusterileriBul(
+  arama
+) {
+  const aramaMetni = (
+    siparisAramaMetniniNormalleştir(
+      arama
+    ) || ""
+  ).trim();
+
+  if (
+    !aramaMetni
+    || aramaMetni.length < 2
+  ) {
+    return [];
+  }
+
+  const musteriHaritasi = new Map();
+
+  gecmisSiparisler.forEach((siparis) => {
+    const musteriId = siparis.musteri_id;
+    const musteriAdi = String(
+      siparis.musteri_ad || ""
+    ).trim();
+
+    const normalMusteriAdi =
+      siparisAramaMetniniNormalleştir(
+        musteriAdi
+      );
+
+    if (
+      musteriId === null
+      || musteriId === undefined
+      || !musteriAdi
+      || normalMusteriAdi
+        === "misafir musteri"
+    ) {
+      return;
+    }
+
+    musteriHaritasi.set(
+      String(musteriId),
+      musteriAdi
+    );
+  });
+
+  const adaylar = [];
+
+  musteriHaritasi.forEach(
+    (musteriAdi, musteriId) => {
+      const normalMusteriAdi =
+        siparisAramaMetniniNormalleştir(
+          musteriAdi
+        );
+
+      const parcalar = [
+        normalMusteriAdi,
+        ...normalMusteriAdi
+          .split(/\s+/)
+          .filter(Boolean)
+      ];
+
+      const skorlar = parcalar.map(
+        (parca) => {
+          const mesafe =
+            siparisLevenshteinMesafesi(
+              aramaMetni,
+              parca
+            );
+
+          const uzunluk = Math.max(
+            aramaMetni.length,
+            parca.length
+          );
+
+          return uzunluk > 0
+            ? 1 - mesafe / uzunluk
+            : 0;
+        }
+      );
+
+      const enYuksekSkor = Math.max(
+        ...skorlar
+      );
+
+      if (enYuksekSkor >= 0.60) {
+        adaylar.push({
+          id: musteriId,
+          ad: musteriAdi,
+          skor: enYuksekSkor
+        });
+      }
+    }
+  );
+
+  return adaylar.sort(
+    (birinci, ikinci) =>
+      ikinci.skor - birinci.skor
+  );
+}
+
+
+function gecmisSiparisOnerisiniGuncelle() {
+  const alan = document.getElementById(
+    "gecmis-siparis-onerileri"
+  );
+
+  if (!alan) {
+    return;
+  }
+
+  const adaylar =
+    gecmisSiparisBenzerMusterileriBul(
+      gecmisSiparisArama
+    );
+
+  if (adaylar.length === 0) {
+    gecmisSiparisOnerisiniGizle();
+    return;
+  }
+
+  alan.innerHTML = "";
+
+  const baslik =
+    document.createElement("div");
+
+  baslik.textContent =
+    "Benzer kayıtlı müşteriler:";
+
+  baslik.style.cssText = `
+    margin-bottom: 6px;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 700;
+  `;
+
+  alan.appendChild(baslik);
+
+  adaylar
+    .slice(0, 5)
+    .forEach((aday) => {
+      const buton =
+        document.createElement("button");
+
+      buton.type = "button";
+
+      buton.style.cssText = `
+        display: block;
+        width: 100%;
+        margin-top: 5px;
+        padding: 9px 11px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface);
+        color: var(--text-dark);
+        text-align: left;
+        cursor: pointer;
+        font-size: 13px;
+        transition: background 0.2s ease,
+          border-color 0.2s ease;
+      `;
+
+      const yuzde = Math.round(
+        aday.skor * 100
+      );
+
+      buton.textContent =
+        `${aday.ad} · %${yuzde} benzerlik`;
+
+      buton.addEventListener(
+        "mouseenter",
+        () => {
+          buton.style.background =
+            "var(--surface-soft)";
+          buton.style.borderColor =
+            "var(--emerald)";
+        }
+      );
+
+      buton.addEventListener(
+        "mouseleave",
+        () => {
+          buton.style.background =
+            "var(--surface)";
+          buton.style.borderColor =
+            "var(--border)";
+        }
+      );
+
+      buton.addEventListener(
+        "click",
+        () => {
+          const aramaInput =
+            document.getElementById(
+              "gecmis-siparis-arama"
+            );
+
+          if (aramaInput) {
+            aramaInput.value =
+              aday.ad;
+          }
+
+          gecmisSiparisArama =
+            aday.ad;
+
+          sessionStorage.setItem(
+            "marketGecmisSiparisArama",
+            gecmisSiparisArama
+          );
+
+          gecmisSiparisOnerisiniGizle();
+          siparisleriYukle();
+        }
+      );
+
+      alan.appendChild(buton);
+    });
+
+  alan.style.display = "block";
+}
+
+function gecmisSiparisAramasiniUygula(
+  deger
+) {
+  gecmisSiparisArama = deger;
+
+  sessionStorage.setItem(
+    "marketGecmisSiparisArama",
+    deger
+  );
+
+  siparisleriYukle();
+}
+
+function siparisGorunumuDegistir(
+  gorunum
+) {
+  if (
+    !["aktif", "gecmis"].includes(
+      gorunum
+    )
+  ) {
+    gorunum = "aktif";
+  }
+
+  siparisGorunumu = gorunum;
+
+  sessionStorage.setItem(
+    "marketSiparisGorunumu",
+    gorunum
+  );
+
+  siparisleriYukle();
 }
 
 async function durumDegistir(id, durum) {
@@ -4053,7 +5300,9 @@ async function durumDegistir(id, durum) {
   }
 
  siparisleriYukle();
- dashboardOzetYukle();
+ dashboardOzetYukle(
+   dashboardGrafikDonemi
+ );
  dashboardGrafikYukle(dashboardGrafikDonemi);
  dashboardEnCokSatanlariYukle();
 }
@@ -4100,6 +5349,12 @@ let urunDurumFiltresi = (
     'market-urun-durum-filtresi'
   )
   || 'tumu'
+);
+
+let urunAramaMetni = (
+  localStorage.getItem(
+    'market-urun-arama'
+  ) || ''
 );
 
 let urunDetayId = null;
@@ -5068,6 +6323,85 @@ function urunDurumFiltresiDegistir(
   urunleriYukle();
 }
 
+function urunAramasiniUygula(
+  yeniArama
+) {
+  urunAramaMetni = String(
+    yeniArama || ''
+  );
+
+  localStorage.setItem(
+    'market-urun-arama',
+    urunAramaMetni
+  );
+
+  urunleriYukle();
+}
+
+function urunAramaEslesmeSkoru(
+  urunAdi,
+  aramaMetni
+) {
+  const normalUrunAdi =
+    siparisAramaMetniniNormalleştir(
+      urunAdi
+    ).trim();
+
+  const normalAramaMetni =
+    siparisAramaMetniniNormalleştir(
+      aramaMetni
+    ).trim();
+
+  if (!normalAramaMetni) {
+    return 0;
+  }
+
+  if (normalAramaMetni.length <= 2) {
+    return normalUrunAdi.startsWith(
+      normalAramaMetni
+    )
+      ? 1
+      : 0;
+  }
+
+  if (
+    normalUrunAdi.includes(
+      normalAramaMetni
+    )
+  ) {
+    return 1;
+  }
+
+  const karsilastirilacakMetinler = [
+    normalUrunAdi,
+    ...normalUrunAdi
+      .split(/\s+/)
+      .filter(Boolean)
+  ];
+
+  const skorlar =
+    karsilastirilacakMetinler.map(
+      (metin) => {
+        const mesafe =
+          siparisLevenshteinMesafesi(
+            normalAramaMetni,
+            metin
+          );
+
+        const uzunluk = Math.max(
+          normalAramaMetni.length,
+          metin.length
+        );
+
+        return uzunluk > 0
+          ? 1 - mesafe / uzunluk
+          : 0;
+      }
+    );
+
+  return Math.max(...skorlar);
+}
+
 async function urunleriYukle() {
   const res = await fetch(
     `/api/market/urunler?market_id=${MARKET_ID}`
@@ -5078,7 +6412,7 @@ async function urunleriYukle() {
     return;
   }
 
-  const list = await res.json();
+  let list = await res.json();
 
   urunOrijinalDegerleri.clear();
 
@@ -5097,6 +6431,21 @@ async function urunleriYukle() {
     aktif: u.aktif === true
   }
 );  });
+
+const urunAramaAnahtari =
+  siparisAramaMetniniNormalleştir(
+    urunAramaMetni
+  );
+
+if (urunAramaAnahtari) {
+  list = list.filter(
+    (urun) =>
+      urunAramaEslesmeSkoru(
+        urun.ad,
+        urunAramaMetni
+      ) >= 0.60
+  );
+}
 
 list.sort((a, b) => {
   const adA = String(a.ad || '');
@@ -5152,6 +6501,16 @@ const durumSelect = document.getElementById(
 
 if (durumSelect) {
   durumSelect.value = urunDurumFiltresi;
+}
+
+const urunAramaInput =
+  document.getElementById(
+    'urun-arama'
+  );
+
+if (urunAramaInput) {
+  urunAramaInput.value =
+    urunAramaMetni;
 }
 
   const govde = document.getElementById(
@@ -5668,7 +7027,9 @@ aktifSekmeyiGeriYukle();
 temaAyarlariniBaslat();
 bildirimSesiAyarlariniBaslat();
 marketDurumYukle();
-dashboardOzetYukle();
+dashboardOzetYukle(
+  dashboardGrafikDonemi
+);
 dashboardGrafikYukle(
   dashboardGrafikDonemi
 );
@@ -5684,7 +7045,9 @@ socket.on("yeni_siparis_geldi", (veri) => {
 
     siparisleriYukle();
     urunleriYukle();
-    dashboardOzetYukle();
+    dashboardOzetYukle(
+      dashboardGrafikDonemi
+    );
     dashboardGrafikYukle(dashboardGrafikDonemi);
   }
 });
@@ -5704,7 +7067,9 @@ socket.on("urun_degisikligi", (veri) => {
 
   urunleriYukle();
   siparisleriYukle();
-  dashboardOzetYukle();
+  dashboardOzetYukle(
+    dashboardGrafikDonemi
+  );
   dashboardGrafikYukle(
     dashboardGrafikDonemi
   );

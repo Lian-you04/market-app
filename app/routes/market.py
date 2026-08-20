@@ -265,71 +265,193 @@ def market_durum_guncelle():
             "hata": str(e)
         }), 500
 
-@market_bp.route("/dashboard-ozet", methods=["GET"])
+@market_bp.route(
+    "/dashboard-ozet",
+    methods=["GET"]
+)
 @role_required("market")
 def dashboard_ozet_getir():
     try:
-        market_id = request.args.get("market_id", 1, type=int)
+        market_id = request.args.get(
+            "market_id",
+            1,
+            type=int
+        )
+
+        donem = request.args.get(
+            "donem",
+            "gunluk"
+        ).lower()
+
+        izin_verilen_donemler = {
+            "gunluk",
+            "haftalik",
+            "aylik",
+            "yillik"
+        }
+
+        if donem not in izin_verilen_donemler:
+            return jsonify({
+                "hata": "Geçersiz dönem bilgisi."
+            }), 400
 
         bugun_istanbul = datetime.now(
             ISTANBUL_SAAT_DILIMI
         ).date()
 
-        yarin_istanbul = bugun_istanbul + timedelta(days=1)
+        if donem == "gunluk":
+            donem_baslangici = bugun_istanbul
+            donem_bitisi = (
+                bugun_istanbul
+                + timedelta(days=1)
+            )
 
-        gun_baslangici_utc, gun_bitisi_utc = (
+            siparis_basligi = (
+                "Bugünkü Sipariş"
+            )
+            ciro_basligi = "Bugünkü Ciro"
+
+        elif donem == "haftalik":
+            donem_baslangici = (
+                bugun_istanbul
+                - timedelta(
+                    days=bugun_istanbul.weekday()
+                )
+            )
+
+            donem_bitisi = (
+                donem_baslangici
+                + timedelta(days=7)
+            )
+
+            siparis_basligi = (
+                "Haftalık Sipariş"
+            )
+            ciro_basligi = "Haftalık Ciro"
+
+        elif donem == "aylik":
+            donem_baslangici = (
+                bugun_istanbul.replace(day=1)
+            )
+
+            if donem_baslangici.month == 12:
+                donem_bitisi = (
+                    donem_baslangici.replace(
+                        year=donem_baslangici.year + 1,
+                        month=1
+                    )
+                )
+            else:
+                donem_bitisi = (
+                    donem_baslangici.replace(
+                        month=donem_baslangici.month + 1
+                    )
+                )
+
+            siparis_basligi = (
+                "Aylık Sipariş"
+            )
+            ciro_basligi = "Aylık Ciro"
+
+        else:
+            donem_baslangici = (
+                bugun_istanbul.replace(
+                    month=1,
+                    day=1
+                )
+            )
+
+            donem_bitisi = (
+                donem_baslangici.replace(
+                    year=donem_baslangici.year + 1
+                )
+            )
+
+            siparis_basligi = (
+                "Yıllık Sipariş"
+            )
+            ciro_basligi = "Yıllık Ciro"
+
+        baslangic_utc, bitis_utc = (
             istanbul_tarih_araligini_utc_yap(
-                bugun_istanbul,
-                yarin_istanbul
+                donem_baslangici,
+                donem_bitisi
             )
         )
 
-        bugunku_siparisler = Siparis.query.filter(
+        siparisler = Siparis.query.filter(
             Siparis.market_id == market_id,
-            Siparis.olusturma_tarihi >= gun_baslangici_utc,
-            Siparis.olusturma_tarihi < gun_bitisi_utc
+            Siparis.olusturma_tarihi >= baslangic_utc,
+            Siparis.olusturma_tarihi < bitis_utc
         ).all()
-
-        bugunku_siparis_sayisi = len(bugunku_siparisler)
-
-        bekleyen_siparis_sayisi = sum(
-            1
-            for siparis in bugunku_siparisler
-            if siparis.durum not in ["teslim_edildi", "iptal"]
-        )
 
         tamamlanan_siparisler = [
             siparis
-            for siparis in bugunku_siparisler
+            for siparis in siparisler
             if siparis.durum == "teslim_edildi"
         ]
 
-        tamamlanan_siparis_sayisi = len(
-            tamamlanan_siparisler
-        )
+        iptal_edilen_siparisler = [
+            siparis
+            for siparis in siparisler
+            if siparis.durum == "iptal"
+        ]
 
-        bugunku_ciro = sum(
+        bekleyen_siparisler = [
+            siparis
+            for siparis in siparisler
+            if siparis.durum not in [
+                "teslim_edildi",
+                "iptal"
+            ]
+        ]
+
+        ciro = sum(
             float(siparis.toplam_tutar)
             for siparis in tamamlanan_siparisler
         )
 
         return jsonify({
-            "bugunku_siparis": bugunku_siparis_sayisi,
-            "bekleyen_siparis": bekleyen_siparis_sayisi,
-            "tamamlanan_siparis": tamamlanan_siparis_sayisi,
-            "bugunku_ciro": round(bugunku_ciro, 2)
+            "donem": donem,
+            "donem_baslangici": (
+                donem_baslangici.isoformat()
+            ),
+            "donem_bitisi": (
+                donem_bitisi.isoformat()
+            ),
+            "siparis_basligi": siparis_basligi,
+            "ciro_basligi": ciro_basligi,
+            "donem_siparis": len(siparisler),
+            "tamamlanan_siparis": len(
+                tamamlanan_siparisler
+            ),
+            "iptal_edilen_siparis": len(
+                iptal_edilen_siparisler
+            ),
+            "bekleyen_siparis": len(
+                bekleyen_siparisler
+            ),
+            "ciro": round(ciro, 2)
         }), 200
 
     except Exception as e:
         return jsonify({
-            "hata": f"Dashboard bilgileri alınamadı: {str(e)}"
+            "hata": (
+                "Dashboard bilgileri alınamadı: "
+                f"{str(e)}"
+            )
         }), 500
 
 @market_bp.route("/dashboard-grafik", methods=["GET"])
 @role_required("market")
 def dashboard_grafik_getir():
     try:
-        market_id = request.args.get("market_id", 1, type=int)
+        market_id = request.args.get(
+            "market_id",
+            1,
+            type=int
+        )
+
         donem = request.args.get(
             "donem",
             "haftalik"
@@ -340,16 +462,22 @@ def dashboard_grafik_getir():
         ).date()
 
         labels = []
-        veriler = []
+        tamamlanan_veriler = []
+        iptal_veriler = []
 
         if donem == "gunluk":
-            donem_baslangic_tarihi = bugun_istanbul
-            donem_bitis_tarihi = (
-                bugun_istanbul + timedelta(days=1)
+            donem_baslangic_tarihi = (
+                bugun_istanbul
             )
+
+            donem_bitis_tarihi = (
+                bugun_istanbul
+                + timedelta(days=1)
+            )
+
             ciro_basligi = "Bugünkü Ciro"
 
-            gun_baslangici_utc, gun_bitisi_utc = (
+            baslangic_utc, bitis_utc = (
                 istanbul_tarih_araligini_utc_yap(
                     donem_baslangic_tarihi,
                     donem_bitis_tarihi
@@ -358,13 +486,14 @@ def dashboard_grafik_getir():
 
             siparisler = Siparis.query.filter(
                 Siparis.market_id == market_id,
-                Siparis.olusturma_tarihi >= gun_baslangici_utc,
-                Siparis.olusturma_tarihi < gun_bitisi_utc
+                Siparis.olusturma_tarihi >= baslangic_utc,
+                Siparis.olusturma_tarihi < bitis_utc
             ).all()
 
             for saat in range(0, 24, 3):
                 saat_bitisi = saat + 3
-                adet = 0
+                tamamlanan_adet = 0
+                iptal_adet = 0
 
                 for siparis in siparisler:
                     siparis_utc = (
@@ -372,25 +501,48 @@ def dashboard_grafik_getir():
                         .replace(tzinfo=timezone.utc)
                     )
 
-                    siparis_istanbul = siparis_utc.astimezone(
-                        ISTANBUL_SAAT_DILIMI
+                    siparis_istanbul = (
+                        siparis_utc.astimezone(
+                            ISTANBUL_SAAT_DILIMI
+                        )
                     )
 
-                    if saat <= siparis_istanbul.hour < saat_bitisi:
-                        adet += 1
+                    if not (
+                        saat
+                        <= siparis_istanbul.hour
+                        < saat_bitisi
+                    ):
+                        continue
+
+                    if siparis.durum == "teslim_edildi":
+                        tamamlanan_adet += 1
+
+                    elif siparis.durum == "iptal":
+                        iptal_adet += 1
 
                 labels.append(
                     f"{saat:02d}:00–{saat_bitisi:02d}:00"
                 )
-                veriler.append(adet)
+
+                tamamlanan_veriler.append(
+                    tamamlanan_adet
+                )
+
+                iptal_veriler.append(
+                    iptal_adet
+                )
 
         elif donem == "haftalik":
             donem_baslangic_tarihi = (
-                bugun_istanbul - timedelta(days=6)
+                bugun_istanbul
+                - timedelta(days=6)
             )
+
             donem_bitis_tarihi = (
-                bugun_istanbul + timedelta(days=1)
+                bugun_istanbul
+                + timedelta(days=1)
             )
+
             ciro_basligi = "Haftalık Ciro"
 
             for gun_farki in range(6, -1, -1):
@@ -399,7 +551,9 @@ def dashboard_grafik_getir():
                     - timedelta(days=gun_farki)
                 )
 
-                sonraki_tarih = tarih + timedelta(days=1)
+                sonraki_tarih = (
+                    tarih + timedelta(days=1)
+                )
 
                 baslangic_utc, bitis_utc = (
                     istanbul_tarih_araligini_utc_yap(
@@ -408,30 +562,56 @@ def dashboard_grafik_getir():
                     )
                 )
 
-                adet = Siparis.query.filter(
+                tamamlanan_adet = Siparis.query.filter(
                     Siparis.market_id == market_id,
+                    Siparis.durum == "teslim_edildi",
                     Siparis.olusturma_tarihi >= baslangic_utc,
                     Siparis.olusturma_tarihi < bitis_utc
                 ).count()
 
-                labels.append(tarih.strftime("%d.%m"))
-                veriler.append(adet)
+                iptal_adet = Siparis.query.filter(
+                    Siparis.market_id == market_id,
+                    Siparis.durum == "iptal",
+                    Siparis.olusturma_tarihi >= baslangic_utc,
+                    Siparis.olusturma_tarihi < bitis_utc
+                ).count()
+
+                labels.append(
+                    tarih.strftime("%d.%m")
+                )
+
+                tamamlanan_veriler.append(
+                    tamamlanan_adet
+                )
+
+                iptal_veriler.append(
+                    iptal_adet
+                )
 
         elif donem == "aylik":
             donem_baslangic_tarihi = (
                 bugun_istanbul.replace(day=1)
             )
+
             donem_bitis_tarihi = (
-                bugun_istanbul + timedelta(days=1)
+                bugun_istanbul
+                + timedelta(days=1)
             )
+
             ciro_basligi = "Aylık Ciro"
 
             hafta_numarasi = 1
-            hafta_baslangici = donem_baslangic_tarihi
+            hafta_baslangici = (
+                donem_baslangic_tarihi
+            )
 
-            while hafta_baslangici <= bugun_istanbul:
+            while (
+                hafta_baslangici
+                <= bugun_istanbul
+            ):
                 hafta_bitisi = min(
-                    hafta_baslangici + timedelta(days=7),
+                    hafta_baslangici
+                    + timedelta(days=7),
                     donem_bitis_tarihi
                 )
 
@@ -442,8 +622,16 @@ def dashboard_grafik_getir():
                     )
                 )
 
-                adet = Siparis.query.filter(
+                tamamlanan_adet = Siparis.query.filter(
                     Siparis.market_id == market_id,
+                    Siparis.durum == "teslim_edildi",
+                    Siparis.olusturma_tarihi >= baslangic_utc,
+                    Siparis.olusturma_tarihi < bitis_utc
+                ).count()
+
+                iptal_adet = Siparis.query.filter(
+                    Siparis.market_id == market_id,
+                    Siparis.durum == "iptal",
                     Siparis.olusturma_tarihi >= baslangic_utc,
                     Siparis.olusturma_tarihi < bitis_utc
                 ).count()
@@ -451,10 +639,19 @@ def dashboard_grafik_getir():
                 labels.append(
                     f"{hafta_numarasi}. Hafta"
                 )
-                veriler.append(adet)
+
+                tamamlanan_veriler.append(
+                    tamamlanan_adet
+                )
+
+                iptal_veriler.append(
+                    iptal_adet
+                )
 
                 hafta_numarasi += 1
-                hafta_baslangici += timedelta(days=7)
+                hafta_baslangici += (
+                    timedelta(days=7)
+                )
 
         elif donem == "yillik":
             yil = bugun_istanbul.year
@@ -473,6 +670,7 @@ def dashboard_grafik_getir():
                     day=1
                 )
             )
+
             ciro_basligi = "Yıllık Ciro"
 
             ay_isimleri = [
@@ -517,14 +715,31 @@ def dashboard_grafik_getir():
                     )
                 )
 
-                adet = Siparis.query.filter(
+                tamamlanan_adet = Siparis.query.filter(
                     Siparis.market_id == market_id,
+                    Siparis.durum == "teslim_edildi",
                     Siparis.olusturma_tarihi >= baslangic_utc,
                     Siparis.olusturma_tarihi < bitis_utc
                 ).count()
 
-                labels.append(ay_isimleri[ay - 1])
-                veriler.append(adet)
+                iptal_adet = Siparis.query.filter(
+                    Siparis.market_id == market_id,
+                    Siparis.durum == "iptal",
+                    Siparis.olusturma_tarihi >= baslangic_utc,
+                    Siparis.olusturma_tarihi < bitis_utc
+                ).count()
+
+                labels.append(
+                    ay_isimleri[ay - 1]
+                )
+
+                tamamlanan_veriler.append(
+                    tamamlanan_adet
+                )
+
+                iptal_veriler.append(
+                    iptal_adet
+                )
 
         else:
             return jsonify({
@@ -541,30 +756,67 @@ def dashboard_grafik_getir():
         donem_cirosu = (
             db.session.query(
                 db.func.coalesce(
-                    db.func.sum(Siparis.toplam_tutar),
+                    db.func.sum(
+                        Siparis.toplam_tutar
+                    ),
                     0
                 )
             )
             .filter(
                 Siparis.market_id == market_id,
                 Siparis.durum == "teslim_edildi",
-                Siparis.olusturma_tarihi >= ciro_baslangici_utc,
-                Siparis.olusturma_tarihi < ciro_bitisi_utc
+                Siparis.olusturma_tarihi
+                >= ciro_baslangici_utc,
+                Siparis.olusturma_tarihi
+                < ciro_bitisi_utc
             )
             .scalar()
         )
 
+        birlesik_veriler = [
+            tamamlanan + iptal
+            for tamamlanan, iptal in zip(
+                tamamlanan_veriler,
+                iptal_veriler
+            )
+        ]
+
         return jsonify({
             "donem": donem,
             "labels": labels,
-            "veriler": veriler,
-            "ciro": round(float(donem_cirosu or 0), 2),
+
+            "veriler": birlesik_veriler,
+
+            "tamamlanan_veriler": (
+                tamamlanan_veriler
+            ),
+
+            "iptal_veriler": (
+                iptal_veriler
+            ),
+
+            "tamamlanan_toplam": sum(
+                tamamlanan_veriler
+            ),
+
+            "iptal_edilen_toplam": sum(
+                iptal_veriler
+            ),
+
+            "ciro": round(
+                float(donem_cirosu or 0),
+                2
+            ),
+
             "ciro_basligi": ciro_basligi
         }), 200
 
     except Exception as e:
         return jsonify({
-            "hata": f"Grafik bilgileri alınamadı: {str(e)}"
+            "hata": (
+                "Grafik bilgileri alınamadı: "
+                f"{str(e)}"
+            )
         }), 500
 
 @market_bp.route("/dashboard-en-cok-satanlar", methods=["GET"])
@@ -1261,16 +1513,54 @@ def urunler_listele():
         return jsonify({"hata": str(e)}), 500
 
 
-@market_bp.route("/siparisler", methods=["GET"])
+@market_bp.route(
+    "/siparisler",
+    methods=["GET"]
+)
 @role_required("market")
 def siparisler_listele():
     try:
-        market_id = request.args.get("market_id", 1, type=int)
+        market_id = request.args.get(
+            "market_id",
+            1,
+            type=int
+        )
 
-        siparisler = Siparis.query.filter(
-            Siparis.market_id == market_id,
-            Siparis.durum.notin_(["teslim_edildi", "iptal"])
-        ).order_by(
+        gorunum = request.args.get(
+            "gorunum",
+            "aktif"
+        ).strip().lower()
+
+        if gorunum not in [
+            "aktif",
+            "gecmis"
+        ]:
+            return jsonify({
+                "hata": (
+                    "Geçersiz sipariş görünümü."
+                )
+            }), 400
+
+        siparis_sorgusu = Siparis.query.filter(
+            Siparis.market_id == market_id
+        )
+
+        if gorunum == "gecmis":
+            siparis_sorgusu = siparis_sorgusu.filter(
+                Siparis.durum.in_([
+                    "teslim_edildi",
+                    "iptal"
+                ])
+            )
+        else:
+            siparis_sorgusu = siparis_sorgusu.filter(
+                Siparis.durum.notin_([
+                    "teslim_edildi",
+                    "iptal"
+                ])
+            )
+
+        siparisler = siparis_sorgusu.order_by(
             Siparis.olusturma_tarihi.desc()
         ).all()
 
@@ -1280,7 +1570,9 @@ def siparisler_listele():
         for siparis in siparisler:
             siparis_zamani_utc = (
                 siparis.olusturma_tarihi
-                .replace(tzinfo=timezone.utc)
+                .replace(
+                    tzinfo=timezone.utc
+                )
             )
 
             siparis_zamani_istanbul = (
@@ -1289,11 +1581,17 @@ def siparisler_listele():
                 )
             )
 
-            siparis_gunu = siparis_zamani_istanbul.date()
+            siparis_gunu = (
+                siparis_zamani_istanbul.date()
+            )
 
-            if siparis_gunu not in gunluk_sira_haritalari:
+            if (
+                siparis_gunu
+                not in gunluk_sira_haritalari
+            ):
                 sonraki_gun = (
-                    siparis_gunu + timedelta(days=1)
+                    siparis_gunu
+                    + timedelta(days=1)
                 )
 
                 gun_baslangici_utc, gun_bitisi_utc = (
@@ -1319,17 +1617,24 @@ def siparisler_listele():
                     .all()
                 )
 
-                gunluk_sira_haritalari[siparis_gunu] = {
+                gunluk_sira_haritalari[
+                    siparis_gunu
+                ] = {
                     siparis_id: sira_no
-                    for sira_no, (siparis_id,) in enumerate(
+                    for sira_no, (siparis_id,)
+                    in enumerate(
                         gunun_siparis_idleri,
                         start=1
                     )
                 }
 
             gunluk_sira_no = (
-                gunluk_sira_haritalari[siparis_gunu]
-                .get(siparis.id, 0)
+                gunluk_sira_haritalari[
+                    siparis_gunu
+                ].get(
+                    siparis.id,
+                    0
+                )
             )
 
             kalemler = [
@@ -1341,9 +1646,14 @@ def siparisler_listele():
                         else "Silinmiş Ürün"
                     ),
                     "adet": detay.adet,
-                    "birim_fiyat": float(detay.birim_fiyat),
+                    "birim_fiyat": float(
+                        detay.birim_fiyat
+                    ),
                     "satir_toplam": (
-                        float(detay.birim_fiyat) * detay.adet
+                        float(
+                            detay.birim_fiyat
+                        )
+                        * detay.adet
                     )
                 }
                 for detay in siparis.detaylar
@@ -1351,9 +1661,15 @@ def siparisler_listele():
 
             sonuc.append({
                 "id": siparis.id,
-                "gunluk_sira_no": gunluk_sira_no,
-                "siparis_tarihi": siparis_gunu.isoformat(),
-                "musteri_id": siparis.musteri_id,
+                "gunluk_sira_no": (
+                    gunluk_sira_no
+                ),
+                "siparis_tarihi": (
+                    siparis_gunu.isoformat()
+                ),
+                "musteri_id": (
+                    siparis.musteri_id
+                ),
                 "musteri_ad": (
                     siparis.musteri.ad_soyad
                     if siparis.musteri
@@ -1370,23 +1686,35 @@ def siparisler_listele():
                     else ""
                 ),
                 "durum": siparis.durum,
-                "odeme_yontemi": siparis.odeme_yontemi,
-                "teslimat_yontemi": siparis.teslimat_yontemi,
+                "odeme_yontemi": (
+                    siparis.odeme_yontemi
+                ),
+                "teslimat_yontemi": (
+                    siparis.teslimat_yontemi
+                ),
                 "olusturma_tarihi": (
-                    siparis_zamani_istanbul.isoformat()
+                    siparis_zamani_istanbul
+                    .isoformat()
                 ),
                 "olusturma_saati": (
-                    siparis_zamani_istanbul.strftime("%H:%M")
+                    siparis_zamani_istanbul
+                    .strftime("%H:%M")
                 ),
-                "siparis_notu": siparis.siparis_notu,
-                "toplam_tutar": float(siparis.toplam_tutar),
+                "siparis_notu": (
+                    siparis.siparis_notu
+                ),
+                "toplam_tutar": float(
+                    siparis.toplam_tutar
+                ),
                 "detaylar": kalemler
             })
 
         return jsonify(sonuc), 200
 
     except Exception as e:
-        return jsonify({"hata": str(e)}), 500
+        return jsonify({
+            "hata": str(e)
+        }), 500
 
 @market_bp.route(
     "/siparisler/<int:siparis_id>/durum",

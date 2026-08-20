@@ -218,7 +218,18 @@
 </a>
 
     <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Ürün, kategori veya marka ara..." onkeyup="if(event.key==='Enter') urunAra()">
+      <input
+  type="text"
+  id="search-input"
+  placeholder="Ürün, kategori veya marka ara..."
+  oninput="urunAra()"
+  onkeydown="
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      urunAra();
+    }
+  "
+>
       <button onclick="urunAra()">Ara</button>
     </div>
 
@@ -918,10 +929,179 @@ function kategoriFiltrele(id, ad, el) {
   urunleriYukle(id);
 }
 
+function musteriAramaMetniniNormalleştir(
+  deger
+) {
+  return String(deger ?? '')
+    .toLocaleLowerCase('tr-TR')
+    .normalize('NFD')
+    .replace(
+      /[\u0300-\u036f]/g,
+      ''
+    )
+    .replace(/ı/g, 'i')
+    .replace(/ğ/g, 'g')
+    .replace(/ü/g, 'u')
+    .replace(/ş/g, 's')
+    .replace(/ö/g, 'o')
+    .replace(/ç/g, 'c')
+    .trim();
+}
+
+
+function musteriLevenshteinMesafesi(
+  birinci,
+  ikinci
+) {
+  const a = String(birinci || '');
+  const b = String(ikinci || '');
+
+  let oncekiSatir = Array.from(
+    {
+      length: b.length + 1
+    },
+    (_, index) => index
+  );
+
+  for (
+    let i = 1;
+    i <= a.length;
+    i++
+  ) {
+    const mevcutSatir = [i];
+
+    for (
+      let j = 1;
+      j <= b.length;
+      j++
+    ) {
+      const maliyet =
+        a[i - 1] === b[j - 1]
+          ? 0
+          : 1;
+
+      mevcutSatir[j] = Math.min(
+        mevcutSatir[j - 1] + 1,
+        oncekiSatir[j] + 1,
+        oncekiSatir[j - 1] + maliyet
+      );
+    }
+
+    oncekiSatir = mevcutSatir;
+  }
+
+  return oncekiSatir[b.length];
+}
+
+
+function musteriUrunAramaSkoru(
+  urunAdi,
+  aramaMetni
+) {
+  const normalUrunAdi =
+    musteriAramaMetniniNormalleştir(
+      urunAdi
+    );
+
+  const normalAramaMetni =
+    musteriAramaMetniniNormalleştir(
+      aramaMetni
+    );
+
+  if (!normalAramaMetni) {
+    return 0;
+  }
+
+  /*
+   * İlk iki karakterde ürün adı
+   * yazılan harflerle başlamalıdır.
+   */
+  if (
+    normalAramaMetni.length <= 2
+  ) {
+    return normalUrunAdi.startsWith(
+      normalAramaMetni
+    )
+      ? 1
+      : 0;
+  }
+
+  /*
+   * Üç karakterden sonra ürün adı
+   * arama metnini içeriyorsa tam eşleşme.
+   */
+  if (
+    normalUrunAdi.includes(
+      normalAramaMetni
+    )
+  ) {
+    return 1;
+  }
+
+  const karsilastirilacakMetinler = [
+    normalUrunAdi,
+    ...normalUrunAdi
+      .split(/\s+/)
+      .filter(Boolean)
+  ];
+
+  const skorlar =
+    karsilastirilacakMetinler.map(
+      (metin) => {
+        const mesafe =
+          musteriLevenshteinMesafesi(
+            normalAramaMetni,
+            metin
+          );
+
+        const uzunluk = Math.max(
+          normalAramaMetni.length,
+          metin.length
+        );
+
+        return uzunluk > 0
+          ? 1 - mesafe / uzunluk
+          : 0;
+      }
+    );
+
+  return Math.max(...skorlar);
+}
+
+
 function urunAra() {
-  const kelime = document.getElementById('search-input').value.toLowerCase();
-  const filtrelenen = urunler.filter(u => u.ad.toLowerCase().includes(kelime));
-  document.getElementById('aktif-kategori-baslik').textContent = `"${kelime}" için arama sonuçları`;
+  const input =
+    document.getElementById(
+      'search-input'
+    );
+
+  const kelime = input
+    ? input.value
+    : '';
+
+  const normalKelime =
+    musteriAramaMetniniNormalleştir(
+      kelime
+    );
+
+  const filtrelenen =
+    !normalKelime
+      ? urunler
+      : urunler.filter(
+          (urun) =>
+            musteriUrunAramaSkoru(
+              urun.ad,
+              kelime
+            ) >= 0.60
+        );
+
+  document.getElementById(
+    'aktif-kategori-baslik'
+  ).textContent =
+    normalKelime
+      ? `"${kelime}" için arama sonuçları`
+      : 'Tüm Ürünler';
+
   ekranaCiz(filtrelenen);
 }
 
