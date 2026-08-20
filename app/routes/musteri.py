@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, session
 from app import db, socketio
-from app.models import Urun, Siparis, SiparisDetay, Musteri, Market, Kullanici, FavoriUrun
+from app.models import Urun, Siparis, SiparisDetay, Musteri, Market, Kullanici, FavoriUrun, Yorum
 from app.security import role_required
 
 musteri_bp = Blueprint("musteri", __name__)
@@ -815,3 +815,57 @@ def siparis_olustur():
         return jsonify({
             "hata": f"Sipariş hatası: {str(e)}"
         }), 500
+
+
+@musteri_bp.route("/yorum_ekle", methods=["POST"])
+@role_required("musteri")
+def yorum_ekle():
+    try:
+        data = request.get_json(silent=True) or {}
+        
+        # O an giriş yapmış olan müşteriyi buluyoruz
+        musteri = aktif_musteri_getir()
+        if not musteri:
+            return jsonify({"hata": "Müşteri profili bulunamadı!"}), 404
+
+        market_id = data.get("market_id")
+        siparis_id = data.get("siparis_id")
+        puan = data.get("puan")
+        yorum_metni = data.get("yorum_metni", "")
+
+        if not market_id or not puan:
+            return jsonify({"hata": "Market ID ve puan zorunludur."}), 400
+
+        try:
+            puan = int(puan)
+            if puan < 1 or puan > 5:
+                raise ValueError
+        except ValueError:
+            return jsonify({"hata": "Puan 1 ile 5 arasında olmalıdır."}), 400
+
+        # İsteğe bağlı güvenlik kontrolü: Eğer sipariş ID gönderilmişse, bu sipariş gerçekten bu müşteriye mi ait?
+        if siparis_id:
+            siparis = Siparis.query.get(siparis_id)
+            if not siparis or siparis.musteri_id != musteri.id:
+                return jsonify({"hata": "Geçersiz sipariş kimliği!"}), 403
+
+        # Yorumu veritabanına ekle
+        yeni_yorum = Yorum(
+            market_id=market_id,
+            musteri_id=musteri.id,
+            siparis_id=siparis_id,
+            puan=puan,
+            yorum_metni=str(yorum_metni).strip()
+        )
+        
+        db.session.add(yeni_yorum)
+        db.session.commit()
+
+        # 🔥 ŞOV KISMI: Market paneline (kasa) anlık bildirim fırlat
+        socketio.emit("yeni_yorum_geldi", {"market_id": market_id})
+
+        return jsonify({"mesaj": "Yorumunuz başarıyla gönderildi."}), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"hata": f"Yorum kaydedilemedi: {str(e)}"}), 500

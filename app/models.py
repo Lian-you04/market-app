@@ -102,3 +102,22 @@ class FavoriUrun(db.Model):
     __table_args__ = (
         db.UniqueConstraint("musteri_id", "urun_id", name="uq_musteri_urun_favori"),
     )
+
+class Yorum(db.Model):
+    __tablename__ = "yorumlar"
+    
+    id = db.Column(db.Integer, primary_key=True)
+    market_id = db.Column(db.Integer, db.ForeignKey("marketler.id"), nullable=False)
+    musteri_id = db.Column(db.Integer, db.ForeignKey("musteriler.id"), nullable=False)
+    siparis_id = db.Column(db.Integer, db.ForeignKey("siparisler.id"), nullable=True) # Opsiyonel: Belli bir siparişe aitse
+    
+    puan = db.Column(db.Integer, nullable=False) # 1 ile 5 arası yıldız
+    yorum_metni = db.Column(db.Text, nullable=True)
+    
+    olusturma_tarihi = db.Column(db.DateTime, default=datetime.utcnow)
+    okundu_mu = db.Column(db.Boolean, default=False) # Panelde okunmamış bildirimi göstermek için
+
+    # İlişkiler
+    market = db.relationship("Market", backref="yorumlar")
+    musteri = db.relationship("Musteri", backref="yorumlar")
+    siparis = db.relationship("Siparis", backref="yorumlar")
