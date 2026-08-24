@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Giriş Yap — Nihat Market Shopping</title>
+<title>Giriş Yap — Market</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -71,7 +71,12 @@
 <body>
 
 <div class="brand-header">
-  <div class="brand-logo">Nihat<span>Market</span></div>
+  <div
+  class="brand-logo"
+  id="login-market-logo"
+>
+  Market
+</div>
   <div class="brand-subtitle">Dijital Market Platformu</div>
 </div>
 
@@ -106,6 +111,45 @@
 </div>
 
 <script>
+async function loginMarketAdiniYukle() {
+  try {
+    const response = await fetch(
+      '/api/musteri/market-durum?market_id=1'
+    );
+
+    if (!response.ok) {
+      return;
+    }
+
+    const veri = await response.json();
+    const marketAdi = String(
+      veri.ad || ''
+    ).trim();
+
+    if (!marketAdi) {
+      return;
+    }
+
+    const logo = document.getElementById(
+      'login-market-logo'
+    );
+
+    if (logo) {
+      logo.textContent = marketAdi;
+    }
+
+    document.title =
+      `Giriş Yap — ${marketAdi}`;
+  } catch (error) {
+    console.warn(
+      'Market adı alınamadı:',
+      error
+    );
+  }
+}
+
+loginMarketAdiniYukle();
+
 async function girisYap(event) {
   event.preventDefault();
 

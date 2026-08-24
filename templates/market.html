@@ -12,6 +12,10 @@ document.documentElement.classList.add(
   "tema-ilk-yukleme"
 );
 
+document.documentElement.classList.add(
+  "rapor-donem-ilk-yukleme"
+);
+
 (function () {
   const izinliSekmeler = [
     'dashboard',
@@ -305,6 +309,14 @@ html[data-market-tema="koyu"] [style*="background:#F1F5F9"] {
   }
   .nav-item:hover { background: rgba(255,255,255,0.05); color: #FFF; }
   .nav-item.active { background: var(--emerald-dark); color: #FFF; }
+  .nav-item.yeni-yorum-var:not(.active) {
+  background: rgba(239, 68, 68, 0.16) !important;
+  color: #FCA5A5 !important;
+}
+
+.nav-item.yeni-yorum-var:not(.active):hover {
+  background: rgba(239, 68, 68, 0.26) !important;
+}
   .badge { background: var(--amber); color: #000; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 12px; }
 
   .main-content { flex: 1; padding: 24px 32px; max-width: 1300px; margin: 0 auto; width: 100%; }
@@ -1157,7 +1169,7 @@ html.tema-ilk-yukleme::after {
 
 .rapor-kart {
   background: var(--card-bg);
-  padding: 20px;
+  padding: 14px 16px;
   border-radius: 12px;
   border: 1px solid var(--border);
 }
@@ -1174,9 +1186,147 @@ html.tema-ilk-yukleme::after {
   margin-top: 8px;
 }
 
+#sekme-raporlar > .panel {
+  overflow: visible;
+}
+
+#rapor-sabit-ust {
+  position: sticky;
+  top: 72px;
+  z-index: 80;
+  background: var(--surface-card) !important;
+}
+
+#rapor-ust-baslik {
+  position: static;
+  min-height: 64px;
+  padding: 12px 20px !important;
+  background: var(--surface-soft) !important;
+  box-shadow: none;
+}
+
+#sekme-dashboard > .panel {
+  overflow: visible;
+}
+
+#sekme-siparisler > .panel {
+  overflow: visible;
+}
+
+#siparisler-ust-kontrol {
+  position: sticky;
+  top: 72px;
+  z-index: 80;
+  background: var(
+    --surface-card,
+    var(--card-bg, #FFFFFF)
+  );
+  border-radius: 12px 12px 0 0;
+  box-shadow:
+    0 1px 0 var(--border),
+    0 6px 14px rgba(15, 23, 42, 0.08);
+}
+
+#sekme-urunler > .panel {
+  overflow: visible;
+}
+
+#urunler-ust-kontrol {
+  position: sticky;
+  top: 72px;
+  z-index: 80;
+  background: var(
+    --surface-card,
+    var(--card-bg, #FFFFFF)
+  ) !important;
+  box-shadow:
+    0 1px 0 var(--border),
+    0 6px 14px rgba(15, 23, 42, 0.08);
+}
+
+#sekme-urunler .product-table thead {
+  position: sticky;
+  top: 146px;
+  z-index: 90;
+}
+
+#sekme-urunler .product-table th {
+  position: static;
+  background: var(--surface-soft) !important;
+  box-shadow: 0 1px 0 var(--border);
+}
+
+#sekme-yorumlar > .panel {
+  overflow: visible;
+}
+
+#yorumlar-ust-kontrol {
+  position: sticky;
+  top: 72px;
+  z-index: 80;
+  background: var(
+    --surface-card,
+    var(--card-bg, #FFFFFF)
+  ) !important;
+  box-shadow:
+    0 1px 0 var(--border),
+    0 6px 14px rgba(15, 23, 42, 0.08);
+}
+
+#sekme-ayarlar > .panel {
+  overflow: visible;
+}
+
+#ayarlar-ust-kontrol {
+  position: sticky;
+  top: 72px;
+  z-index: 80;
+  background: var(
+    --surface-card,
+    var(--card-bg, #FFFFFF)
+  ) !important;
+  box-shadow:
+    0 1px 0 var(--border),
+    0 6px 14px rgba(15, 23, 42, 0.08);
+}
+
+#siparisler-ust-kontrol .panel-header {
+  background: transparent !important;
+}
+
+#dashboard-ust-baslik {
+  position: sticky;
+  top: 72px;
+  z-index: 80;
+  background: var(
+    --surface-card,
+    var(--card-bg, #FFFFFF)
+  ) !important;
+  box-shadow:
+    0 1px 0 var(--border),
+    0 6px 14px rgba(15, 23, 42, 0.08);
+}
+
+#rapor-ust-baslik h2 {
+  font-size: 17px !important;
+}
+
+#rapor-alt-sekmeler {
+  position: static;
+  gap: 6px !important;
+  padding: 8px 14px !important;
+  background: var(--surface-soft) !important;
+  box-shadow: 0 1px 0 var(--border);
+}
+
+#rapor-alt-sekmeler .rapor-sekme-btn {
+  padding: 7px 12px !important;
+  font-size: 13px !important;
+}
+
 .rapor-blok {
   background: var(--card-bg);
-  padding: 20px;
+  padding: 14px;
   border-radius: 12px;
   border: 1px solid var(--border);
 }
@@ -1324,7 +1474,7 @@ html[data-market-tema="koyu"] .rapor-trend-azalis {
 .rapor-canvas-kutu {
   position: relative;
   width: 100%;
-  height: 260px;
+  height: 210px;
 }
 
 @media print {
@@ -1381,6 +1531,10 @@ html[data-market-tema="koyu"] .rapor-trend-azalis {
     display: block !important;
   }
 
+  .rapor-alt-panel.hidden {
+    display: none !important;
+  }
+
   .rapor-kpi-grid {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
@@ -1415,9 +1569,94 @@ html[data-market-tema="koyu"] .rapor-trend-azalis {
   .rapor-satan-satiri {
     color: #000000 !important;
   }
+
+  #sekme-raporlar,
+  #sekme-raporlar > .panel,
+  #rapor-sabit-ust,
+  #rapor-ust-baslik,
+  #rapor-icerik,
+  #rapor-panel-genel,
+  #rapor-panel-musteri {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    transform: none !important;
+    margin: 0 !important;
+  }
+
+  #sekme-raporlar,
+  #sekme-raporlar > .panel,
+  #rapor-sabit-ust,
+  #rapor-icerik {
+    display: block !important;
+  }
+
+  #rapor-sabit-ust,
+  #rapor-icerik,
+  #rapor-panel-genel,
+  #rapor-panel-musteri {
+    break-before: avoid !important;
+    break-after: avoid !important;
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  #rapor-icerik {
+    padding: 0 !important;
+  }
+
+}
+
+html.rapor-donem-ilk-yukleme
+#rapor-genel-donem {
+  visibility: hidden;
+}
+
+html.siparis-gecmis-ilk-yukleme
+#siparis-sekme-aktif {
+  background: var(
+    --surface-card,
+    var(--card-bg, #FFFFFF)
+  ) !important;
+  color: var(--text-dark) !important;
+  border-color: var(--border) !important;
+}
+
+html.siparis-gecmis-ilk-yukleme
+#siparis-sekme-gecmis {
+  background: var(--emerald-dark) !important;
+  color: #FFFFFF !important;
+  border-color: var(--emerald-dark) !important;
 }
 
 </style>
+
+<script>
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'auto';
+  }
+</script>
+
+<script>
+(function () {
+  try {
+    if (
+      sessionStorage.getItem(
+        "marketSiparisGorunumu"
+      ) === "gecmis"
+    ) {
+      document.documentElement.classList.add(
+        "siparis-gecmis-ilk-yukleme"
+      );
+    }
+  } catch (e) {}
+})();
+</script>
+
 </head>
 <body>
 
@@ -1478,6 +1717,12 @@ html[data-market-tema="koyu"] .rapor-trend-azalis {
 
   <div class="nav-item" data-sekme="musteriler" onclick="sekmeDegis('musteriler', this)">
     <span>👥 Kayıtlı Müşteriler</span>
+    <span
+      class="badge"
+      id="kayitli-musteri-sayisi"
+    >
+      0
+    </span>
   </div>
 
   <div class="nav-item" data-sekme="ayarlar" onclick="sekmeDegis('ayarlar', this)">
@@ -1491,7 +1736,10 @@ html[data-market-tema="koyu"] .rapor-trend-azalis {
 <div id="sekme-dashboard">
   <div class="panel">
 
-    <div class="panel-header">
+    <div
+      id="dashboard-ust-baslik"
+      class="panel-header"
+    >
       <div>
         <h2>Dashboard</h2>
         <div style="
@@ -1499,7 +1747,6 @@ html[data-market-tema="koyu"] .rapor-trend-azalis {
           color: var(--text-muted);
           margin-top: 4px;
         ">
-          Bugünkü market performansınız
         </div>
       </div>
 
@@ -1901,7 +2148,7 @@ html[data-market-tema="koyu"] .rapor-trend-azalis {
     <!-- SİPARİŞ GRAFİĞİ SONU -->
 
     <!-- EN ÇOK SATAN ÜRÜNLER -->
-<div style="padding: 0 24px 24px;">
+<div style="padding: 18px 24px 24px;">
   <div style="
     padding: 20px;
     background: #FFFFFF;
@@ -1974,161 +2221,120 @@ html[data-market-tema="koyu"] .rapor-trend-azalis {
     <!-- SİPARİŞLER SEKMESİ -->
     <div id="sekme-siparisler" class="hidden">
       <div class="panel">
-        <div class="panel-header">
-          <h2>Anlık Sipariş Ekranı</h2>
-          <span style="font-size: 12px; color: var(--text-muted);">Siparişler 8 saniyede bir otomatik yenilenir</span>
-        </div>
-                <div
-          id="siparis-gorunum-sekmeleri"
-          style="
-            display: flex;
-            gap: 8px;
-            padding: 16px 20px 0;
-            border-bottom: 1px solid var(--border);
-          "
-        >
-          <button
-            id="siparis-sekme-aktif"
-            type="button"
-            class="btn btn-primary"
-            onclick="
-              siparisGorunumuDegistir(
-                'aktif',
-                this
-              )
-            "
-            aria-pressed="true"
-          >
-            📦 Aktif Siparişler
-          </button>
+        <div id="siparisler-ust-kontrol">
+  <div style="
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+  ">
+    <button
+      id="siparis-sekme-aktif"
+      type="button"
+      class="btn btn-primary"
+      onclick="siparisGorunumuDegistir('aktif')"
+    >
+      📦 Aktif Siparişler
+    </button>
 
-          <button
-            id="siparis-sekme-gecmis"
-            type="button"
-            class="btn"
-            onclick="
-              siparisGorunumuDegistir(
-                'gecmis',
-                this
-              )
-            "
-            aria-pressed="false"
-          >
-            🗂️ Geçmiş Siparişler
-          </button>
-        </div>
-                <div
-          id="gecmis-siparis-filtreleri"
-          class="hidden"
-          style="
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-          "
-        >
-          <div style="
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 12px;
-          ">
-            <button
-              id="gecmis-filtre-tumu"
-              type="button"
-              class="btn btn-primary"
-              onclick="
-                gecmisSiparisFiltresiDegistir(
-                  'tumu',
-                  this
-                )
-              "
-              aria-pressed="true"
-            >
-              📋 Tümü
-            </button>
+    <button
+      id="siparis-sekme-gecmis"
+      type="button"
+      class="btn"
+      onclick="siparisGorunumuDegistir('gecmis')"
+    >
+      🗂️ Geçmiş Siparişler
+    </button>
 
-            <button
-              id="gecmis-filtre-teslim"
-              type="button"
-              class="btn"
-              onclick="
-                gecmisSiparisFiltresiDegistir(
-                  'teslim_edildi',
-                  this
-                )
-              "
-              aria-pressed="false"
-            >
-              ✅ Teslim Edilen
-            </button>
+    <select
+      id="siparis-durum-filtresi"
+      onchange="siparisDurumFiltresiDegistir(this.value)"
+      style="
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--input-bg);
+        color: var(--text-dark);
+        font-weight: 700;
+      "
+    >
+      <option value="tumu">📋 Tüm Durumlar</option>
+      <option value="teslim_edildi">✅ Teslim Edilen</option>
+      <option value="iptal">❌ İptal Edilen</option>
+    </select>
 
-            <button
-              id="gecmis-filtre-iptal"
-              type="button"
-              class="btn"
-              onclick="
-                gecmisSiparisFiltresiDegistir(
-                  'iptal',
-                  this
-                )
-              "
-              aria-pressed="false"
-            >
-              ❌ İptal Edilen
-            </button>
-          </div>
+    <input
+      id="siparis-tarih-filtresi"
+      type="date"
+      onchange="siparisTarihFiltresiDegistir(this.value)"
+      style="
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--input-bg);
+        color: var(--text-dark);
+        font-weight: 700;
+      "
+    >
 
-          <div style="
-            position: relative;
-            max-width: 520px;
-          ">
-            <input
-              id="gecmis-siparis-arama"
-              type="search"
-              value=""
-              autocomplete="off"
-              placeholder="Müşteri adıyla geçmiş sipariş ara..."
-              oninput="
-                gecmisSiparisAramasiniUygula(
-                  this.value
-                )
-              "
-              style="
-                width: 100%;
-                padding: 11px 13px;
-                border: 1px solid var(--border);
-                border-radius: 8px;
-                background: var(--input-bg);
-                color: var(--text-dark);
-                font-size: 13px;
-                outline: none;
-              "
-            />
+    <button
+      id="siparis-tarih-temizle"
+      type="button"
+      class="btn"
+      onclick="siparisTarihFiltresiDegistir('')"
+    >
+      Filtreyi Kaldır
+    </button>
 
-            <div
-              id="gecmis-siparis-onerileri"
-              style="
-                display: none;
-                position: absolute;
-                z-index: 20;
-                top: calc(100% + 6px);
-                left: 0;
-                right: 0;
-                padding: 8px;
-                border: 1px solid var(--border);
-                border-radius: 8px;
-                background: var(--surface-card);
-                box-shadow: 0 10px 24px rgba(
-                  15,
-                  23,
-                  42,
-                  0.16
-                );
-              "
-            ></div>
-          </div>
-        </div>
-        <div id="siparis-listesi">
+    <div style="
+      position: relative;
+      flex: 1 1 240px;
+      max-width: 320px;
+    ">
+      <input
+        id="gecmis-siparis-arama"
+        type="search"
+        placeholder="Müşteri adıyla ara..."
+        oninput="gecmisSiparisAramasiniUygula(this.value)"
+        onkeydown="
+          gecmisSiparisAramasiniOnayla(
+            event,
+            this.value
+          )
+        "
+        style="
+          width: 100%;
+          padding: 10px 12px;
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          background: var(--input-bg);
+          color: var(--text-dark);
+          font-size: 13px;
+          outline: none;
+        "
+      >
+
+      <div
+        id="gecmis-siparis-onerileri"
+        style="
+          display: none;
+          position: absolute;
+          z-index: 20;
+          top: calc(100% + 6px);
+          left: 0;
+          right: 0;
+          padding: 8px;
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          background: var(--surface-card);
+          box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
+        "
+      ></div>
+    </div>
+  </div>
+</div>        <div id="siparis-listesi">
   <div
     class="siparis-yukleniyor"
     role="status"
@@ -2142,7 +2348,7 @@ html[data-market-tema="koyu"] .rapor-trend-azalis {
 
     <div id="sekme-urunler" class="hidden">
       <div class="panel">
-        <div class="panel-header">
+        <div id="urunler-ust-kontrol" class="panel-header">
   <h2>Raf & Stok Listesi</h2>
 
   <div style="
@@ -2480,27 +2686,84 @@ html[data-market-tema="koyu"] .rapor-trend-azalis {
         <!-- RAPORLAR SEKMESİ -->
     <div id="sekme-raporlar" class="hidden">
       <div class="panel">
-        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div id="rapor-sabit-ust">
+        <div
+  id="rapor-ust-baslik"
+  class="panel-header"
+  style="
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  "
+>
           <div>
-            <h2>Market Performans Raporu</h2>
+            <h2>
+            <span id="market-rapor-ad">
+              Dahir Market
+            </span>
+              Raporu
+            </h2>
             <span style="font-size: 12px; color: var(--text-muted);">Finansal ve operasyonel veriler</span>
           </div>
-          <button
-            onclick="window.print()"
-            class="btn btn-primary"
-            style="display: flex; align-items: center; gap: 8px;"
-          >
-            🖨️ Raporu Yazdır
-          </button>
+          <div style="
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+">
+  <label
+    for="rapor-genel-donem"
+    style="
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-muted);
+    "
+  >
+    Rapor dönemi
+  </label>
+
+  <select
+    id="rapor-genel-donem"
+    aria-label="Rapor dönemi seçin"
+    onchange="raporGenelDonemiDegistir(this.value)"
+    style="
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card-bg);
+      color: var(--text-dark);
+      font-weight: 700;
+      cursor: pointer;
+    "
+  >
+    <option value="gunluk">Günlük</option>
+    <option value="haftalik">Haftalık</option>
+    <option value="aylik">Aylık</option>
+    <option value="yillik">Yıllık</option>
+  </select>
+
+  <button
+    type="button"
+    onclick="window.print()"
+    class="btn btn-primary"
+    style="
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    "
+  >
+    🖨️ Raporu Yazdır
+  </button>
+</div>
         </div>
 
         <!-- ALT SEKME BUTONLARI -->
         <div id="rapor-alt-sekmeler" style="display: flex; gap: 8px; flex-wrap: wrap; padding: 16px 20px; border-bottom: 1px solid var(--border);">
           <button type="button" class="btn rapor-sekme-btn" data-rapor-sekme="genel" onclick="raporAltSekmeDegistir('genel', this)">📊 Genel Bakış</button>
-          <button type="button" class="btn rapor-sekme-btn" data-rapor-sekme="satis" onclick="raporAltSekmeDegistir('satis', this)">💹 Satış Analizi</button>
-          <button type="button" class="btn rapor-sekme-btn" data-rapor-sekme="urun" onclick="raporAltSekmeDegistir('urun', this)">🏷️ Ürün & Kategori</button>
           <button type="button" class="btn rapor-sekme-btn" data-rapor-sekme="musteri" onclick="raporAltSekmeDegistir('musteri', this)">👥 Müşteriler</button>
-          <button type="button" class="btn rapor-sekme-btn" data-rapor-sekme="stok" onclick="raporAltSekmeDegistir('stok', this)">📦 Stok & Operasyon</button>
+        </div>
         </div>
 
         <div id="rapor-icerik" style="padding: 24px;">
@@ -2508,17 +2771,8 @@ html[data-market-tema="koyu"] .rapor-trend-azalis {
           <!-- GENEL BAKIŞ -->
           <div id="rapor-panel-genel" class="rapor-alt-panel"></div>
 
-          <!-- SATIŞ ANALİZİ -->
-          <div id="rapor-panel-satis" class="rapor-alt-panel hidden"></div>
-
-          <!-- ÜRÜN & KATEGORİ -->
-          <div id="rapor-panel-urun" class="rapor-alt-panel hidden"></div>
-
           <!-- MÜŞTERİLER -->
           <div id="rapor-panel-musteri" class="rapor-alt-panel hidden"></div>
-
-          <!-- STOK & OPERASYON -->
-          <div id="rapor-panel-stok" class="rapor-alt-panel hidden"></div>
 
         </div>
       </div>
@@ -2527,22 +2781,49 @@ html[data-market-tema="koyu"] .rapor-trend-azalis {
     <!-- YORUMLAR SEKMESİ -->
     <div id="sekme-yorumlar" class="hidden">
       <div class="panel">
-        <div class="panel-header" style="flex-wrap: wrap; gap: 16px;">
+        <div
+          id="yorumlar-ust-kontrol"
+          class="panel-header"
+          style="flex-wrap: wrap; gap: 16px;"
+        >
           <div>
-            <h2>Müşteri Yorumları</h2>
+            <h2>
+  Müşteri Yorumları
+  <span
+    id="yorum-sayaci"
+    style="
+      margin-left: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+    "
+  >
+    (0)
+  </span>
+</h2>
             <span style="font-size: 12px; color: var(--text-muted);">Müşteri deneyimlerini ve puanlarını takip edin</span>
           </div>
 
           <!-- FİLTRE VE SIRALAMA ÇUBUĞU -->
-          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <div
+              id="yorum-filtre-kontrolu"
+              style="
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              flex-wrap: wrap;
+              visibility: hidden;
+            "
+          >
             <input
+              id="yorum-arama"
               type="search"
               placeholder="İsim veya yorum ara..."
               oninput="yorumAramaUygula(this.value)"
               style="padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px; background: var(--input-bg); color: var(--text-dark); font-size: 13px; outline: none; min-width: 200px;"
             >
             
-            <select onchange="yorumSiralamaDegistir(this.value)" style="padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px; background: var(--input-bg); color: var(--text-dark); font-size: 13px; outline: none; cursor: pointer;">
+            <select onchange="yorumSiralamaDegistir(this.value)" id="yorum-siralama" style="padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px; background: var(--input-bg); color: var(--text-dark); font-size: 13px; outline: none; cursor: pointer;">
               <option value="yeni">Tarih: Önce En Yeni</option>
               <option value="eski">Tarih: Önce En Eski</option>
               <option value="puan_yuksek">Yıldız: Yüksekten Düşüğe</option>
@@ -2551,7 +2832,7 @@ html[data-market-tema="koyu"] .rapor-trend-azalis {
               <option value="isim_z_a">İsim: Z - A</option>
             </select>
             
-            <select onchange="yorumDurumFiltresiDegistir(this.value)" style="padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px; background: var(--input-bg); color: var(--text-dark); font-size: 13px; outline: none; cursor: pointer;">
+            <select onchange="yorumDurumFiltresiDegistir(this.value)" id="yorum-durum-filtresi" style="padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px; background: var(--input-bg); color: var(--text-dark); font-size: 13px; outline: none; cursor: pointer;">
               <option value="tumu">Durum: Tümü</option>
               <option value="okunmayan">Sadece Okunmayanlar</option>
               <option value="okunan">Sadece Okunanlar</option>
@@ -2615,13 +2896,13 @@ html[data-market-tema="koyu"] .rapor-trend-azalis {
     <!-- AYARLAR SEKMESİ -->
     <div id="sekme-ayarlar" class="hidden">
       <div class="panel">
-        <div class="panel-header">
+        <div id="ayarlar-ust-kontrol" class="panel-header">
           <h2>Ayarlar</h2>
         </div>
         <div style="
-  padding: 24px;
-  max-width: 820px;
-">
+          padding: 24px;
+          max-width: 820px;
+        ">
 
   <div style="
     display: grid;
@@ -3111,18 +3392,23 @@ let gecmisSiparisArama = (
   ) || ""
 );
 
+let siparisTarihFiltresi =
+  sessionStorage.getItem(
+    "marketSiparisTarihFiltresi"
+  ) || "";
+
+let gecmisSiparisOnerisiSecildi =
+  false;
+
 let gecmisSiparisler = [];
 let dukkanAktif = true;
 let dukkanMinLimit = 50.0;
 let dashboardGrafik = null;
 let raporSparklineGrafik = null;
 let raporDurumDonutGrafik = null;
-let raporSatisCiroGrafik = null;
-let raporSatisSiparisGrafik = null;
-let raporOdemeDonutGrafik = null;
-let raporTeslimatDonutGrafik = null;
+const raporDurumGizliEtiketlerAnahtari =
+  `market-durum-grafik-gizli-${MARKET_ID}`;
 let raporEnCokSatanGrafik = null;
-let raporSatisDonemi = 'haftalik';
 let dashboardGrafikDonemi = (
   document.documentElement.getAttribute(
     'data-market-grafik-donemi'
@@ -3211,6 +3497,131 @@ function aktifSekmeyiGeriYukle() {
   );
 }
 
+const dashboardOzetOnbellekAnahtari =
+  (donem) =>
+    `market-dashboard-ozet-${MARKET_ID}-${donem}`;
+
+const dashboardGrafikOnbellekAnahtari =
+  (donem) =>
+    `market-dashboard-grafik-${MARKET_ID}-${donem}-${dashboardGrafikModu}`;
+
+function dashboardOzetVerisiniUygula(veri) {
+  if (
+    !veri
+    || typeof veri !== 'object'
+  ) {
+    return;
+  }
+
+  const metinGuncelle = (
+    id,
+    deger
+  ) => {
+    const alan =
+      document.getElementById(id);
+
+    if (alan) {
+      alan.textContent = deger;
+    }
+  };
+
+  metinGuncelle(
+    'dashboard-bugunku-siparis',
+    veri.donem_siparis ?? 0
+  );
+
+  metinGuncelle(
+    'dashboard-tamamlanan-siparis',
+    veri.tamamlanan_siparis ?? 0
+  );
+
+  metinGuncelle(
+    'dashboard-iptal-edilen-siparis',
+    veri.iptal_edilen_siparis ?? 0
+  );
+
+  metinGuncelle(
+    'dashboard-bugunku-siparis-basligi',
+    veri.siparis_basligi || 'Sipariş'
+  );
+
+  metinGuncelle(
+    'dashboard-ciro-basligi',
+    veri.ciro_basligi || 'Ciro'
+  );
+
+  metinGuncelle(
+    'dashboard-bugunku-ciro',
+    `${Number(
+      veri.ciro ?? 0
+    ).toLocaleString('tr-TR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })} TL`
+  );
+}
+
+function dashboardOzetOnbellektenUygula(
+  donem
+) {
+  let hamVeri = null;
+
+  try {
+    hamVeri = sessionStorage.getItem(
+      dashboardOzetOnbellekAnahtari(donem)
+    );
+  } catch (e) {
+    return;
+  }
+
+  if (!hamVeri) {
+    return;
+  }
+
+  try {
+    dashboardOzetVerisiniUygula(
+      JSON.parse(hamVeri)
+    );
+  } catch (e) {
+    console.warn(
+      'Dashboard özet önbelleği okunamadı:',
+      e
+    );
+  }
+}
+
+function dashboardGrafikOnbellektenYukle(
+  donem
+) {
+  let hamVeri = null;
+
+  try {
+    hamVeri = sessionStorage.getItem(
+      dashboardGrafikOnbellekAnahtari(donem)
+    );
+  } catch (e) {
+    return;
+  }
+
+  if (!hamVeri) {
+    return;
+  }
+
+  try {
+    const veri = JSON.parse(hamVeri);
+
+    dashboardGrafikYukle(
+      donem,
+      veri
+    );
+  } catch (e) {
+    console.warn(
+      'Dashboard grafik önbelleği okunamadı:',
+      e
+    );
+  }
+}
+
 async function dashboardOzetYukle(
   donem = dashboardGrafikDonemi
 ) {
@@ -3246,53 +3657,19 @@ async function dashboardOzetYukle(
       );
     }
 
-    const metinGuncelle = (
-      id,
-      deger
-    ) => {
-      const alan = document.getElementById(id);
+    dashboardOzetVerisiniUygula(veri);
 
-      if (alan) {
-        alan.textContent = deger;
-      }
-    };
-
-    metinGuncelle(
-      "dashboard-bugunku-siparis",
-      veri.donem_siparis ?? 0
-    );
-
-    metinGuncelle(
-      "dashboard-tamamlanan-siparis",
-      veri.tamamlanan_siparis ?? 0
-    );
-
-    metinGuncelle(
-      "dashboard-iptal-edilen-siparis",
-      veri.iptal_edilen_siparis ?? 0
-    );
-
-    metinGuncelle(
-      "dashboard-bugunku-siparis-basligi",
-      veri.siparis_basligi
-      || "Sipariş"
-    );
-
-    metinGuncelle(
-      "dashboard-ciro-basligi",
-      veri.ciro_basligi
-      || "Ciro"
-    );
-
-    metinGuncelle(
-      "dashboard-bugunku-ciro",
-      `${Number(
-        veri.ciro ?? 0
-      ).toLocaleString("tr-TR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      })} TL`
-    );
+    try {
+      sessionStorage.setItem(
+        dashboardOzetOnbellekAnahtari(donem),
+        JSON.stringify(veri)
+      );
+    } catch (e) {
+      console.warn(
+        "Dashboard özeti önbelleğe yazılamadı:",
+        e
+      );
+    }
 
   } catch (e) {
     console.error(
@@ -3303,7 +3680,8 @@ async function dashboardOzetYukle(
 }
 
 async function dashboardGrafikYukle(
-  donem = dashboardGrafikDonemi
+  donem = dashboardGrafikDonemi,
+  onbellekVerisi = null
 ) {
   const izinliModlar = [
     "tamamlanan",
@@ -3322,26 +3700,41 @@ async function dashboardGrafikYukle(
   dashboardGrafikModuButonlariniGuncelle();
 
   try {
-    const res = await fetch(
-      `/api/market/dashboard-grafik` +
-      `?market_id=${MARKET_ID}` +
-      `&donem=${donem}`,
-      {
-        cache: "no-store"
-      }
-    );
+    let veri = onbellekVerisi;
 
-    const veri = await res.json().catch(
-      () => ({})
-    );
-
-    if (!res.ok) {
-      throw new Error(
-        veri.hata
-        || "Grafik bilgileri alınamadı."
-      );
+if (!veri) {
+  const res = await fetch(
+    `/api/market/dashboard-grafik` +
+    `?market_id=${MARKET_ID}` +
+    `&donem=${donem}`,
+    {
+      cache: "no-store"
     }
+  );
 
+  veri = await res.json().catch(
+    () => ({})
+  );
+
+  if (!res.ok) {
+    throw new Error(
+      veri.hata
+      || "Grafik bilgileri alınamadı."
+    );
+  }
+
+  try {
+    sessionStorage.setItem(
+      dashboardGrafikOnbellekAnahtari(donem),
+      JSON.stringify(veri)
+    );
+  } catch (e) {
+    console.warn(
+      "Dashboard grafiği önbelleğe yazılamadı:",
+      e
+    );
+  }
+}
     const ciroBasligi =
       document.getElementById(
         "dashboard-ciro-basligi"
@@ -3764,6 +4157,14 @@ function marketLogoAdiniGuncelle(ad) {
 
   if (footerAd) {
     footerAd.textContent = temizAd;
+  }
+    const raporAd =
+    document.getElementById(
+      "market-rapor-ad"
+    );
+
+  if (raporAd) {
+    raporAd.textContent = temizAd;
   }
 }
 
@@ -4870,29 +5271,35 @@ document.documentElement.setAttribute(
 async function siparisleriYukle() {
   siparisGorunumuButonlariniGuncelle();
 
-  const res = await fetch(
-    `/api/market/siparisler`
-    + `?market_id=${MARKET_ID}`
-    + `&gorunum=${siparisGorunumu}`
-  );
+  const apiDurum =
+  siparisGorunumu === "gecmis"
+    ? gecmisSiparisFiltresi
+    : "tumu";
+
+const res = await fetch(
+  `/api/market/siparisler`
+  + `?market_id=${MARKET_ID}`
+  + `&gorunum=${siparisGorunumu}`
+  + `&durum=${encodeURIComponent(apiDurum)}`
+  + `&tarih=${encodeURIComponent(
+      siparisTarihFiltresi
+    )}`
+);
 
   const list = await res.json();
 
-  let gosterilecekListe = list;
+    let gosterilecekListe = list;
 
-if (
-  siparisGorunumu === "gecmis"
-) {
   gecmisSiparisler = list;
 
   if (
-    gecmisSiparisFiltresi
-    !== "tumu"
+    siparisGorunumu === "gecmis"
+    && gecmisSiparisFiltresi !== "tumu"
   ) {
     gosterilecekListe =
       gosterilecekListe.filter(
-        s =>
-          s.durum
+        (siparis) =>
+          siparis.durum
           === gecmisSiparisFiltresi
       );
   }
@@ -4903,44 +5310,45 @@ if (
     );
 
   if (aramaMetni) {
-  const benzerMusteriler =
-    gecmisSiparisBenzerMusterileriBul(
-      gecmisSiparisArama
-    );
+    const benzerMusteriler =
+      gecmisSiparisBenzerMusterileriBul(
+        gecmisSiparisArama
+      );
 
-  const benzerMusteriIdleri =
-    new Set(
-      benzerMusteriler.map(
-        (musteri) =>
-          String(musteri.id)
-      )
-    );
+    const benzerMusteriIdleri =
+      new Set(
+        benzerMusteriler.map(
+          (musteri) =>
+            String(musteri.id)
+        )
+      );
 
-  gosterilecekListe =
-    gosterilecekListe.filter(
-      (siparis) => {
-        if (
-          siparis.musteri_id === null
-          || siparis.musteri_id === undefined
-        ) {
-          return false;
+    gosterilecekListe =
+      gosterilecekListe.filter(
+        (siparis) => {
+          if (
+            siparis.musteri_id === null
+            || siparis.musteri_id === undefined
+          ) {
+            return false;
+          }
+
+          return benzerMusteriIdleri.has(
+            String(siparis.musteri_id)
+          );
         }
+      );
 
-        return benzerMusteriIdleri.has(
-          String(siparis.musteri_id)
-        );
+    if (
+      gecmisSiparisOnerisiSecildi
+    ) {
+      gecmisSiparisOnerisiniGizle();
+    } else {
+      gecmisSiparisOnerisiniGuncelle();
+    }
+      } else {
+        gecmisSiparisOnerisiniGizle();
       }
-    );
-}
-}
-
-if (
-  siparisGorunumu === "gecmis"
-) {
-  gecmisSiparisOnerisiniGuncelle();
-} else {
-  gecmisSiparisOnerisiniGizle();
-}
 
   let aktifListe = list;
 
@@ -4993,7 +5401,7 @@ if (
         }
       </div>
     `;
-
+    bekleyenKaydirmaKonumunuUygula(true);
     return;
   }
 
@@ -5319,46 +5727,65 @@ if (
       </div>
     `;
   }).join("");
+  bekleyenKaydirmaKonumunuUygula(true);
 }
 
 function siparisGorunumuButonlariniGuncelle() {
-  const aktifButon = document.getElementById(
-    "siparis-sekme-aktif"
-  );
+  const aktifButon =
+    document.getElementById(
+      "siparis-sekme-aktif"
+    );
 
-  const gecmisButon = document.getElementById(
-    "siparis-sekme-gecmis"
-  );
+  const gecmisButon =
+    document.getElementById(
+      "siparis-sekme-gecmis"
+    );
 
-  const filtreAlani = document.getElementById(
-    "gecmis-siparis-filtreleri"
-  );
+  const durumInput =
+    document.getElementById(
+      "siparis-durum-filtresi"
+    );
+
+  const tarihInput =
+    document.getElementById(
+      "siparis-tarih-filtresi"
+    );
+
+  const tarihTemizle =
+    document.getElementById(
+      "siparis-tarih-temizle"
+    );
+
+  const aramaInput =
+    document.getElementById(
+      "gecmis-siparis-arama"
+    );
+
+  const oneriler =
+    document.getElementById(
+      "gecmis-siparis-onerileri"
+    );
+
+  const gecmisMi =
+    siparisGorunumu === "gecmis";
 
   if (aktifButon) {
-    const aktifMi = (
-      siparisGorunumu === "aktif"
-    );
-
-    aktifButon.classList.toggle(
-      "btn-primary",
-      aktifMi
-    );
+    aktifButon.className =
+      gecmisMi
+        ? "btn"
+        : "btn btn-primary";
 
     aktifButon.setAttribute(
       "aria-pressed",
-      String(aktifMi)
+      String(!gecmisMi)
     );
   }
 
   if (gecmisButon) {
-    const gecmisMi = (
-      siparisGorunumu === "gecmis"
-    );
-
-    gecmisButon.classList.toggle(
-      "btn-primary",
+    gecmisButon.className =
       gecmisMi
-    );
+        ? "btn btn-primary"
+        : "btn";
 
     gecmisButon.setAttribute(
       "aria-pressed",
@@ -5366,28 +5793,56 @@ function siparisGorunumuButonlariniGuncelle() {
     );
   }
 
-  if (filtreAlani) {
-    filtreAlani.classList.toggle(
-      "hidden",
-      siparisGorunumu !== "gecmis"
-    );
+  if (durumInput) {
+    durumInput.value =
+      gecmisMi
+        ? gecmisSiparisFiltresi
+        : "tumu";
+
+    durumInput.disabled = !gecmisMi;
+
+    durumInput.style.opacity =
+      gecmisMi ? "1" : "0.55";
+
+    durumInput.style.cursor =
+      gecmisMi
+        ? "pointer"
+        : "not-allowed";
   }
 
-  if (
-    siparisGorunumu === "gecmis"
-  ) {
-    const aramaInput =
-      document.getElementById(
-        "gecmis-siparis-arama"
-      );
-
-    if (aramaInput) {
-      aramaInput.value =
-        gecmisSiparisArama;
-    }
-
-    gecmisSiparisFiltreButonlariniGuncelle();
+  if (tarihInput) {
+    tarihInput.value =
+      siparisTarihFiltresi;
   }
+
+  if (tarihTemizle) {
+    tarihTemizle.disabled =
+      !siparisTarihFiltresi;
+
+    tarihTemizle.style.opacity =
+      siparisTarihFiltresi
+        ? "1"
+        : "0.55";
+  }
+
+  if (aramaInput) {
+    aramaInput.value =
+      gecmisSiparisArama;
+
+    aramaInput.placeholder =
+      gecmisMi
+        ? "Müşteri adıyla geçmiş sipariş ara..."
+        : "Müşteri adıyla aktif sipariş ara...";
+  }
+
+  if (!gecmisMi && oneriler) {
+    oneriler.style.display =
+      "none";
+  }
+
+  document.documentElement.classList.remove(
+    "siparis-gecmis-ilk-yukleme"
+  );
 }
 
 function gecmisSiparisFiltreButonlariniGuncelle() {
@@ -5426,6 +5881,37 @@ function gecmisSiparisFiltreButonlariniGuncelle() {
   });
 }
 
+function siparisDurumFiltresiDegistir(durum) {
+  const izinliDurumlar = [
+    "tumu",
+    "teslim_edildi",
+    "iptal"
+  ];
+
+  if (!izinliDurumlar.includes(durum)) {
+    durum = "tumu";
+  }
+
+  gecmisSiparisFiltresi = durum;
+
+  sessionStorage.setItem(
+    "marketGecmisSiparisFiltresi",
+    durum
+  );
+
+  siparisleriYukle();
+}
+
+function siparisTarihFiltresiDegistir(tarih) {
+  siparisTarihFiltresi = tarih || "";
+
+  sessionStorage.setItem(
+    "marketSiparisTarihFiltresi",
+    siparisTarihFiltresi
+  );
+
+  siparisleriYukle();
+}
 
 function gecmisSiparisFiltresiDegistir(
   filtre
@@ -5655,7 +6141,7 @@ function gecmisSiparisOnerisiniGuncelle() {
     document.createElement("div");
 
   baslik.textContent =
-    "Benzer kayıtlı müşteriler:";
+  `${adaylar[0].ad} mı demek istediniz?`;
 
   baslik.style.cssText = `
     margin-bottom: 6px;
@@ -5738,6 +6224,9 @@ function gecmisSiparisOnerisiniGuncelle() {
             gecmisSiparisArama
           );
 
+          gecmisSiparisOnerisiSecildi =
+            true;
+
           gecmisSiparisOnerisiniGizle();
           siparisleriYukle();
         }
@@ -5752,6 +6241,9 @@ function gecmisSiparisOnerisiniGuncelle() {
 function gecmisSiparisAramasiniUygula(
   deger
 ) {
+  gecmisSiparisOnerisiSecildi =
+    false;
+
   gecmisSiparisArama = deger;
 
   sessionStorage.setItem(
@@ -5760,6 +6252,26 @@ function gecmisSiparisAramasiniUygula(
   );
 
   siparisleriYukle();
+}
+
+function gecmisSiparisAramasiniOnayla(
+  event,
+  deger
+) {
+  if (event.key !== "Enter") {
+    return;
+  }
+
+  event.preventDefault();
+
+  gecmisSiparisAramasiniUygula(
+    deger
+  );
+
+  gecmisSiparisOnerisiSecildi =
+    true;
+
+  gecmisSiparisOnerisiniGizle();
 }
 
 function siparisGorunumuDegistir(
@@ -7320,6 +7832,7 @@ if (urunDurumFiltresi !== 'satista') {
   }
 }
   govde.replaceChildren(yeniGovde);
+  bekleyenKaydirmaKonumunuUygula(true);
 
 }
 
@@ -7338,7 +7851,17 @@ async function musterileriYukle() {
     }
 
     musteriler = await res.json();
+    const musteriRozeti =
+      document.getElementById(
+        "kayitli-musteri-sayisi"
+      );
+
+    if (musteriRozeti) {
+      musteriRozeti.textContent =
+        musteriler.length;
+    }
     musterileriCiz();
+    bekleyenKaydirmaKonumunuUygula(true);
   } catch (e) {
     console.error('Müşteri listesi yükleme hatası:', e);
   }
@@ -7349,23 +7872,188 @@ let yorumAramaMetni = '';
 let yorumSiralama = 'yeni';
 let yorumDurumFiltresi = 'tumu';
 
+const yorumFiltreDepolamaAnahtari =
+  `market-yorum-filtreleri-${MARKET_ID}`;
+
+let yorumAramaGirdisi = '';
+
+const yorumListeKaydirmaAnahtari =
+  `market-yorum-listesi-scroll-${MARKET_ID}`;
+
+let yorumListeKaydirmaDinleyicisiHazir =
+  false;
+
+function yorumListeKaydirmaKonumunuKaydet() {
+  const alan =
+    document.getElementById(
+      'yorum-listesi'
+    );
+
+  if (!alan) {
+    return;
+  }
+
+  try {
+    sessionStorage.setItem(
+      yorumListeKaydirmaAnahtari,
+      String(alan.scrollTop)
+    );
+  } catch (e) {
+    console.warn(
+      'Yorum liste konumu kaydedilemedi:',
+      e
+    );
+  }
+}
+
+function yorumListeKaydirmaKonumunuGeriYukle() {
+  const alan =
+    document.getElementById(
+      'yorum-listesi'
+    );
+
+  if (!alan) {
+    return;
+  }
+
+  let kayitliKonum = 0;
+
+  try {
+    kayitliKonum = Number(
+      sessionStorage.getItem(
+        yorumListeKaydirmaAnahtari
+      ) || 0
+    );
+  } catch (e) {
+    kayitliKonum = 0;
+  }
+
+  if (
+    !Number.isFinite(kayitliKonum)
+    || kayitliKonum <= 0
+  ) {
+    return;
+  }
+
+  const uygula = () => {
+    const maksimumKonum = Math.max(
+      0,
+      alan.scrollHeight - alan.clientHeight
+    );
+
+    alan.scrollTop = Math.min(
+      kayitliKonum,
+      maksimumKonum
+    );
+  };
+
+  uygula();
+  requestAnimationFrame(uygula);
+  setTimeout(uygula, 100);
+  setTimeout(uygula, 300);
+}
+
+function yorumListeKaydirmaDinleyicisiniBaslat() {
+  const alan =
+    document.getElementById(
+      'yorum-listesi'
+    );
+
+  if (
+    !alan
+    || yorumListeKaydirmaDinleyicisiHazir
+  ) {
+    return;
+  }
+
+  alan.addEventListener(
+    'scroll',
+    yorumListeKaydirmaKonumunuKaydet,
+    { passive: true }
+  );
+
+  yorumListeKaydirmaDinleyicisiHazir =
+    true;
+}
+
+function yorumFiltreleriniYukle() {
+  try {
+    const kayit = JSON.parse(
+      sessionStorage.getItem(
+        yorumFiltreDepolamaAnahtari
+      ) || '{}'
+    );
+
+    yorumAramaGirdisi =
+      String(kayit.arama || '');
+
+    yorumAramaMetni =
+      siparisAramaMetniniNormalleştir(
+        yorumAramaGirdisi
+      );
+
+    yorumSiralama =
+      kayit.siralama || 'yeni';
+
+    yorumDurumFiltresi =
+      kayit.durum || 'tumu';
+
+  } catch (e) {
+    console.warn(
+      'Yorum filtreleri yüklenemedi:',
+      e
+    );
+  }
+}
+
+function yorumFiltreleriniKaydet() {
+  try {
+    sessionStorage.setItem(
+      yorumFiltreDepolamaAnahtari,
+      JSON.stringify({
+        arama: yorumAramaGirdisi,
+        siralama: yorumSiralama,
+        durum: yorumDurumFiltresi
+      })
+    );
+
+  } catch (e) {
+    console.warn(
+      'Yorum filtreleri kaydedilemedi:',
+      e
+    );
+  }
+}
+
 function yorumAramaUygula(deger) {
-  // Daha önce yazdığımız normalleştirme fonksiyonunu kullanıyoruz (küçük harf, türkçe karakter temizliği vb.)
-  yorumAramaMetni = siparisAramaMetniniNormalleştir(deger);
+  yorumAramaGirdisi =
+    String(deger || '');
+
+  yorumAramaMetni =
+    siparisAramaMetniniNormalleştir(
+      yorumAramaGirdisi
+    );
+
+  yorumFiltreleriniKaydet();
   yorumlariCiz();
 }
 
 function yorumSiralamaDegistir(deger) {
   yorumSiralama = deger;
+
+  yorumFiltreleriniKaydet();
   yorumlariCiz();
 }
 
 function yorumDurumFiltresiDegistir(deger) {
   yorumDurumFiltresi = deger;
+
+  yorumFiltreleriniKaydet();
   yorumlariCiz();
 }
 
 async function yorumlariYukle() {
+  yorumListeKaydirmaDinleyicisiniBaslat();
   const alan = document.getElementById('yorum-listesi');
   const rozet = document.getElementById('yeni-yorum-sayisi');
   
@@ -7380,8 +8068,22 @@ async function yorumlariYukle() {
       rozet.textContent = okunmamisSayisi;
       rozet.classList.toggle('hidden', okunmamisSayisi === 0);
     }
+
+    const yorumMenuOgesi =
+  document.querySelector(
+    '.nav-item[data-sekme="yorumlar"]'
+  );
+
+if (yorumMenuOgesi) {
+  yorumMenuOgesi.classList.toggle(
+    "yeni-yorum-var",
+    okunmamisSayisi > 0
+  );
+}
     
     yorumlariCiz();
+    yorumListeKaydirmaKonumunuGeriYukle();
+    bekleyenKaydirmaKonumunuUygula(true);
   } catch (e) {
     console.error(e);
     if (alan) alan.innerHTML = `<div style="text-align: center; color: var(--rose); padding: 40px;">Yorumlar yüklenirken hata oluştu.</div>`;
@@ -7393,6 +8095,33 @@ function yorumlariCiz() {
   if (!alan) return;
   
   let gosterilecek = [...yorumlarListesi];
+
+  const yorumSayaci =
+  document.getElementById('yorum-sayaci');
+
+if (yorumSayaci) {
+  let durumSayisi =
+    yorumlarListesi.length;
+
+  if (
+    yorumDurumFiltresi === 'okunmayan'
+  ) {
+    durumSayisi =
+      yorumlarListesi.filter(
+        (yorum) => !yorum.okundu_mu
+      ).length;
+  } else if (
+    yorumDurumFiltresi === 'okunan'
+  ) {
+    durumSayisi =
+      yorumlarListesi.filter(
+        (yorum) => yorum.okundu_mu
+      ).length;
+  }
+
+  yorumSayaci.textContent =
+    `(${durumSayisi})`;
+}
 
   // 1. DURUM FİLTRESİ
   if (yorumDurumFiltresi === 'okunmayan') {
@@ -7429,7 +8158,9 @@ function yorumlariCiz() {
   }
   
   alan.innerHTML = gosterilecek.map(y => {
-    const bgRenk = y.okundu_mu ? "var(--surface-card)" : "#F0FDF4";
+    const bgRenk = y.okundu_mu
+  ? "var(--surface-card)"
+  : "var(--surface-hover)";
     const borderRenk = y.okundu_mu ? "var(--border)" : "var(--emerald-dark)";
     const siparisNotu = y.siparis_id ? `<span style="font-size: 11px; background: var(--surface-muted); color: var(--text-dark); padding: 3px 6px; border-radius: 4px; margin-left: 8px;">Sipariş #${y.siparis_id}</span>` : "";
     const yildizlar = "⭐".repeat(y.puan) + "☆".repeat(5 - y.puan);
@@ -7444,7 +8175,50 @@ function yorumlariCiz() {
           </div>
           <div style="text-align: right;">
             <div style="font-size: 16px; letter-spacing: 2px;">${yildizlar}</div>
-            ${!y.okundu_mu ? `<button onclick="yorumOkunduIsaretle(${y.id})" style="margin-top: 8px; background: var(--emerald-dark); color: white; border: none; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.2s;">✓ Okundu İşaretle</button>` : ''}
+            <div style="
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+">
+  ${
+    !y.okundu_mu
+      ? `
+        <button
+          type="button"
+          onclick="yorumOkunduIsaretle(${y.id})"
+          style="
+            border: none;
+            background: var(--emerald-dark);
+            color: #FFFFFF;
+            border-radius: 6px;
+            padding: 7px 11px;
+            font-weight: 700;
+            cursor: pointer;
+          "
+        >
+          ✓ Okundu İşaretle
+        </button>
+      `
+      : ''
+  }
+
+  <button
+    type="button"
+    onclick="yorumSil(${y.id})"
+    style="
+      border: 1px solid var(--rose);
+      background: transparent;
+      color: var(--rose);
+      border-radius: 6px;
+      padding: 7px 11px;
+      font-weight: 700;
+      cursor: pointer;
+    "
+  >
+    🗑 Sil
+  </button>
+</div>
           </div>
         </div>
         <div style="font-size: 14px; color: var(--text-dark); line-height: 1.5;">
@@ -7463,6 +8237,35 @@ async function yorumOkunduIsaretle(id) {
     console.error("Yorum okundu işaretlenemedi:", e);
   }
 }
+
+async function yorumSil(yorumId) {
+  if (!confirm('Bu yorumu silmek istediğinize emin misiniz?')) {
+    return;
+  }
+
+  try {
+    const res = await fetch(
+      `/api/market/yorumlar/${yorumId}?market_id=${MARKET_ID}`,
+      {
+        method: 'DELETE'
+      }
+    );
+
+    const veri = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      throw new Error(
+        veri.hata || 'Yorum silinemedi.'
+      );
+    }
+
+    await yorumlariYukle();
+
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
 function musteriAramasiniUygula(deger) {
   musteriAramaMetni = String(deger || '');
   musterileriCiz();
@@ -7900,73 +8703,110 @@ async function cikisYap() {
   window.location.href = '/login';
 }
 
+const raporSekmeDepolamaAnahtari =
+  `market-rapor-alt-sekme-${MARKET_ID}`;
+
+const raporSekmeSecenekleri = [
+  'genel',
+  'musteri'
+];
+
 let raporAktifAltSekme = 'genel';
 const raporYuklenenSekmeler = new Set();
 
-setInterval(saatGuncelle, 1000); saatGuncelle();
-aktifSekmeyiGeriYukle();
-temaAyarlariniBaslat();
-bildirimSesiAyarlariniBaslat();
-marketDurumYukle();
-dashboardOzetYukle(
-  dashboardGrafikDonemi
-);
-dashboardGrafikYukle(
-  dashboardGrafikDonemi
-);
-dashboardEnCokSatanlariYukle();
-siparisleriYukle();
-urunleriYukle();
-musterileriYukle();
-raporAltSekmeDegistir('genel', document.querySelector('.rapor-sekme-btn[data-rapor-sekme="genel"]'));
-yorumlariYukle();
+let raporGenelIstekNo = 0;
 
+const sekmeKaydirmaAnahtari =
+  `market-scroll-${MARKET_ID}`;
 
-const socket = io();
+const eskiRaporKaydirmaAnahtari =
+  `market-rapor-scroll-${MARKET_ID}`;
 
-socket.on("yeni_siparis_geldi", (veri) => {
-  if (veri.market_id === MARKET_ID) {
-    console.log("🔔 CANLI SİPARİŞ DÜŞTÜ!", veri);
+function aktifSekmeKaydirmaAnahtari() {
+  const aktifSekme =
+    document.documentElement.getAttribute(
+      'data-market-aktif-sekme'
+    ) || 'dashboard';
 
-    siparisleriYukle();
-    urunleriYukle();
-    dashboardOzetYukle(
-      dashboardGrafikDonemi
+  if (aktifSekme === 'raporlar') {
+    return eskiRaporKaydirmaAnahtari;
+  }
+
+  return `${sekmeKaydirmaAnahtari}-${aktifSekme}`;
+}
+
+function kaydirmaKonumunuKaydet() {
+  try {
+    sessionStorage.setItem(
+      aktifSekmeKaydirmaAnahtari(),
+      String(window.scrollY)
     );
-    dashboardGrafikYukle(dashboardGrafikDonemi);
+  } catch (e) {
+    console.warn(
+      'Kaydırma konumu kaydedilemedi:',
+      e
+    );
   }
-});
+}
 
-socket.on("yeni_yorum_geldi", (veri) => {
-  if (veri.market_id === MARKET_ID) {
-    console.log("⭐ YENİ YORUM GELDİ!", veri);
-    zilSesiCal("cift_bip"); // Yeni yorum geldiğinde tatlı bir çift bip çalsın
-    yorumlariYukle(); // Sayfayı yenilemeden yorumu ekrana bas ve badge'i arttır
+window.addEventListener(
+  'scroll',
+  kaydirmaKonumunuKaydet,
+  { passive: true }
+);
+
+window.addEventListener(
+  'pagehide',
+  kaydirmaKonumunuKaydet
+);
+
+function bekleyenKaydirmaKonumunuUygula(_zorla = false) {
+  let kayitliKonum = 0;
+
+  try {
+    kayitliKonum = Number(
+      sessionStorage.getItem(
+        aktifSekmeKaydirmaAnahtari()
+      ) || 0
+    );
+  } catch (e) {
+    return;
   }
-});
 
-socket.on("urun_degisikligi", (veri) => {
   if (
-    Number(veri.market_id)
-    !== Number(MARKET_ID)
+    !Number.isFinite(kayitliKonum)
+    || kayitliKonum <= 0
   ) {
     return;
   }
 
-  console.log(
-    "📦 Ürün/stok değişikliği:",
-    veri
-  );
+  const uygula = () => {
+    const sayfaYuksekligi = Math.max(
+      document.documentElement.scrollHeight,
+      document.body
+        ? document.body.scrollHeight
+        : 0
+    );
 
-  urunleriYukle();
-  siparisleriYukle();
-  dashboardOzetYukle(
-    dashboardGrafikDonemi
-  );
-  dashboardGrafikYukle(
-    dashboardGrafikDonemi
-  );
-});
+    const maksimumKaydirma = Math.max(
+      0,
+      sayfaYuksekligi - window.innerHeight
+    );
+
+    window.scrollTo({
+      top: Math.min(
+        kayitliKonum,
+        maksimumKaydirma
+      ),
+      left: 0,
+      behavior: 'auto'
+    });
+  };
+
+  uygula();
+  requestAnimationFrame(uygula);
+  setTimeout(uygula, 100);
+}
 
 function raporTrendRozeti(yuzde, tersCevir = false) {
   const sayi = Number(yuzde) || 0;
@@ -7978,147 +8818,515 @@ function raporTrendRozeti(yuzde, tersCevir = false) {
 }
 
 async function raporGenelBakisYukle() {
-  const panel = document.getElementById('rapor-panel-genel');
+  const panel = document.getElementById(
+    'rapor-panel-genel'
+  );
 
   if (!panel) {
     return;
   }
 
+  const buIstekNo = ++raporGenelIstekNo;
+
+  const izinliDonemler = [
+    'gunluk',
+    'haftalik',
+    'aylik',
+    'yillik'
+  ];
+
+  const raporGenelDonemAnahtari =
+    `market-rapor-genel-donemi-${MARKET_ID}`;
+
+  const ciroDepolamaAnahtari =
+    `market-rapor-ciro-donemi-${MARKET_ID}`;
+
+  const sepetDepolamaAnahtari =
+    `market-rapor-sepet-donemi-${MARKET_ID}`;
+
+  const durumDepolamaAnahtari =
+    `market-rapor-durum-donemi-${MARKET_ID}`;
+
+  let ortakDonem = 'gunluk';
+
+  try {
+    ortakDonem =
+      sessionStorage.getItem(
+        raporGenelDonemAnahtari
+      )
+      || sessionStorage.getItem(
+        ciroDepolamaAnahtari
+      )
+      || 'gunluk';
+  } catch (e) {
+    ortakDonem = 'gunluk';
+  }
+
+  if (!izinliDonemler.includes(ortakDonem)) {
+    ortakDonem = 'gunluk';
+  }
+
+  const ciroDonemi = ortakDonem;
+  const sepetDonemi = ortakDonem;
+  const durumDonemi = ortakDonem;
+
+  sessionStorage.setItem(
+    raporGenelDonemAnahtari,
+    ortakDonem
+  );
+
+  sessionStorage.setItem(
+    ciroDepolamaAnahtari,
+    ortakDonem
+  );
+
+  sessionStorage.setItem(
+    sepetDepolamaAnahtari,
+    ortakDonem
+  );
+
+  sessionStorage.setItem(
+    durumDepolamaAnahtari,
+    ortakDonem
+  );
+
+  const raporGenelDonemSecici =
+    document.getElementById(
+      'rapor-genel-donem'
+    );
+
+  if (raporGenelDonemSecici) {
+    raporGenelDonemSecici.value =
+      ortakDonem;
+  }
+
+  document.documentElement.classList.remove(
+    "rapor-donem-ilk-yukleme"
+  );
+
+  const raporGenelIlkYukleme =
+  panel.dataset.raporYuklendi !== 'true';
+
+if (raporGenelIlkYukleme) {
   panel.innerHTML = `
     <div class="siparis-yukleniyor">
       <div class="siparis-yukleniyor-spinner"></div>
     </div>
   `;
+}
 
   try {
-    const res = await fetch(`/api/market/raporlar/genel-bakis?market_id=${MARKET_ID}`);
-    const veri = await res.json().catch(() => ({}));
+    const res = await fetch(
+  `/api/market/raporlar/genel-bakis`
+  + `?market_id=${MARKET_ID}`
+  + `&donem=${encodeURIComponent(ciroDonemi)}`
+  + `&sepet_donem=${encodeURIComponent(sepetDonemi)}`
+  + `&durum_donem=${encodeURIComponent(durumDonemi)}`
+  + `&_=${Date.now()}`,
+  {
+    cache: 'no-store'
+  }
+);
+
+    const veri = await res.json().catch(
+      () => ({})
+    );
+
+        if (buIstekNo !== raporGenelIstekNo) {
+      return;
+    }
+
+    console.log(
+      '📈 Güncel rapor ciro cevabı:',
+      veri.secili_ciro,
+      veri.secili_donem
+    );
 
     if (!res.ok) {
-      throw new Error(veri.hata || 'Genel bakış raporu alınamadı.');
+      throw new Error(
+        veri.hata
+        || 'Genel bakış raporu alınamadı.'
+      );
     }
 
     const paraFormatla = (deger) =>
-      Number(deger).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' TL';
+      Number(deger || 0).toLocaleString(
+        'tr-TR',
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      ) + ' TL';
+
+    const donemEtiketleri = {
+      gunluk: 'Günlük',
+      haftalik: 'Haftalık',
+      aylik: 'Aylık',
+      yillik: 'Yıllık'
+    };
+
+    const ciroKarsilastirmaMetinleri = {
+      gunluk: 'Dünle karşılaştırma',
+      haftalik: 'Önceki haftayla karşılaştırma',
+      aylik: 'Geçen ayla karşılaştırma',
+      yillik: 'Geçen yılla karşılaştırma'
+    };
+
+    const sepetKarsilastirmaMetinleri = {
+      gunluk: 'Dünle karşılaştırma',
+      haftalik: 'Önceki haftayla karşılaştırma',
+      aylik: 'Geçen ayla karşılaştırma',
+      yillik: 'Geçen yılla karşılaştırma'
+    };
+
+    const seciliCiro =
+      veri.secili_ciro
+      ?? veri.ciro_bugun
+      ?? 0;
+
+    const seciliCiroTrendi =
+      veri.secili_ciro_trend
+      ?? veri.ciro_bugun_trend
+      ?? 0;
+
+    const seciliCiroBasligi =
+      veri.secili_donem_basligi
+      || `${donemEtiketleri[ciroDonemi]} Ciro`;
+
+    const seciliSepet =
+      veri.ortalama_sepet
+      ?? 0;
+
+    const seciliSepetTrendi =
+      veri.ortalama_sepet_trend
+      ?? 0;
+
+    const oranDagilimi =
+      veri.durum_dagilimi || {};
+
+    const teslimEdilenAdet = Number(
+      oranDagilimi.teslim_edildi || 0
+    );
+
+    const iptalAdedi = Number(
+      oranDagilimi.iptal || 0
+    );
+
+    const sonuclananSiparisAdedi =
+      teslimEdilenAdet + iptalAdedi;
+
+    const teslimOrani =
+      sonuclananSiparisAdedi > 0
+        ? (
+            teslimEdilenAdet
+            / sonuclananSiparisAdedi
+          ) * 100
+        : 0;
+
+    const iptalOrani =
+      sonuclananSiparisAdedi > 0
+        ? (
+            iptalAdedi
+            / sonuclananSiparisAdedi
+          ) * 100
+        : 0;
 
     panel.innerHTML = `
-      <div class="rapor-kpi-grid">
+      <div
+        class="rapor-kpi-grid"
+        style="
+          grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+        "
+      >
         <div class="rapor-kart">
           <div class="rapor-kpi-ust">
-            <div class="rapor-kart-etiket">BUGÜNKÜ CİRO</div>
-            ${raporTrendRozeti(veri.ciro_bugun_trend)}
+
+            <div class="rapor-kart-etiket">
+              ${seciliCiroBasligi}
+            </div>
+
+            ${raporTrendRozeti(
+              seciliCiroTrendi
+            )}
           </div>
-          <div class="rapor-kart-deger" style="color: var(--emerald-dark);">
-            ${paraFormatla(veri.ciro_bugun)}
+
+          <div
+            class="rapor-kart-deger"
+            style="
+              color: var(--emerald-dark);
+            "
+          >
+            ${paraFormatla(seciliCiro)}
           </div>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Dünle karşılaştırma</div>
         </div>
 
         <div class="rapor-kart">
-          <div class="rapor-kpi-ust">
-            <div class="rapor-kart-etiket">BU AYKİ CİRO</div>
-            ${raporTrendRozeti(veri.ciro_bu_ay_trend)}
-          </div>
-          <div class="rapor-kart-deger" style="color: var(--emerald-dark);">
-            ${paraFormatla(veri.ciro_bu_ay)}
-          </div>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Geçen ayla karşılaştırma</div>
-        </div>
+          <div
+            class="rapor-kpi-ust"
+            style="
+              align-items: flex-start;
+            "
+          >
+            <div>
+              <div class="rapor-kart-etiket">
+                ${
+                  veri.sepet_donemi_basligi
+                  || 'Ort. Sepet Tutarı'
+                }
+            </div>
 
-        <div class="rapor-kart">
-          <div class="rapor-kpi-ust">
-            <div class="rapor-kart-etiket">ORT. SEPET TUTARI</div>
-            ${raporTrendRozeti(veri.ortalama_sepet_trend)}
-          </div>
-          <div class="rapor-kart-deger" style="color: var(--text-dark);">
-            ${paraFormatla(veri.ortalama_sepet)}
-          </div>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Bu ay, geçen aya göre</div>
-        </div>
+            </div>
 
-        <div class="rapor-kart">
-          <div class="rapor-kpi-ust">
-            <div class="rapor-kart-etiket">İPTAL ORANI</div>
-            ${raporTrendRozeti(veri.iptal_orani_trend, true)}
+            ${raporTrendRozeti(
+              seciliSepetTrendi
+            )}
           </div>
-          <div class="rapor-kart-deger" style="color: var(--rose);">
-            %${Number(veri.iptal_orani).toFixed(1)}
+
+          <div
+            class="rapor-kart-deger"
+            style="
+              color: var(--text-dark);
+            "
+          >
+            ${paraFormatla(seciliSepet)}
           </div>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Bu ay, geçen aya göre</div>
         </div>
       </div>
 
       <div class="rapor-2col">
         <div class="rapor-blok">
-          <h3 class="rapor-blok-baslik">Son 7 Günün Ciro Trendi</h3>
-          <div class="rapor-canvas-kutu" style="margin-top: 16px;">
-            <canvas id="rapor-genel-sparkline"></canvas>
+          <h3 class="rapor-blok-baslik">
+            ${
+              veri.grafik_basligi
+              || `${donemEtiketleri[ciroDonemi]} Ciro Grafiği`
+            }
+          </h3>
+
+          <div
+            class="rapor-canvas-kutu"
+            style="margin-top: 16px;"
+          >
+            <canvas
+              id="rapor-genel-sparkline"
+            ></canvas>
           </div>
         </div>
 
-        <div class="rapor-blok">
-          <h3 class="rapor-blok-baslik">Sipariş Durum Dağılımı</h3>
-          <div class="rapor-canvas-kutu" style="margin-top: 16px;">
-            <canvas id="rapor-genel-durum-donut"></canvas>
+        <div
+  class="rapor-blok"
+  style="position: relative;"
+>
+  <div style="
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  ">
+    <h3 class="rapor-blok-baslik">
+      ${donemEtiketleri[durumDonemi]} Teslimat / İptal Oranı
+    </h3>
+  </div>
+
+<div
+  style="
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  "
+>
+  <div style="text-align: right;">
+    <div style="
+      font-size: 9px;
+      color: var(--rose);
+      font-weight: 800;
+    ">
+      İPTAL ORANI
+    </div>
+
+    <div style="
+      margin-top: 2px;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--rose);
+    ">
+      %${iptalOrani.toFixed(1)}
+    </div>
+  </div>
+
+  <div style="text-align: right;">
+    <div style="
+      font-size: 9px;
+      color: var(--emerald-dark);
+      font-weight: 800;
+    ">
+      TESLİM EDİLME ORANI
+    </div>
+
+    <div style="
+      margin-top: 2px;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--emerald-dark);
+    ">
+      %${teslimOrani.toFixed(1)}
+    </div>
+  </div>
+</div>
+          <div
+            class="rapor-canvas-kutu"
+            style="margin-top: 16px;"
+          >
+            <canvas
+              id="rapor-genel-durum-donut"
+            ></canvas>
+          </div>
           </div>
         </div>
-      </div>
     `;
 
-    // Sparkline çizgi grafiği
-    const sparklineCanvas = document.getElementById('rapor-genel-sparkline');
+    panel.dataset.raporYuklendi = 'true';
+
+    const grafikEtiketleri =
+      Array.isArray(
+        veri.grafik_etiketleri
+      )
+        ? veri.grafik_etiketleri
+        : [];
+
+    const grafikVerileri =
+      Array.isArray(
+        veri.grafik_verileri
+      )
+        ? veri.grafik_verileri
+        : (
+            veri.sparkline_7gun || []
+          );
+
+    const sparklineCanvas =
+      document.getElementById(
+        'rapor-genel-sparkline'
+      );
 
     if (sparklineCanvas) {
       if (raporSparklineGrafik) {
         raporSparklineGrafik.destroy();
       }
 
-      const gunEtiketleri = [];
-      const bugunTarih = new Date();
+      let etiketler =
+        grafikEtiketleri;
 
-      for (let i = 6; i >= 0; i--) {
-        const tarih = new Date(bugunTarih);
-        tarih.setDate(tarih.getDate() - i);
-        gunEtiketleri.push(tarih.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }));
+      if (etiketler.length === 0) {
+        const bugunTarih = new Date();
+        etiketler = [];
+
+        for (let i = 6; i >= 0; i--) {
+          const tarih = new Date(
+            bugunTarih
+          );
+
+          tarih.setDate(
+            tarih.getDate() - i
+          );
+
+          etiketler.push(
+            tarih.toLocaleDateString(
+              'tr-TR',
+              {
+                day: 'numeric',
+                month: 'short'
+              }
+            )
+          );
+        }
       }
 
-      raporSparklineGrafik = new Chart(sparklineCanvas.getContext('2d'), {
-        type: 'line',
-        data: {
-          labels: gunEtiketleri,
-          datasets: [{
-            label: 'Ciro',
-            data: veri.sparkline_7gun || [],
-            borderColor: '#059669',
-            backgroundColor: 'rgba(5, 150, 105, 0.12)',
-            borderWidth: 3,
-            pointRadius: 4,
-            pointBackgroundColor: '#059669',
-            tension: 0.35,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: (ctx) => `${Number(ctx.parsed.y).toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL`
+      raporSparklineGrafik = new Chart(
+        sparklineCanvas.getContext('2d'),
+        {
+          type: 'line',
+
+          data: {
+            labels: etiketler,
+
+            datasets: [{
+              label: 'Ciro',
+              data: grafikVerileri,
+              borderColor: '#059669',
+              backgroundColor:
+                'rgba(5, 150, 105, 0.12)',
+              borderWidth: 3,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              pointBackgroundColor: '#059669',
+              tension: 0.35,
+              fill: true
+            }]
+          },
+
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            interaction: {
+              mode: 'index',
+              intersect: false
+            },
+
+            plugins: {
+              legend: {
+                display: false
+              },
+
+              tooltip: {
+                callbacks: {
+                  label: (ctx) =>
+                    `${Number(
+                      ctx.parsed.y || 0
+                    ).toLocaleString(
+                      'tr-TR',
+                      {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      }
+                    )} TL`
+                }
+              }
+            },
+
+            scales: {
+              y: {
+                beginAtZero: true,
+
+                ticks: {
+                  callback: (deger) =>
+                    `${Number(
+                      deger || 0
+                    ).toLocaleString(
+                      'tr-TR'
+                    )} TL`
+                }
+              },
+
+              x: {
+                grid: {
+                  display: false
+                }
               }
             }
-          },
-          scales: {
-            y: { beginAtZero: true, ticks: { precision: 0 } },
-            x: { grid: { display: false } }
           }
         }
-      });
+      );
     }
 
-    // Durum dağılımı donut grafiği
-    const donutCanvas = document.getElementById('rapor-genel-durum-donut');
+    const donutCanvas =
+      document.getElementById(
+        'rapor-genel-durum-donut'
+      );
 
     if (donutCanvas) {
       if (raporDurumDonutGrafik) {
@@ -8141,367 +9349,326 @@ async function raporGenelBakisYukle() {
         iptal: '#EF4444'
       };
 
-      const dagilim = veri.durum_dagilimi || {};
-      const etiketler = Object.keys(dagilim).map((k) => durumEtiketleri[k] || k);
-      const veriler = Object.values(dagilim);
-      const renkler = Object.keys(dagilim).map((k) => durumRenkleri[k] || '#94A3B8');
+      const dagilim =
+        veri.durum_dagilimi || {};
 
-      raporDurumDonutGrafik = new Chart(donutCanvas.getContext('2d'), {
-        type: 'doughnut',
-        data: {
-          labels: etiketler,
-          datasets: [{
-            data: veriler,
-            backgroundColor: renkler,
-            borderWidth: 2,
-            borderColor: getComputedStyle(document.documentElement).getPropertyValue('--card-bg') || '#FFFFFF'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } }
-          }
-        }
-      });
-    }
+      const durumAnahtarlari =
+        Object.keys(dagilim);
 
-  } catch (e) {
-    console.error('Genel bakış raporu yükleme hatası:', e);
-    panel.innerHTML = `<div style="padding: 32px; text-align: center; color: var(--rose);">${htmlMetniKacir(e.message)}</div>`;
-    raporYuklenenSekmeler.delete('genel');
-  }
-}
+      const etiketler =
+        durumAnahtarlari.map(
+          (k) =>
+            durumEtiketleri[k] || k
+        );
 
-async function raporSatisAnaliziYukle(donem = raporSatisDonemi) {
-  const panel = document.getElementById('rapor-panel-satis');
+      const donutVerileri =
+        Object.values(dagilim);
 
-  if (!panel) {
-    return;
-  }
+      const renkler =
+        durumAnahtarlari.map(
+          (k) =>
+            durumRenkleri[k]
+            || '#94A3B8'
+        );
 
-  raporSatisDonemi = donem;
+      raporDurumDonutGrafik =
+        new Chart(
+          donutCanvas.getContext('2d'),
+          {
+            type: 'doughnut',
 
-  const ilkYukleme = panel.children.length === 0;
+            data: {
+              labels: etiketler,
 
-  if (ilkYukleme) {
-    panel.innerHTML = `
-      <div class="siparis-yukleniyor">
-        <div class="siparis-yukleniyor-spinner"></div>
-      </div>
-    `;
-  }
+              datasets: [{
+                data: donutVerileri,
+                backgroundColor: renkler,
+                borderWidth: 2,
+                borderColor:
+                  getComputedStyle(
+                    document.documentElement
+                  ).getPropertyValue(
+                    '--card-bg'
+                  ) || '#FFFFFF'
+              }]
+            },
 
-  try {
-    const res = await fetch(
-      `/api/market/raporlar/satis-analizi?market_id=${MARKET_ID}&donem=${donem}`
-    );
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
 
-    const veri = await res.json().catch(() => ({}));
+              plugins: {
+                legend: {
+                  position: 'bottom',
 
-    if (!res.ok) {
-      throw new Error(veri.hata || 'Satış analizi raporu alınamadı.');
-    }
+                  labels: {
+                    boxWidth: 12,
+                    padding: 12,
 
-    panel.innerHTML = `
-      <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-        <button type="button" class="btn rapor-donem-btn" data-donem="gunluk" onclick="raporSatisDonemDegistir('gunluk', this)">Günlük</button>
-        <button type="button" class="btn rapor-donem-btn" data-donem="haftalik" onclick="raporSatisDonemDegistir('haftalik', this)">Haftalık</button>
-        <button type="button" class="btn rapor-donem-btn" data-donem="aylik" onclick="raporSatisDonemDegistir('aylik', this)">Aylık</button>
-        <button type="button" class="btn rapor-donem-btn" data-donem="yillik" onclick="raporSatisDonemDegistir('yillik', this)">Yıllık</button>
-      </div>
+                    font: {
+                      size: 14,
+                      weight: '600'
+                    },
 
-      <div class="rapor-blok">
-        <h3 class="rapor-blok-baslik">Dönemsel Ciro</h3>
-        <div class="rapor-canvas-kutu" style="margin-top: 16px;">
-          <canvas id="rapor-satis-ciro-canvas"></canvas>
-        </div>
-      </div>
+                    filter: function(
+                      legendItem
+                    ) {
+                      return (
+                        legendItem.text
+                          !== 'Bekliyor'
+                        && legendItem.text
+                          !== 'Hazırlanıyor'
+                        && legendItem.text
+                          !== 'Yolda'
+                      );
+                    }
+                  },
 
-      <div class="rapor-blok">
-        <h3 class="rapor-blok-baslik">Sipariş Hacmi</h3>
-        <div class="rapor-canvas-kutu" style="margin-top: 16px;">
-          <canvas id="rapor-satis-siparis-canvas"></canvas>
-        </div>
-      </div>
+                  onHover: function(event) {
+                    if (
+                      event.native
+                      && event.native.target
+                    ) {
+                      event.native.target.style.cursor =
+                        'pointer';
+                    }
+                  },
 
-      <div class="rapor-2col">
-        <div class="rapor-blok">
-          <h3 class="rapor-blok-baslik">Ödeme Yöntemi Dağılımı</h3>
-          <div class="rapor-canvas-kutu" style="height: 220px; margin-top: 16px;">
-            <canvas id="rapor-odeme-donut"></canvas>
-          </div>
-        </div>
+                  onLeave: function(event) {
+                    if (
+                      event.native
+                      && event.native.target
+                    ) {
+                      event.native.target.style.cursor =
+                        'default';
+                    }
+                  },
 
-        <div class="rapor-blok">
-          <h3 class="rapor-blok-baslik">Teslimat Yöntemi Dağılımı</h3>
-          <div class="rapor-canvas-kutu" style="height: 220px; margin-top: 16px;">
-            <canvas id="rapor-teslimat-donut"></canvas>
-          </div>
-        </div>
-      </div>
-    `;
+                  onClick: function(
+                    event,
+                    legendItem,
+                    legend
+                  ) {
+                    const grafik =
+                      legend.chart;
 
-    document.querySelectorAll('.rapor-donem-btn').forEach((b) => {
-      b.classList.toggle('btn-primary', b.dataset.donem === donem);
-    });
+                    const index =
+                      legendItem.index;
 
-    // Dönemsel ciro çizgi grafiği
-    const ciroCanvas = document.getElementById('rapor-satis-ciro-canvas');
+                    grafik.toggleDataVisibility(
+                      index
+                    );
 
-    if (ciroCanvas) {
-      if (raporSatisCiroGrafik) {
-        raporSatisCiroGrafik.destroy();
-      }
+                    grafik.update();
 
-      raporSatisCiroGrafik = new Chart(ciroCanvas.getContext('2d'), {
-        type: 'line',
-        data: {
-          labels: veri.labels || [],
-          datasets: [{
-            label: 'Ciro',
-            data: veri.ciro_veriler || [],
-            borderColor: '#059669',
-            backgroundColor: 'rgba(5, 150, 105, 0.12)',
-            borderWidth: 3,
-            pointRadius: 4,
-            pointBackgroundColor: '#059669',
-            tension: 0.35,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: (ctx) => `${Number(ctx.parsed.y).toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL`
+                    const gizliEtiketler = [];
+
+                    grafik.data.labels.forEach(
+                      (
+                        etiket,
+                        etiketIndex
+                      ) => {
+                        if (
+                          !grafik.getDataVisibility(
+                            etiketIndex
+                          )
+                        ) {
+                          gizliEtiketler.push(
+                            etiket
+                          );
+                        }
+                      }
+                    );
+
+                    try {
+                      sessionStorage.setItem(
+                        raporDurumGizliEtiketlerAnahtari,
+                        JSON.stringify(
+                          gizliEtiketler
+                        )
+                      );
+                    } catch (e) {
+                      console.warn(
+                        'Grafik görünürlüğü kaydedilemedi:',
+                        e
+                      );
+                    }
+                  }
+                }
               }
             }
-          },
-          scales: {
-            y: { beginAtZero: true, ticks: { precision: 0 } },
-            x: { grid: { display: false } }
+          }
+        );
+
+      let gizliEtiketler = [];
+
+      try {
+        gizliEtiketler = JSON.parse(
+          sessionStorage.getItem(
+            raporDurumGizliEtiketlerAnahtari
+          ) || '[]'
+        );
+
+        if (
+          !Array.isArray(
+            gizliEtiketler
+          )
+        ) {
+          gizliEtiketler = [];
+        }
+      } catch (e) {
+        gizliEtiketler = [];
+      }
+
+      etiketler.forEach(
+        (etiket, index) => {
+          if (
+            gizliEtiketler.includes(
+              etiket
+            )
+          ) {
+            raporDurumDonutGrafik
+              .toggleDataVisibility(index);
           }
         }
-      });
-    }
+      );
 
-    // Sipariş hacmi bar grafiği
-    const siparisCanvas = document.getElementById('rapor-satis-siparis-canvas');
-
-    if (siparisCanvas) {
-      if (raporSatisSiparisGrafik) {
-        raporSatisSiparisGrafik.destroy();
-      }
-
-      raporSatisSiparisGrafik = new Chart(siparisCanvas.getContext('2d'), {
-        type: 'bar',
-        data: {
-          labels: veri.labels || [],
-          datasets: [{
-            label: 'Sipariş Sayısı',
-            data: veri.siparis_veriler || [],
-            backgroundColor: '#4F46E5',
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, ticks: { precision: 0 } },
-            x: { grid: { display: false } }
-          }
-        }
-      });
-    }
-
-    // Ödeme yöntemi donut
-    const odemeCanvas = document.getElementById('rapor-odeme-donut');
-
-    if (odemeCanvas) {
-      if (raporOdemeDonutGrafik) {
-        raporOdemeDonutGrafik.destroy();
-      }
-
-      const odemeEtiketleri = { nakit: 'Nakit', kart: 'Kart' };
-      const odemeDagilimi = veri.odeme_dagilimi || {};
-
-      raporOdemeDonutGrafik = new Chart(odemeCanvas.getContext('2d'), {
-        type: 'doughnut',
-        data: {
-          labels: Object.keys(odemeDagilimi).map((k) => odemeEtiketleri[k] || k),
-          datasets: [{
-            data: Object.values(odemeDagilimi),
-            backgroundColor: ['#10B981', '#3B82F6'],
-            borderWidth: 2,
-            borderColor: getComputedStyle(document.documentElement).getPropertyValue('--card-bg') || '#FFFFFF'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } } }
-        }
-      });
-    }
-
-    // Teslimat yöntemi donut
-    const teslimatCanvas = document.getElementById('rapor-teslimat-donut');
-
-    if (teslimatCanvas) {
-      if (raporTeslimatDonutGrafik) {
-        raporTeslimatDonutGrafik.destroy();
-      }
-
-      const teslimatEtiketleri = { adrese_teslim: 'Adrese Teslim', gel_al: 'Gel-Al' };
-      const teslimatDagilimi = veri.teslimat_dagilimi || {};
-
-      raporTeslimatDonutGrafik = new Chart(teslimatCanvas.getContext('2d'), {
-        type: 'doughnut',
-        data: {
-          labels: Object.keys(teslimatDagilimi).map((k) => teslimatEtiketleri[k] || k),
-          datasets: [{
-            data: Object.values(teslimatDagilimi),
-            backgroundColor: ['#F59E0B', '#8B5CF6'],
-            borderWidth: 2,
-            borderColor: getComputedStyle(document.documentElement).getPropertyValue('--card-bg') || '#FFFFFF'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } } }
-        }
-      });
+      raporDurumDonutGrafik.update();
     }
 
   } catch (e) {
-    console.error('Satış analizi yükleme hatası:', e);
-    panel.innerHTML = `<div style="padding: 32px; text-align: center; color: var(--rose);">${htmlMetniKacir(e.message)}</div>`;
-    raporYuklenenSekmeler.delete('satis');
-  }
-}
-
-function raporSatisDonemDegistir(donem, buton) {
-  raporSatisAnaliziYukle(donem);
-}
-
-async function raporUrunKategoriYukle() {
-  const panel = document.getElementById('rapor-panel-urun');
-
-  if (!panel) {
-    return;
-  }
-
-  panel.innerHTML = `
-    <div class="siparis-yukleniyor">
-      <div class="siparis-yukleniyor-spinner"></div>
-    </div>
-  `;
-
-  try {
-    const res = await fetch(`/api/market/raporlar/urun-kategori?market_id=${MARKET_ID}`);
-    const veri = await res.json().catch(() => ({}));
-
-    if (!res.ok) {
-      throw new Error(veri.hata || 'Ürün & kategori raporu alınamadı.');
-    }
-
-    const kategoriler = Array.isArray(veri.kategoriler) ? veri.kategoriler : [];
-    const enCokSatanlar = Array.isArray(veri.en_cok_satanlar) ? veri.en_cok_satanlar : [];
-    const hicSatilmayanlar = Array.isArray(veri.hic_satilmayanlar) ? veri.hic_satilmayanlar : [];
-
-    const maksKategoriCiro = Math.max(...kategoriler.map((k) => k.ciro), 1);
+    console.error(
+      'Genel bakış raporu yükleme hatası:',
+      e
+    );
 
     panel.innerHTML = `
-      <div class="rapor-blok">
-        <h3 class="rapor-blok-baslik">Kategori Bazlı Ciro & Adet</h3>
-        <div style="margin-top: 16px;">
-          ${
-            kategoriler.map((k) => {
-              const yuzde = (k.ciro / maksKategoriCiro) * 100;
-              const kategoriAdi = KATEGORI_ETIKETLERI[k.kategori] || k.kategori;
-
-              return `
-                <div class="rapor-kategori-satiri">
-                  <div class="rapor-kategori-ust">
-                    <span>${htmlMetniKacir(kategoriAdi)} <span style="color: var(--text-muted); font-weight: 600;">(${k.adet} adet)</span></span>
-                    <span>${Number(k.ciro).toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</span>
-                  </div>
-                  <div class="rapor-kategori-bar-arka">
-                    <div class="rapor-kategori-bar-dolu" style="width: ${yuzde}%;"></div>
-                  </div>
-                </div>
-              `;
-            }).join('') || '<div style="color: var(--text-muted); font-size: 13px;">Henüz teslim edilmiş satış yok.</div>'
-          }
-        </div>
-      </div>
-
-      <div class="rapor-blok">
-        <h3 class="rapor-blok-baslik">En Çok Satan 10 Ürün</h3>
-        <div class="rapor-canvas-kutu" style="margin-top: 16px;">
-          <canvas id="rapor-en-cok-satan-canvas"></canvas>
-        </div>
-      </div>
-
-      <div class="rapor-blok">
-        <h3 class="rapor-blok-baslik" style="color: var(--amber);">💤 Hiç Satılmamış Ürünler</h3>
-        <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 10px;">
-          ${
-            hicSatilmayanlar.map((u) => `
-              <div class="rapor-kritik-etiket" style="background: #FEF3C7; border-color: #FDE68A; color: #92400E;">
-                ${htmlMetniKacir(u.ad)}
-                <span style="background: #92400E; color: #FFFFFF; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">${u.stok} stokta</span>
-              </div>
-            `).join('') || '<div style="color: var(--emerald-dark); font-size: 13px; font-weight: 700;">Tüm aktif ürünler en az bir kez satılmış! 🎉</div>'
-          }
-        </div>
+      <div style="
+        padding: 32px;
+        text-align: center;
+        color: var(--rose);
+      ">
+        ${htmlMetniKacir(e.message)}
       </div>
     `;
 
-    const enCokSatanCanvas = document.getElementById('rapor-en-cok-satan-canvas');
-
-    if (enCokSatanCanvas) {
-      if (raporEnCokSatanGrafik) {
-        raporEnCokSatanGrafik.destroy();
-      }
-
-      raporEnCokSatanGrafik = new Chart(enCokSatanCanvas.getContext('2d'), {
-        type: 'bar',
-        data: {
-          labels: enCokSatanlar.map((u) => u.ad),
-          datasets: [{
-            label: 'Satılan Adet',
-            data: enCokSatanlar.map((u) => u.adet),
-            backgroundColor: '#059669',
-            borderRadius: 6
-          }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { beginAtZero: true, ticks: { precision: 0 } },
-            y: { grid: { display: false } }
-          }
-        }
-      });
-    }
-
-  } catch (e) {
-    console.error('Ürün & kategori raporu yükleme hatası:', e);
-    panel.innerHTML = `<div style="padding: 32px; text-align: center; color: var(--rose);">${htmlMetniKacir(e.message)}</div>`;
-    raporYuklenenSekmeler.delete('urun');
+    raporYuklenenSekmeler.delete(
+      'genel'
+    );
   }
+}
+
+
+async function raporDurumDonemiDegistir(donem) {
+  const mevcutKonum = window.scrollY;
+
+  sessionStorage.setItem(
+    `market-rapor-durum-donemi-${MARKET_ID}`,
+    donem
+  );
+
+  raporYuklenenSekmeler.delete('genel');
+
+  await raporGenelBakisYukle();
+
+  const konumuUygula = () => {
+    const maksimumKonum = Math.max(
+      0,
+      document.documentElement.scrollHeight
+      - window.innerHeight
+    );
+
+    window.scrollTo({
+      top: Math.min(
+        mevcutKonum,
+        maksimumKonum
+      ),
+      left: 0,
+      behavior: 'auto'
+    });
+  };
+
+  konumuUygula();
+  requestAnimationFrame(konumuUygula);
+  setTimeout(konumuUygula, 80);
+}
+
+async function raporGenelDonemiDegistir(donem) {
+  const izinliDonemler = [
+    'gunluk',
+    'haftalik',
+    'aylik',
+    'yillik'
+  ];
+
+  if (!izinliDonemler.includes(donem)) {
+    donem = 'gunluk';
+  }
+
+  const mevcutKonum = window.scrollY;
+
+  sessionStorage.setItem(
+    `market-rapor-genel-donemi-${MARKET_ID}`,
+    donem
+  );
+
+  sessionStorage.setItem(
+    `market-rapor-ciro-donemi-${MARKET_ID}`,
+    donem
+  );
+
+  sessionStorage.setItem(
+    `market-rapor-sepet-donemi-${MARKET_ID}`,
+    donem
+  );
+
+  sessionStorage.setItem(
+    `market-rapor-durum-donemi-${MARKET_ID}`,
+    donem
+  );
+
+  const donemSecici = document.getElementById(
+    'rapor-genel-donem'
+  );
+
+  if (donemSecici) {
+    donemSecici.value = donem;
+  }
+
+  const aktifRaporSekmesi =
+    raporAktifAltSekme === 'musteri'
+      ? 'musteri'
+      : 'genel';
+
+  raporYuklenenSekmeler.delete('genel');
+  raporYuklenenSekmeler.delete('musteri');
+
+  if (aktifRaporSekmesi === 'musteri') {
+    await raporMusterilerYukle();
+  } else {
+    await raporGenelBakisYukle();
+  }
+
+  const konumuUygula = () => {
+    const maksimumKonum = Math.max(
+      0,
+      document.documentElement.scrollHeight
+      - window.innerHeight
+    );
+
+    window.scrollTo({
+      top: Math.min(
+        mevcutKonum,
+        maksimumKonum
+      ),
+      left: 0,
+      behavior: 'auto'
+    });
+  };
+
+  konumuUygula();
+  requestAnimationFrame(konumuUygula);
+  setTimeout(konumuUygula, 80);
 }
 
 async function raporMusterilerYukle() {
@@ -8511,36 +9678,39 @@ async function raporMusterilerYukle() {
   panel.innerHTML = `<div class="siparis-yukleniyor"><div class="siparis-yukleniyor-spinner"></div></div>`;
 
   try {
-    const res = await fetch(`/api/market/raporlar/musteriler?market_id=${MARKET_ID}`);
+    const raporDonemSecici = document.getElementById(
+      'rapor-genel-donem'
+    );
+
+    const raporDonemi =
+      sessionStorage.getItem(
+        `market-rapor-genel-donemi-${MARKET_ID}`
+      )
+      || raporDonemSecici?.value
+      || 'gunluk';
+
+      if (raporDonemSecici) {
+        raporDonemSecici.value = raporDonemi;
+      }
+
+      document.documentElement.classList.remove(
+        'rapor-donem-ilk-yukleme'
+      );
+
+    const res = await fetch(
+      `/api/market/raporlar/musteriler`
+      + `?market_id=${MARKET_ID}`
+      + `&donem=${encodeURIComponent(raporDonemi)}`
+    );
     const veri = await res.json().catch(() => ({}));
 
     if (!res.ok) throw new Error(veri.hata || 'Müşteri raporu alınamadı.');
 
     const enIyi = Array.isArray(veri.en_iyi_musteriler) ? veri.en_iyi_musteriler : [];
-    
-    // Sadakat Oranı: 1'den fazla sipariş verenlerin tüm müşterilere oranı
-    const sadakatOrani = veri.toplam_aktif_musteri > 0 
-        ? Math.round(((veri.toplam_aktif_musteri - veri.tek_siparisli_sayisi) / veri.toplam_aktif_musteri) * 100) 
-        : 0;
 
     panel.innerHTML = `
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
-        <div class="rapor-kart" style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-          <div style="font-size: 12px; color: var(--text-muted); font-weight: bold;">SİPARİŞ VEREN MÜŞTERİ</div>
-          <div style="font-size: 24px; font-weight: 800; color: var(--primary); margin-top: 8px;">${veri.toplam_aktif_musteri} Kişi</div>
-        </div>
-        <div class="rapor-kart" style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-          <div style="font-size: 12px; color: var(--text-muted); font-weight: bold;">TEK SEFERLİK MÜŞTERİ</div>
-          <div style="font-size: 24px; font-weight: 800; color: var(--rose); margin-top: 8px;">${veri.tek_siparisli_sayisi} Kişi</div>
-        </div>
-        <div class="rapor-kart" style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-          <div style="font-size: 12px; color: var(--text-muted); font-weight: bold;">MÜŞTERİ SADAKAT ORANI</div>
-          <div style="font-size: 24px; font-weight: 800; color: var(--emerald-dark); margin-top: 8px;">%${sadakatOrani}</div>
-        </div>
-      </div>
-
       <div class="rapor-blok">
-        <h3 class="rapor-blok-baslik">🌟 En Çok Kazandıran 10 Müşteri (VIP)</h3>
+        <h3 class="rapor-blok-baslik">🌟 En Çok Kazandıran 10 Müşteri</h3>
         <div style="margin-top: 16px; overflow-x: auto;">
           <table style="width: 100%; border-collapse: collapse; font-size: 13px; min-width: 500px;">
             <thead>
@@ -8576,109 +9746,6 @@ async function raporMusterilerYukle() {
     raporYuklenenSekmeler.delete('musteri');
   }
 }
-
-async function raporStokYukle() {
-  const panel = document.getElementById('rapor-panel-stok');
-  if (!panel) return;
-
-  panel.innerHTML = `<div class="siparis-yukleniyor"><div class="siparis-yukleniyor-spinner"></div></div>`;
-
-  try {
-    const res = await fetch(`/api/market/raporlar/stok?market_id=${MARKET_ID}`);
-    const veri = await res.json().catch(() => ({}));
-
-    if (!res.ok) throw new Error(veri.hata || 'Stok raporu alınamadı.');
-
-    const tukenenler = Array.isArray(veri.tukenenler) ? veri.tukenenler : [];
-    const kritik = Array.isArray(veri.kritik_stoklar) ? veri.kritik_stoklar : [];
-
-    panel.innerHTML = `
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
-        <div class="rapor-kart" style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-          <div style="font-size: 12px; color: var(--text-muted); font-weight: bold;">TOPLAM ÜRÜN ÇEŞİDİ</div>
-          <div style="font-size: 24px; font-weight: 800; color: var(--text-dark); margin-top: 8px;">${veri.toplam_cesit} Çeşit</div>
-        </div>
-        <div class="rapor-kart" style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-          <div style="font-size: 12px; color: var(--text-muted); font-weight: bold;">RAFTAKİ TOPLAM ADET</div>
-          <div style="font-size: 24px; font-weight: 800; color: var(--primary); margin-top: 8px;">${veri.toplam_stok_adedi} Adet</div>
-        </div>
-        <div class="rapor-kart" style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-          <div style="font-size: 12px; color: var(--text-muted); font-weight: bold;">TAHMİNİ ENVANTER DEĞERİ</div>
-          <div style="font-size: 24px; font-weight: 800; color: var(--emerald-dark); margin-top: 8px;">${Number(veri.toplam_envanter_degeri).toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</div>
-        </div>
-        <div class="rapor-kart" style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-          <div style="font-size: 12px; color: var(--text-muted); font-weight: bold;">TÜKENEN / KRİTİK ÜRÜN</div>
-          <div style="font-size: 24px; font-weight: 800; color: var(--rose); margin-top: 8px;">${veri.tukenen_sayisi + veri.kritik_sayisi} Ürün</div>
-        </div>
-      </div>
-
-      <!-- Tükenen Ürünler -->
-      <div class="rapor-blok" style="margin-bottom: 24px;">
-        <h3 class="rapor-blok-baslik" style="color: var(--rose);">❌ Tükenen veya Satışa Kapalı Ürünler</h3>
-        <div style="margin-top: 16px; overflow-x: auto;">
-          <table style="width: 100%; border-collapse: collapse; font-size: 13px; min-width: 400px;">
-            <thead>
-              <tr style="border-bottom: 2px solid var(--border); color: var(--text-muted); text-align: left;">
-                <th style="padding: 10px 8px;">Ürün Adı</th>
-                <th style="padding: 10px 8px;">Kategori</th>
-                <th style="padding: 10px 8px; text-align: right;">Birim Fiyat</th>
-                <th style="padding: 10px 8px; text-align: center;">Stok Durumu</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${tukenenler.map(u => `
-                <tr style="border-bottom: 1px solid var(--border);">
-                  <td style="padding: 12px 8px; font-weight: 700; color: var(--text-dark);">${htmlMetniKacir(u.ad)}</td>
-                  <td style="padding: 12px 8px; color: var(--text-muted);">${htmlMetniKacir(KATEGORI_ETIKETLERI[u.kategori] || u.kategori)}</td>
-                  <td style="padding: 12px 8px; text-align: right; font-weight: bold;">${Number(u.fiyat).toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</td>
-                  <td style="padding: 12px 8px; text-align: center;"><span style="background: #FEE2E2; color: #DC2626; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800;">Tükendi</span></td>
-                </tr>
-              `).join('') || '<tr><td colspan="4" style="text-align: center; padding: 20px; color: var(--emerald-dark); font-weight: bold;">Tükenen ürün bulunmuyor! Harika 🎉</td></tr>'}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Kritik Stoklar -->
-      <div class="rapor-blok">
-        <h3 class="rapor-blok-baslik" style="color: var(--amber);">⚠️ Kritik Stokta Olanlar (5 ve Altı)</h3>
-        <div style="margin-top: 16px; overflow-x: auto;">
-          <table style="width: 100%; border-collapse: collapse; font-size: 13px; min-width: 400px;">
-            <thead>
-              <tr style="border-bottom: 2px solid var(--border); color: var(--text-muted); text-align: left;">
-                <th style="padding: 10px 8px;">Ürün Adı</th>
-                <th style="padding: 10px 8px;">Kategori</th>
-                <th style="padding: 10px 8px; text-align: right;">Birim Fiyat</th>
-                <th style="padding: 10px 8px; text-align: center;">Kalan Stok</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${kritik.map(u => `
-                <tr style="border-bottom: 1px solid var(--border);">
-                  <td style="padding: 12px 8px; font-weight: 700; color: var(--text-dark);">${htmlMetniKacir(u.ad)}</td>
-                  <td style="padding: 12px 8px; color: var(--text-muted);">${htmlMetniKacir(KATEGORI_ETIKETLERI[u.kategori] || u.kategori)}</td>
-                  <td style="padding: 12px 8px; text-align: right; font-weight: bold;">${Number(u.fiyat).toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</td>
-                  <td style="padding: 12px 8px; text-align: center;"><span style="background: #FEF3C7; color: #D97706; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800;">${u.stok} Adet</span></td>
-                </tr>
-              `).join('') || '<tr><td colspan="4" style="text-align: center; padding: 20px; color: var(--emerald-dark); font-weight: bold;">Kritik seviyede ürün yok! 🚀</td></tr>'}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    `;
-
-  } catch (e) {
-    console.error('Stok raporu yükleme hatası:', e);
-    panel.innerHTML = `<div style="padding: 32px; text-align: center; color: var(--rose);">${htmlMetniKacir(e.message)}</div>`;
-    raporYuklenenSekmeler.delete('stok');
-  }
-}
-
-
-
-
-
-
 
 async function raporlariYukle() {
   const kategoriAlani = document.getElementById('rp-kategoriler');
@@ -8762,13 +9829,28 @@ async function raporlariYukle() {
 
 
 function raporAltSekmeDegistir(sekme, buton) {
-  const sekmeler = ['genel', 'satis', 'urun', 'musteri', 'stok'];
+  const sekmeler = [
+  'genel',
+  'musteri'
+];
 
   if (!sekmeler.includes(sekme)) {
     sekme = 'genel';
   }
 
   raporAktifAltSekme = sekme;
+
+  try {
+  sessionStorage.setItem(
+    raporSekmeDepolamaAnahtari,
+    sekme
+  );
+} catch (e) {
+  console.warn(
+    'Rapor sekmesi kaydedilemedi:',
+    e
+  );
+}
 
   document.querySelectorAll('.rapor-sekme-btn').forEach((b) => {
     b.classList.remove('aktif');
@@ -8788,26 +9870,340 @@ function raporAltSekmeDegistir(sekme, buton) {
   raporAltSekmeVerisiYukle(sekme);
 }
 
-function raporAltSekmeVerisiYukle(sekme) {
-  if (raporYuklenenSekmeler.has(sekme)) {
+async function raporAltSekmeVerisiYukle(
+  sekme
+) {
+  if (
+    raporYuklenenSekmeler.has(sekme)
+  ) {
     return;
   }
 
   raporYuklenenSekmeler.add(sekme);
 
-  if (sekme === 'genel') {
-    raporGenelBakisYukle();
-  } else if (sekme === 'satis') {
-    raporSatisAnaliziYukle();
-  } else if (sekme === 'urun') {
-    raporUrunKategoriYukle();
-  } else if (sekme === 'musteri') {
-    raporMusterilerYukle();
-  } else if (sekme === 'stok') {
-    raporStokYukle();
+  try {
+    if (sekme === 'genel') {
+      await raporGenelBakisYukle();
+
+    } else if (sekme === 'musteri') {
+      await raporMusterilerYukle();
+    }
+
+  } finally {
+    bekleyenKaydirmaKonumunuUygula(true);
   }
-  // diğer sekmeler (urun, musteri, stok) sıradaki adımlarda eklenecek
 }
+
+let raporCanliYenilemeNo = 0;
+
+async function raporlariCanliGuncelle() {
+  const yenilemeNo =
+    ++raporCanliYenilemeNo;
+
+  const mevcutKonum =
+    window.scrollY;
+
+  const aktifRaporSekmesi =
+    raporSekmeSecenekleri.includes(
+      raporAktifAltSekme
+    )
+      ? raporAktifAltSekme
+      : 'genel';
+
+  try {
+    if (
+      aktifRaporSekmesi === 'genel'
+    ) {
+      raporYuklenenSekmeler.delete(
+        'genel'
+      );
+
+      await raporGenelBakisYukle();
+
+      raporYuklenenSekmeler.add(
+        'genel'
+      );
+    } else {
+      raporYuklenenSekmeler.delete(
+        aktifRaporSekmesi
+      );
+
+      await raporAltSekmeVerisiYukle(
+        aktifRaporSekmesi
+      );
+    }
+  } catch (hata) {
+    console.error(
+      'Rapor canlı güncellenemedi:',
+      hata
+    );
+  }
+
+  if (
+    yenilemeNo !== raporCanliYenilemeNo
+  ) {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    const maksimumKonum = Math.max(
+      0,
+      document.documentElement.scrollHeight
+      - window.innerHeight
+    );
+
+    window.scrollTo({
+      top: Math.min(
+        mevcutKonum,
+        maksimumKonum
+      ),
+      left: 0,
+      behavior: 'auto'
+    });
+  });
+}
+
+setInterval(
+  saatGuncelle,
+  1000
+);
+
+saatGuncelle();
+
+aktifSekmeyiGeriYukle();
+temaAyarlariniBaslat();
+bildirimSesiAyarlariniBaslat();
+marketDurumYukle();
+
+dashboardOzetOnbellektenUygula(
+  dashboardGrafikDonemi
+);
+
+dashboardGrafikOnbellektenYukle(
+  dashboardGrafikDonemi
+);
+
+dashboardOzetYukle(
+  dashboardGrafikDonemi
+);
+
+dashboardGrafikYukle(
+  dashboardGrafikDonemi
+);
+
+dashboardEnCokSatanlariYukle();
+siparisleriYukle();
+urunleriYukle();
+musterileriYukle();
+
+let raporKayitliSekme = 'genel';
+
+try {
+  raporKayitliSekme =
+    sessionStorage.getItem(
+      raporSekmeDepolamaAnahtari
+    ) || 'genel';
+} catch (e) {
+  raporKayitliSekme = 'genel';
+}
+
+if (
+  !raporSekmeSecenekleri.includes(
+    raporKayitliSekme
+  )
+) {
+  raporKayitliSekme = 'genel';
+}
+
+raporAltSekmeDegistir(
+  raporKayitliSekme,
+  document.querySelector(
+    `.rapor-sekme-btn[data-rapor-sekme="${raporKayitliSekme}"]`
+  )
+);
+
+yorumFiltreleriniYukle();
+
+const yorumAramaInput =
+  document.getElementById(
+    'yorum-arama'
+  );
+
+const yorumSiralamaInput =
+  document.getElementById(
+    'yorum-siralama'
+  );
+
+const yorumDurumInput =
+  document.getElementById(
+    'yorum-durum-filtresi'
+  );
+
+if (yorumAramaInput) {
+  yorumAramaInput.value =
+    yorumAramaGirdisi;
+}
+
+if (yorumSiralamaInput) {
+  yorumSiralamaInput.value =
+    yorumSiralama;
+}
+
+if (yorumDurumInput) {
+  yorumDurumInput.value =
+    yorumDurumFiltresi;
+}
+
+const yorumFiltreKontrolu =
+  document.getElementById(
+    'yorum-filtre-kontrolu'
+  );
+
+if (yorumFiltreKontrolu) {
+  yorumFiltreKontrolu.style.visibility =
+    'visible';
+}
+
+yorumlariYukle();
+
+const socket = io();
+
+socket.onAny(
+  (olayAdi, veri) => {
+    console.log(
+      '📡 Socket olayı geldi:',
+      olayAdi,
+      veri
+    );
+  }
+);
+
+socket.on(
+  "market_durumu_degisti",
+  (veri) => {
+    if (
+      Number(veri.market_id)
+      !== Number(MARKET_ID)
+    ) {
+      return;
+    }
+
+    marketDurumYukle();
+  }
+);
+
+socket.on(
+  "yeni_siparis_geldi",
+  (veri) => {
+    if (
+      Number(veri.market_id)
+      !== Number(MARKET_ID)
+    ) {
+      return;
+    }
+
+    siparisleriYukle();
+    urunleriYukle();
+
+    dashboardOzetYukle(
+      dashboardGrafikDonemi
+    );
+
+    dashboardGrafikYukle(
+      dashboardGrafikDonemi
+    );
+
+    dashboardEnCokSatanlariYukle();
+    console.log(
+  '📊 Rapor canlı güncelleme olayı:',
+  veri
+);
+
+raporlariCanliGuncelle().catch((hata) => {
+  console.error(
+    'Rapor canlı güncellenemedi:',
+    hata
+  );
+});
+  }
+);
+
+socket.on(
+  "siparis_durumu_degisti",
+  (veri) => {
+    if (
+      Number(veri.market_id)
+      !== Number(MARKET_ID)
+    ) {
+      return;
+    }
+
+    siparisleriYukle();
+    urunleriYukle();
+
+    dashboardOzetYukle(
+      dashboardGrafikDonemi
+    );
+
+    dashboardGrafikYukle(
+      dashboardGrafikDonemi
+    );
+
+    dashboardEnCokSatanlariYukle();
+
+    console.log(
+  '📊 Rapor canlı güncelleme olayı:',
+  veri
+);
+
+raporlariCanliGuncelle().catch((hata) => {
+  console.error(
+    'Rapor canlı güncellenemedi:',
+    hata
+  );
+});
+  }
+);
+
+socket.on(
+  "yeni_yorum_geldi",
+  (veri) => {
+    if (
+      Number(veri.market_id)
+      !== Number(MARKET_ID)
+    ) {
+      return;
+    }
+
+    zilSesiCal("cift_bip");
+    yorumlariYukle();
+  }
+);
+
+socket.on(
+  "urun_degisikligi",
+  (veri) => {
+    if (
+      Number(veri.market_id)
+      !== Number(MARKET_ID)
+    ) {
+      return;
+    }
+
+    urunleriYukle();
+    siparisleriYukle();
+
+    dashboardOzetYukle(
+      dashboardGrafikDonemi
+    );
+
+    dashboardGrafikYukle(
+      dashboardGrafikDonemi
+    );
+
+    dashboardEnCokSatanlariYukle();
+  }
+);
 </script>
 
 <!-- ÜRÜN GÜNCELLEME MODALI -->
