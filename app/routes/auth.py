@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, session, current_app
-from app import db
+from app import db, socketio
 from app.models import Kullanici, Market, Musteri
 
 auth_bp = Blueprint("auth", __name__)
@@ -40,6 +40,14 @@ def register():
 
         db.session.add(yeni_musteri)
         db.session.commit()
+
+        socketio.emit(
+            "yeni_musteri_kaydedildi",
+            {
+               "musteri_id": yeni_musteri.id,
+               "ad_soyad": yeni_musteri.ad_soyad
+            }
+        )
 
         return jsonify({"mesaj": "Kayıt başarılı! Şimdi giriş yapabilirsiniz."}), 201
 

@@ -1007,7 +1007,7 @@ html.tema-ilk-yukleme::after {
   color: #FFFFFF !important;
 }
 
-.dashboard-grafik-mod-btn[data-mod="tamamlanan"].aktif {
+.dashboard-grafik-mod-btn[data-mod="onaylanan"].aktif {
   background: #059669 !important;
   border-color: #059669 !important;
   box-shadow: 0 6px 16px rgba(
@@ -1018,7 +1018,7 @@ html.tema-ilk-yukleme::after {
   );
 }
 
-.dashboard-grafik-mod-btn[data-mod="iptal"].aktif {
+.dashboard-grafik-mod-btn[data-mod="reddedilen"].aktif {
   background: #DC2626 !important;
   border-color: #DC2626 !important;
   box-shadow: 0 6px 16px rgba(
@@ -1152,17 +1152,17 @@ html.tema-ilk-yukleme::after {
   white-space: nowrap;
 }
 
-.durum-teslim_edildi {
+.durum-onaylandi {
   background: #D1FAE5;
   color: #065F46;
 }
 
-.durum-iptal {
+.durum-reddedildi {
   background: #FEE2E2;
   color: #B91C1C;
 }
 
-.durum-diger {
+.durum-bekliyor {
   background: #FEF3C7;
   color: #B45309;
 }
@@ -1826,7 +1826,7 @@ html.siparis-gecmis-ilk-yukleme
   </div>
 
 
-  <!-- İPTAL EDİLEN SİPARİŞ -->
+  <!-- REDDEDİLEN SİPARİŞ -->
   <div style="
     background: #FFFFFF;
     border: 1px solid var(--border);
@@ -1844,7 +1844,7 @@ html.siparis-gecmis-ilk-yukleme
         font-weight: 700;
         color: var(--text-muted);
       ">
-        İptal Edilen Sipariş
+        Reddedilen Sipariş
       </span>
 
       <span style="
@@ -1862,7 +1862,7 @@ html.siparis-gecmis-ilk-yukleme
     </div>
 
     <div
-      id="dashboard-iptal-edilen-siparis"
+      id="dashboard-reddedilen-siparis"
       style="
         font-size: 30px;
         font-weight: 800;
@@ -1877,12 +1877,12 @@ html.siparis-gecmis-ilk-yukleme
       color: var(--text-muted);
       margin-top: 6px;
     ">
-      Seçilen dönemde iptal edilen siparişler
+      Seçilen dönemde reddedilen siparişler
     </div>
   </div>
 
 
-  <!-- TAMAMLANAN SİPARİŞ -->
+  <!-- ONAYLANAN SİPARİŞ -->
   <div style="
     background: #FFFFFF;
     border: 1px solid var(--border);
@@ -1900,7 +1900,7 @@ html.siparis-gecmis-ilk-yukleme
         font-weight: 700;
         color: var(--text-muted);
       ">
-        Tamamlanan Sipariş
+        Onaylanan Sipariş
       </span>
 
       <span style="
@@ -1918,7 +1918,7 @@ html.siparis-gecmis-ilk-yukleme
     </div>
 
     <div
-      id="dashboard-tamamlanan-siparis"
+      id="dashboard-onaylanan-siparis"
       style="
         font-size: 30px;
         font-weight: 800;
@@ -1933,7 +1933,7 @@ html.siparis-gecmis-ilk-yukleme
       color: var(--text-muted);
       margin-top: 6px;
     ">
-      Seçilen dönemde teslim edilen siparişler
+      Seçilen dönemde onaylanan siparişler
     </div>
   </div>
 
@@ -1992,7 +1992,7 @@ html.siparis-gecmis-ilk-yukleme
       color: var(--text-muted);
       margin-top: 6px;
     ">
-      Seçilen dönemde teslim edilen siparişlerin toplamı
+      Seçilen dönemde onaylanan siparişlerin toplamı
     </div>
   </div>
 
@@ -2101,29 +2101,29 @@ html.siparis-gecmis-ilk-yukleme
   <button
     type="button"
     class="btn dashboard-grafik-mod-btn"
-    data-mod="tamamlanan"
+    data-mod="onaylanan"
     onclick="
       dashboardGrafikModuDegistir(
-        'tamamlanan',
+        'onaylanan',
         this
       )
     "
   >
-    ✅ Tamamlananlar
+    ✅ Onaylananlar
   </button>
 
   <button
     type="button"
     class="btn dashboard-grafik-mod-btn"
-    data-mod="iptal"
+    data-mod="reddedilen"
     onclick="
       dashboardGrafikModuDegistir(
-        'iptal',
+        'reddedilen',
         this
       )
     "
   >
-    ❌ İptal Edilenler
+    ❌ Reddedilenler
   </button>
 
   <button
@@ -2176,7 +2176,7 @@ html.siparis-gecmis-ilk-yukleme
           font-size: 12px;
           color: var(--text-muted);
         ">
-          Teslim edilen siparişlere göre ilk 5 ürün
+          Onaylanan siparişlere göre ilk 5 ürün
         </p>
       </div>
 
@@ -2261,8 +2261,8 @@ html.siparis-gecmis-ilk-yukleme
       "
     >
       <option value="tumu">📋 Tüm Durumlar</option>
-      <option value="teslim_edildi">✅ Teslim Edilen</option>
-      <option value="iptal">❌ İptal Edilen</option>
+      <option value="onaylandi">✅ Onaylanan</option>
+      <option value="reddedildi">❌ Reddedilen</option>
     </select>
 
     <input
@@ -3531,13 +3531,13 @@ function dashboardOzetVerisiniUygula(veri) {
   );
 
   metinGuncelle(
-    'dashboard-tamamlanan-siparis',
-    veri.tamamlanan_siparis ?? 0
+    'dashboard-onaylanan-siparis',
+    veri.onaylanan_siparis ?? 0
   );
 
   metinGuncelle(
-    'dashboard-iptal-edilen-siparis',
-    veri.iptal_edilen_siparis ?? 0
+    'dashboard-reddedilen-siparis',
+    veri.reddedilen_siparis ?? 0
   );
 
   metinGuncelle(
@@ -3684,8 +3684,8 @@ async function dashboardGrafikYukle(
   onbellekVerisi = null
 ) {
   const izinliModlar = [
-    "tamamlanan",
-    "iptal",
+    "onaylanan",
+    "reddedilen",
     "birlesik"
   ];
 
@@ -3769,18 +3769,18 @@ if (!veri) {
       return;
     }
 
-    const tamamlananVeriler =
+    const onaylananVeriler =
       Array.isArray(
-        veri.tamamlanan_veriler
+        veri.onaylanan_veriler
       )
-        ? veri.tamamlanan_veriler
+        ? veri.onaylanan_veriler
         : [];
 
-    const iptalVeriler =
+    const reddedilenVeriler =
       Array.isArray(
-        veri.iptal_veriler
+        veri.reddedilen_veriler
       )
-        ? veri.iptal_veriler
+        ? veri.reddedilen_veriler
         : [];
 
     const ortakAyarlar = {
@@ -3795,11 +3795,11 @@ if (!veri) {
 
     if (
       dashboardGrafikModu
-      === "tamamlanan"
+      === "onaylanan"
     ) {
       datasets = [{
-        label: "Tamamlanan Siparişler",
-        data: tamamlananVeriler,
+        label: "Onaylanan Siparişler",
+        data: onaylananVeriler,
         borderColor: "#059669",
         backgroundColor: "#059669",
         pointBackgroundColor: "#059669",
@@ -3809,11 +3809,11 @@ if (!veri) {
 
     else if (
       dashboardGrafikModu
-      === "iptal"
+      === "reddedilen"
     ) {
       datasets = [{
-        label: "İptal Edilen Siparişler",
-        data: iptalVeriler,
+        label: "Reddedilen Siparişler",
+        data: reddedilenVeriler,
         borderColor: "#DC2626",
         backgroundColor: "#DC2626",
         pointBackgroundColor: "#DC2626",
@@ -3824,16 +3824,16 @@ if (!veri) {
     else {
       datasets = [
         {
-          label: "Tamamlanan Siparişler",
-          data: tamamlananVeriler,
+          label: "Onaylanan Siparişler",
+          data: onaylananVeriler,
           borderColor: "#059669",
           backgroundColor: "#059669",
           pointBackgroundColor: "#059669",
           ...ortakAyarlar
         },
         {
-          label: "İptal Edilen Siparişler",
-          data: iptalVeriler,
+          label: "Reddedilen Siparişler",
+          data: reddedilenVeriler,
           borderColor: "#DC2626",
           backgroundColor: "#DC2626",
           pointBackgroundColor: "#DC2626",
@@ -3944,8 +3944,8 @@ function dashboardGrafikModuDegistir(
   buton
 ) {
   const izinliModlar = [
-    "tamamlanan",
-    "iptal",
+    "onaylanan",
+    "reddedilen",
     "birlesik"
   ];
 
@@ -4142,6 +4142,8 @@ async function dashboardEnCokSatanlariYukle() {
 function marketLogoAdiniGuncelle(ad) {
   const temizAd =
     (ad || "").trim() || "Dahir Market";
+
+  document.title = `${temizAd} Kasa`;
 
   const logoAd = document.getElementById(
     "market-logo-ad"
@@ -5493,13 +5495,6 @@ const res = await fetch(
                 }
               )} TL
             </span>
-
-            ${
-              s.durum !== "teslim_edildi"
-              && s.durum !== "iptal"
-                ? ""
-                : ""
-            }
           </div>
         </div>
       `
@@ -5648,74 +5643,105 @@ const res = await fetch(
         gap: 8px;
       ">
         <button
-          onclick="
-            durumDegistir(
-              ${s.id},
-              'teslim_edildi'
-            )
-          "
-          style="
-            background: #10B981;
-            color: white;
-            border: none;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-weight: 800;
-            cursor: pointer;
-          "
-        >
-          ✅ Teslim Et
-        </button>
+  onclick="
+    durumDegistir(
+      ${s.id},
+      'onaylandi'
+    )
+  "
+  style="
+    background: #10B981;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: 800;
+    cursor: pointer;
+  "
+>
+  ✅ Onayla
+</button>
 
-        <button
-          onclick="
-            durumDegistir(
-              ${s.id},
-              'iptal'
-            )
-          "
-          style="
-            background: #FEE2E2;
-            color: #DC2626;
-            border: 1px solid #FECACA;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-weight: 800;
-            cursor: pointer;
-          "
-        >
-          ❌ İptal Et
-        </button>
+<button
+  onclick="
+    durumDegistir(
+      ${s.id},
+      'reddedildi'
+    )
+  "
+  style="
+    background: #FEE2E2;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: 800;
+    cursor: pointer;
+  "
+>
+  ❌ Reddet
+</button>
       </div>
     `
     : `
       <div style="
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  ${
+    s.durum === "reddedildi"
+      ? `
+        background: #FEE2E2;
+        color: #B91C1C;
+      `
+      : `
+        background: #D1FAE5;
+        color: #047857;
+      `
+  }
+">
+  ${
+    s.durum === "onaylandi"
+      ? (
+          s.karar_saati
+            ? `✅ ${s.karar_saati}’de onaylandı`
+            : "✅ Onaylandı"
+        )
+      : (
+          s.karar_saati
+            ? `❌ ${s.karar_saati}’de reddedildi`
+            : "❌ Reddedildi"
+        )
+  }
+</div>
+
+${
+  s.durum === "reddedildi"
+  && s.red_sebebi
+    ? `
+      <div style="
+        margin-top: 8px;
+        max-width: 280px;
         padding: 9px 12px;
         border-radius: 8px;
-        font-size: 13px;
-        font-weight: 800;
-        ${
-          s.durum === "iptal"
-            ? `
-              background: #FEE2E2;
-              color: #B91C1C;
-            `
-            : `
-              background: #D1FAE5;
-              color: #047857;
-            `
-        }
+        background: #FFF1F2;
+        border: 1px solid #FECDD3;
+        color: #9F1239;
+        font-size: 12px;
+        font-weight: 600;
+        text-align: left;
       ">
-        ${
-          s.durum === "iptal"
-            ? "❌ İptal Edildi"
-            : "✅ Teslim Edildi"
-        }
+        📝 <b>Red sebebi:</b>
+        ${htmlMetniKacir(s.red_sebebi)}
       </div>
     `
+    : ""
+}
+`
 }
           </div>
 
@@ -5845,47 +5871,11 @@ function siparisGorunumuButonlariniGuncelle() {
   );
 }
 
-function gecmisSiparisFiltreButonlariniGuncelle() {
-  const filtreler = [
-    "tumu",
-    "teslim_edildi",
-    "iptal"
-  ];
-
-  filtreler.forEach((filtre) => {
-    const buton = document.getElementById(
-      filtre === "tumu"
-        ? "gecmis-filtre-tumu"
-        : filtre === "teslim_edildi"
-          ? "gecmis-filtre-teslim"
-          : "gecmis-filtre-iptal"
-    );
-
-    if (!buton) {
-      return;
-    }
-
-    const aktifMi = (
-      gecmisSiparisFiltresi === filtre
-    );
-
-    buton.classList.toggle(
-      "btn-primary",
-      aktifMi
-    );
-
-    buton.setAttribute(
-      "aria-pressed",
-      String(aktifMi)
-    );
-  });
-}
-
 function siparisDurumFiltresiDegistir(durum) {
   const izinliDurumlar = [
     "tumu",
-    "teslim_edildi",
-    "iptal"
+    "onaylandi",
+    "reddedildi"
   ];
 
   if (!izinliDurumlar.includes(durum)) {
@@ -5912,32 +5902,6 @@ function siparisTarihFiltresiDegistir(tarih) {
 
   siparisleriYukle();
 }
-
-function gecmisSiparisFiltresiDegistir(
-  filtre
-) {
-  if (
-    ![
-      "tumu",
-      "teslim_edildi",
-      "iptal"
-    ].includes(filtre)
-  ) {
-    filtre = "tumu";
-  }
-
-  gecmisSiparisFiltresi = filtre;
-
-  sessionStorage.setItem(
-    "marketGecmisSiparisFiltresi",
-    filtre
-  );
-
-  gecmisSiparisFiltreButonlariniGuncelle();
-
-  siparisleriYukle();
-}
-
 
 function siparisAramaMetniniNormalleştir(
   metin
@@ -6296,33 +6260,92 @@ function siparisGorunumuDegistir(
 }
 
 async function durumDegistir(id, durum) {
-  const eminMisin = confirm(
-    durum === 'teslim_edildi'
-      ? 'Bu siparişi teslim edildi olarak işaretlemek istiyor musunuz?'
-      : 'Bu siparişi iptal etmek istiyor musunuz?'
-  );
-
-  if (!eminMisin) return;
-
-  const res = await fetch(`/api/market/siparisler/${id}/durum`, {
-    method: 'PUT',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({durum})
-  });
-
-  const veri = await res.json().catch(() => ({}));
-
-  if (!res.ok) {
-    alert(veri.hata || 'Sipariş durumu güncellenemedi.');
+  if (!["onaylandi", "reddedildi"].includes(durum)) {
+    alert("Geçersiz sipariş durumu.");
     return;
   }
 
- siparisleriYukle();
- dashboardOzetYukle(
-   dashboardGrafikDonemi
- );
- dashboardGrafikYukle(dashboardGrafikDonemi);
- dashboardEnCokSatanlariYukle();
+  let redSebebi = null;
+  let eminMisin = false;
+
+  if (durum === "onaylandi") {
+    eminMisin = confirm(
+      "Bu siparişi onaylamak istiyor musunuz?"
+    );
+  } else {
+    redSebebi = prompt(
+      "Bu siparişi neden reddediyorsunuz?\n"
+      + "Red sebebi zorunludur."
+    );
+
+    if (redSebebi === null) {
+      return;
+    }
+
+    redSebebi = redSebebi.trim();
+
+    if (!redSebebi) {
+      alert("Red sebebi boş bırakılamaz.");
+      return;
+    }
+
+    if (redSebebi.length > 500) {
+      alert("Red sebebi en fazla 500 karakter olabilir.");
+      return;
+    }
+
+    eminMisin = confirm(
+      "Bu siparişi reddetmek istiyor musunuz?\n\n"
+      + `Red sebebi: ${redSebebi}`
+    );
+  }
+
+  if (!eminMisin) {
+    return;
+  }
+
+  const istekGovdesi = {
+    durum: durum
+  };
+
+  if (durum === "reddedildi") {
+    istekGovdesi.red_sebebi = redSebebi;
+  }
+
+  const res = await fetch(
+    `/api/market/siparisler/${id}/durum`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(istekGovdesi)
+    }
+  );
+
+  const veri = await res.json().catch(
+    () => ({})
+  );
+
+  if (!res.ok) {
+    alert(
+      veri.hata
+      || "Sipariş durumu güncellenemedi."
+    );
+    return;
+  }
+
+  siparisleriYukle();
+
+  dashboardOzetYukle(
+    dashboardGrafikDonemi
+  );
+
+  dashboardGrafikYukle(
+    dashboardGrafikDonemi
+  );
+
+  dashboardEnCokSatanlariYukle();
 }
 
 const KATEGORI_ETIKETLERI = {
@@ -8422,15 +8445,34 @@ async function musteriSiparisleriGor(musteriId) {
     }
 
     listeAlani.innerHTML = siparisler.map((s) => {
-      const durumSinifi = (
-        s.durum === 'teslim_edildi' || s.durum === 'iptal'
-      ) ? `durum-${s.durum}` : 'durum-diger';
+      const izinliDurumlar = [
+        'bekliyor',
+        'onaylandi',
+        'reddedildi'
+      ];
 
-      const durumYazi = s.durum === 'teslim_edildi'
-        ? 'Teslim Edildi'
-        : s.durum === 'iptal'
-          ? 'İptal'
-          : (s.durum || '-');
+      const durumSinifi = izinliDurumlar.includes(
+        s.durum
+      )
+        ? `durum-${s.durum}`
+        : 'durum-bekliyor';
+
+      const durumYazi =
+        s.durum === 'bekliyor'
+          ? '⏳ Cevap bekleniyor'
+          : s.durum === 'onaylandi'
+            ? (
+                s.karar_saati
+                  ? `✅ ${s.karar_saati}’de onaylandı`
+                  : '✅ Onaylandı'
+              )
+            : s.durum === 'reddedildi'
+              ? (
+                  s.karar_saati
+                    ? `❌ ${s.karar_saati}’de reddedildi`
+                    : '❌ Reddedildi'
+                )
+              : (s.durum || '-');
 
       const kalemler = (s.detaylar || []).map((d) => `
         <div class="item-row">
@@ -8461,11 +8503,32 @@ async function musteriSiparisleriGor(musteriId) {
             <span class="musteri-siparis-durum-rozeti ${durumSinifi}">
               ${durumYazi}
             </span>
-          </div>
+            </div>
 
-          <div class="order-items">
-            ${kalemler}
-          </div>
+            ${
+              s.durum === 'reddedildi'
+              && s.red_sebebi
+                ? `
+                  <div style="
+                    margin-bottom: 10px;
+                    padding: 9px 12px;
+                    border-radius: 8px;
+                    background: #FFF1F2;
+                    border: 1px solid #FECDD3;
+                    color: #9F1239;
+                    font-size: 12px;
+                    font-weight: 600;
+                  ">
+                    📝 <b>Red sebebi:</b>
+                    ${htmlMetniKacir(s.red_sebebi)}
+                  </div>
+                `
+                : ''
+            }
+
+            <div class="order-items">
+              ${kalemler}
+            </div>
 
           <div style="
             margin-top: 8px;
@@ -9004,33 +9067,32 @@ if (raporGenelIlkYukleme) {
     const oranDagilimi =
       veri.durum_dagilimi || {};
 
-    const teslimEdilenAdet = Number(
-      oranDagilimi.teslim_edildi || 0
+    const onaylananAdet = Number(
+      oranDagilimi.onaylandi || 0
     );
 
-    const iptalAdedi = Number(
-      oranDagilimi.iptal || 0
+    const reddedilenAdet = Number(
+      oranDagilimi.reddedildi || 0
     );
 
-    const sonuclananSiparisAdedi =
-      teslimEdilenAdet + iptalAdedi;
+    const kararaBaglananSiparisAdedi =
+      onaylananAdet + reddedilenAdet;
 
-    const teslimOrani =
-      sonuclananSiparisAdedi > 0
+    const onayOrani =
+      kararaBaglananSiparisAdedi > 0
         ? (
-            teslimEdilenAdet
-            / sonuclananSiparisAdedi
+            onaylananAdet
+            / kararaBaglananSiparisAdedi
           ) * 100
         : 0;
 
-    const iptalOrani =
-      sonuclananSiparisAdedi > 0
+    const reddetmeOrani =
+      kararaBaglananSiparisAdedi > 0
         ? (
-            iptalAdedi
-            / sonuclananSiparisAdedi
+            reddedilenAdet
+            / kararaBaglananSiparisAdedi
           ) * 100
         : 0;
-
     panel.innerHTML = `
       <div
         class="rapor-kpi-grid"
@@ -9125,7 +9187,7 @@ if (raporGenelIlkYukleme) {
     flex-wrap: wrap;
   ">
     <h3 class="rapor-blok-baslik">
-      ${donemEtiketleri[durumDonemi]} Teslimat / İptal Oranı
+      ${donemEtiketleri[durumDonemi]} Onay / Reddetme Oranı
     </h3>
   </div>
 
@@ -9145,7 +9207,7 @@ if (raporGenelIlkYukleme) {
       color: var(--rose);
       font-weight: 800;
     ">
-      İPTAL ORANI
+      REDDETME ORANI
     </div>
 
     <div style="
@@ -9154,7 +9216,7 @@ if (raporGenelIlkYukleme) {
       font-weight: 800;
       color: var(--rose);
     ">
-      %${iptalOrani.toFixed(1)}
+      %${reddetmeOrani.toFixed(1)}
     </div>
   </div>
 
@@ -9164,7 +9226,7 @@ if (raporGenelIlkYukleme) {
       color: var(--emerald-dark);
       font-weight: 800;
     ">
-      TESLİM EDİLME ORANI
+      ONAY ORANI
     </div>
 
     <div style="
@@ -9173,7 +9235,7 @@ if (raporGenelIlkYukleme) {
       font-weight: 800;
       color: var(--emerald-dark);
     ">
-      %${teslimOrani.toFixed(1)}
+      %${onayOrani.toFixed(1)}
     </div>
   </div>
 </div>
@@ -9334,19 +9396,15 @@ if (raporGenelIlkYukleme) {
       }
 
       const durumEtiketleri = {
-        bekliyor: 'Bekliyor',
-        hazirlaniyor: 'Hazırlanıyor',
-        yolda: 'Yolda',
-        teslim_edildi: 'Teslim Edildi',
-        iptal: 'İptal'
+        bekliyor: 'Cevap Bekleniyor',
+        onaylandi: 'Onaylandı',
+        reddedildi: 'Reddedildi'
       };
 
       const durumRenkleri = {
         bekliyor: '#F59E0B',
-        hazirlaniyor: '#3B82F6',
-        yolda: '#8B5CF6',
-        teslim_edildi: '#10B981',
-        iptal: '#EF4444'
+        onaylandi: '#10B981',
+        reddedildi: '#EF4444'
       };
 
       const dagilim =
@@ -9415,11 +9473,7 @@ if (raporGenelIlkYukleme) {
                     ) {
                       return (
                         legendItem.text
-                          !== 'Bekliyor'
-                        && legendItem.text
-                          !== 'Hazırlanıyor'
-                        && legendItem.text
-                          !== 'Yolda'
+                          !== 'Cevap Bekleniyor'
                       );
                     }
                   },
@@ -9746,87 +9800,6 @@ async function raporMusterilerYukle() {
     raporYuklenenSekmeler.delete('musteri');
   }
 }
-
-async function raporlariYukle() {
-  const kategoriAlani = document.getElementById('rp-kategoriler');
-  const satanlarAlani = document.getElementById('rp-en-cok-satanlar');
-  const kritikStokAlani = document.getElementById('rp-kritik-stok');
-
-  try {
-    const res = await fetch(`/api/market/raporlar?market_id=${MARKET_ID}`);
-    const veri = await res.json().catch(() => ({}));
-
-    if (!res.ok) {
-      throw new Error(veri.hata || 'Raporlar alınamadı.');
-    }
-
-    // 1. Finansal Özet
-    document.getElementById('rp-ciro-bugun').textContent =
-      Number(veri.finans.ciro_bugun).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' TL';
-
-    document.getElementById('rp-ciro-ay').textContent =
-      Number(veri.finans.ciro_bu_ay).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' TL';
-
-    document.getElementById('rp-ort-sepet').textContent =
-      Number(veri.finans.ortalama_sepet).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' TL';
-
-    document.getElementById('rp-iptal-oran').textContent =
-      '%' + Math.round(veri.operasyon.iptal_orani);
-
-    // 2. Kategori Çubuk Barları
-    const kategoriler = Array.isArray(veri.kategoriler) ? veri.kategoriler : [];
-    const maksCiro = Math.max(...kategoriler.map(k => k.ciro), 1);
-
-    kategoriAlani.innerHTML = kategoriler.map((k) => {
-      const yuzde = (k.ciro / maksCiro) * 100;
-      const kategoriAdi = KATEGORI_ETIKETLERI[k.kategori] || k.kategori;
-
-      return `
-        <div class="rapor-kategori-satiri">
-          <div class="rapor-kategori-ust">
-            <span>${htmlMetniKacir(kategoriAdi)}</span>
-            <span>${Number(k.ciro).toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</span>
-          </div>
-          <div class="rapor-kategori-bar-arka">
-            <div class="rapor-kategori-bar-dolu" style="width: ${yuzde}%;"></div>
-          </div>
-        </div>
-      `;
-    }).join('') || '<div style="color: var(--text-muted); font-size: 13px;">Henüz teslim edilmiş satış yok.</div>';
-
-    // 3. En Çok Satanlar
-    const enCokSatanlar = Array.isArray(veri.en_cok_satanlar) ? veri.en_cok_satanlar : [];
-
-    satanlarAlani.innerHTML = enCokSatanlar.map((u, i) => `
-      <div class="rapor-satan-satiri">
-        <span><strong>${i + 1}.</strong> ${htmlMetniKacir(u.ad)}</span>
-        <span style="color: var(--text-muted);"><strong>${u.adet}</strong> Adet</span>
-      </div>
-    `).join('') || '<div style="color: var(--text-muted); font-size: 13px;">Henüz satış verisi yok.</div>';
-
-    // 4. Kritik Stok
-    const kritikStok = Array.isArray(veri.kritik_stok) ? veri.kritik_stok : [];
-
-    kritikStokAlani.innerHTML = kritikStok.map((u) => `
-      <div class="rapor-kritik-etiket">
-        ${htmlMetniKacir(u.ad)}
-        <span class="rapor-kritik-stok-sayisi">${u.stok} Kaldı</span>
-      </div>
-    `).join('') || '<div style="color: var(--emerald-dark); font-size: 13px; font-weight: 700;">Tüm stoklar yeterli seviyede! ✅</div>';
-
-  } catch (e) {
-    console.error('Raporlar yüklenemedi:', e);
-
-    if (kategoriAlani) {
-      kategoriAlani.innerHTML = `<div style="color: var(--rose); font-size: 13px;">${htmlMetniKacir(e.message)}</div>`;
-    }
-
-    if (satanlarAlani) satanlarAlani.innerHTML = '';
-    if (kritikStokAlani) kritikStokAlani.innerHTML = '';
-  }
-}
-
-
 
 function raporAltSekmeDegistir(sekme, buton) {
   const sekmeler = [
@@ -10162,6 +10135,25 @@ raporlariCanliGuncelle().catch((hata) => {
     hata
   );
 });
+  }
+);
+
+socket.on(
+  "yeni_musteri_kaydedildi",
+  (veri) => {
+    console.log(
+      "👤 Yeni müşteri kaydedildi:",
+      veri
+    );
+
+    musterileriYukle();
+  }
+);
+
+socket.on(
+  "musteri_bilgileri_guncellendi",
+  () => {
+    musterileriYukle();
   }
 );
 

@@ -6,9 +6,9 @@ from app.models import Kullanici, Market
 app = create_app()
 
 with app.app_context():
-    email = "ahmetamca@kosebasimarket.com"
-    sifre = "HatayBakkal2026!"
-    dukkan_adi = "Köşebaşı Mahalle Bakkalı"
+    email = "nihatmarket@gmail.com"
+    sifre = "NihatSec123"
+    dukkan_adi = "Nihat Market"
 
     mevcut_market_sayisi = Market.query.count()
 
@@ -34,7 +34,7 @@ with app.app_context():
                 kullanici_id=kullanici.id,
                 ad=dukkan_adi,
                 adres="https://maps.app.goo.gl/CPR7e1GN8gCaBfLs6",
-                telefon="05551234567"
+                telefon="05366408006"
             )
 
             db.session.add(market)

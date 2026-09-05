@@ -1,9 +1,13 @@
 from flask import Blueprint, request, jsonify, session
+from datetime import timezone
+from zoneinfo import ZoneInfo
 from app import db, socketio
 from app.models import Urun, Siparis, SiparisDetay, Musteri, Market, Kullanici, FavoriUrun, Yorum
 from app.security import role_required
 
 musteri_bp = Blueprint("musteri", __name__)
+
+ISTANBUL_SAAT_DILIMI = ZoneInfo("Europe/Istanbul")
 
 
 def aktif_musteri_getir():
@@ -21,15 +25,63 @@ def siparis_json(s):
         "birim_fiyat": float(d.birim_fiyat)
     } for d in s.detaylar]
 
+    siparis_zamani_utc = s.olusturma_tarihi
+
+    if (
+        siparis_zamani_utc
+        and siparis_zamani_utc.tzinfo is None
+    ):
+        siparis_zamani_utc = siparis_zamani_utc.replace(
+            tzinfo=timezone.utc
+        )
+
+    siparis_zamani_istanbul = (
+        siparis_zamani_utc.astimezone(
+            ISTANBUL_SAAT_DILIMI
+        )
+        if siparis_zamani_utc
+        else None
+    )
+
+    karar_zamani_istanbul = None
+
+    if s.karar_tarihi:
+        karar_zamani_utc = s.karar_tarihi
+
+        if karar_zamani_utc.tzinfo is None:
+            karar_zamani_utc = karar_zamani_utc.replace(
+                tzinfo=timezone.utc
+            )
+
+        karar_zamani_istanbul = (
+            karar_zamani_utc.astimezone(
+                ISTANBUL_SAAT_DILIMI
+            )
+        )
+
     return {
         "id": s.id,
         "durum": s.durum,
+        "karar_tarihi": (
+            karar_zamani_istanbul.isoformat()
+            if karar_zamani_istanbul
+            else None
+        ),
+        "karar_saati": (
+            karar_zamani_istanbul.strftime("%H:%M")
+            if karar_zamani_istanbul
+            else None
+        ),
+        "red_sebebi": s.red_sebebi,
+        "siparis_notu": s.siparis_notu,
         "odeme_yontemi": s.odeme_yontemi,
         "teslimat_yontemi": s.teslimat_yontemi,
         "toplam_tutar": float(s.toplam_tutar),
         "tarih": (
-            s.olusturma_tarihi.strftime("%d.%m.%Y %H:%M")
-            if s.olusturma_tarihi
+            siparis_zamani_istanbul.strftime(
+                "%d.%m.%Y %H:%M"
+            )
+            if siparis_zamani_istanbul
             else ""
         ),
         "detaylar": kalemler
@@ -241,6 +293,13 @@ def profil_guncelle():
 
         db.session.commit()
 
+        socketio.emit(
+            "musteri_bilgileri_guncellendi",
+            {
+                "musteri_id": musteri.id
+            }
+        )
+
         return jsonify({
             "mesaj": "Profil bilgileriniz güncellendi."
         }), 200
@@ -292,8 +351,8 @@ def gecmis_siparisleri_getir():
         siparisler = Siparis.query.filter(
             Siparis.musteri_id == musteri.id,
             Siparis.durum.in_([
-                "teslim_edildi",
-                "iptal"
+                "onaylandi",
+                "reddedildi",
             ])
         ).order_by(
             Siparis.olusturma_tarihi.desc()
@@ -397,10 +456,7 @@ def aktif_siparisleri_getir():
 
         siparisler = Siparis.query.filter(
             Siparis.musteri_id == musteri.id,
-            Siparis.durum.notin_([
-                "teslim_edildi",
-                "iptal"
-            ])
+            Siparis.durum == "bekliyor"
         ).order_by(
             Siparis.olusturma_tarihi.desc()
         ).all()
@@ -411,57 +467,6 @@ def aktif_siparisleri_getir():
         ]), 200
 
     except Exception as e:
-        return jsonify({"hata": str(e)}), 500
-
-
-@musteri_bp.route(
-    "/siparisler/<int:siparis_id>/iptal",
-    methods=["POST"]
-)
-@role_required("musteri")
-def musteri_siparis_iptal(siparis_id):
-    try:
-        musteri = aktif_musteri_getir()
-        siparis = Siparis.query.get_or_404(siparis_id)
-
-        if not musteri or siparis.musteri_id != musteri.id:
-            return jsonify({
-                "hata": "Bu siparişi iptal etme yetkiniz yok!"
-            }), 403
-
-        if siparis.durum != "bekliyor":
-            return jsonify({
-                "hata": (
-                    "Hazırlanmaya başlanmış sipariş iptal edilemez. "
-                    "Lütfen bakkalı arayın."
-                )
-            }), 400
-
-        siparis.durum = "iptal"
-
-        for detay in siparis.detaylar:
-            if detay.urun:
-                detay.urun.stok_adet += detay.adet
-
-                if detay.urun.stok_adet > 0:
-                    detay.urun.aktif = True
-
-        db.session.commit()
-
-        socketio.emit("siparis_durumu_degisti", {
-            "siparis_id": siparis.id,
-            "yeni_durum": "iptal"
-        })
-
-        return jsonify({
-            "mesaj": (
-                "Siparişiniz iptal edildi "
-                "ve stoklar iade edildi."
-            )
-        }), 200
-
-    except Exception as e:
-        db.session.rollback()
         return jsonify({"hata": str(e)}), 500
 
 

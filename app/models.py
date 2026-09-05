@@ -67,7 +67,21 @@ class Siparis(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     market_id = db.Column(db.Integer, db.ForeignKey("marketler.id"), nullable=False)
     musteri_id = db.Column(db.Integer, db.ForeignKey("musteriler.id"), nullable=False)
-    durum = db.Column(db.String(20), default="bekliyor")  # bekliyor, hazirlaniyor, yolda, teslim_edildi, iptal
+    durum = db.Column(
+        db.String(20),
+        default="bekliyor",
+        nullable=False
+    )  # bekliyor, onaylandi, reddedildi
+
+    karar_tarihi = db.Column(
+        db.DateTime,
+        nullable=True
+    )
+
+    red_sebebi = db.Column(
+        db.Text,
+        nullable=True
+    )
     odeme_yontemi = db.Column(db.String(20), nullable=False)  # nakit, kart
     teslimat_yontemi = db.Column(db.String(20), nullable=False)  # adrese_teslim, gel_al
     siparis_notu = db.Column(db.Text, nullable=True)

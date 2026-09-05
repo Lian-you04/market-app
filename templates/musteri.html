@@ -177,11 +177,20 @@
 
   .order-history-card { border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-bottom: 12px; }
   .status-badge { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 12px; text-transform: uppercase; }
-  .st-bekliyor { background: #FEF3C7; color: #D97706; }
-  .st-hazirlaniyor { background: #DBEAFE; color: #2563EB; }
-  .st-yolda { background: #E0E7FF; color: #4F46E5; }
-  .st-teslim { background: #D1FAE5; color: #059669; }
-  .st-iptal { background: #FEE2E2; color: #DC2626; }
+  .st-bekliyor {
+  background: #FEF3C7;
+  color: #D97706;
+}
+
+.st-onaylandi {
+  background: #D1FAE5;
+  color: #059669;
+}
+
+.st-reddedildi {
+  background: #FEE2E2;
+  color: #DC2626;
+}
   .btn-cancel-order { background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.2s; }
   .btn-cancel-order:hover { background: #DC2626; color: white; }
 
@@ -646,20 +655,35 @@ async function profilKaydet() {
   }
 }
 
-async function siparislerimModalAc() {
+function htmlMetniKacir(metin) {
+  return String(metin ?? "").replace(
+    /[&<>"']/g,
+    karakter => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[karakter])
+  );
+}
+
+async function siparislerimModalAc(sessiz = false) {
   document.getElementById('profil-dropdown').style.display = 'none';
   document.getElementById('siparislerim-modal').classList.remove('hidden');
 
   const alan = document.getElementById('siparislerim-icerik');
 
-  alan.innerHTML = `
-    <div style="text-align:center; color:var(--text-muted); padding:20px;">
-      Siparişleriniz yükleniyor...
-    </div>
-  `;
+  if (!sessiz) {
+    alan.innerHTML = `
+      <div style="text-align:center; color:var(--text-muted); padding:20px;">
+        Siparişleriniz yükleniyor...
+      </div>
+    `;
+  }
 
   try {
-    const res = await fetch('/api/musteri/siparisler/gecmis');
+    const res = await fetch('/api/musteri/siparisler');
     const veri = await res.json().catch(() => null);
 
     if (!res.ok) {
@@ -676,22 +700,34 @@ async function siparislerimModalAc() {
     if (liste.length === 0) {
       alan.innerHTML = `
         <div style="text-align:center; color:var(--text-muted); padding:30px;">
-          Henüz tamamlanmış veya iptal edilmiş siparişiniz bulunmuyor.
+          Henüz siparişiniz bulunmuyor.
         </div>
       `;
       return;
     }
 
     alan.innerHTML = liste.map(s => {
-      const teslimEdildi = s.durum === 'teslim_edildi';
+      const rozetSinif =
+        s.durum === 'bekliyor'
+          ? 'st-bekliyor'
+          : s.durum === 'onaylandi'
+            ? 'st-onaylandi'
+            : 'st-reddedildi';
 
-      const rozetSinif = teslimEdildi
-        ? 'st-teslim'
-        : 'st-iptal';
-
-      const durumYazi = teslimEdildi
-        ? '✅ Teslim Edildi'
-        : '❌ İptal Edildi';
+      const durumYazi =
+        s.durum === 'bekliyor'
+          ? '⏳ Cevap bekleniyor'
+          : s.durum === 'onaylandi'
+            ? (
+                s.karar_saati
+                  ? `✅ ${s.karar_saati}’de onaylandı`
+                  : '✅ Onaylandı'
+              )
+            : (
+                s.karar_saati
+                  ? `❌ ${s.karar_saati}’de reddedildi`
+                  : '❌ Reddedildi'
+              );
 
       const urunDetayi = Array.isArray(s.detaylar)
         ? s.detaylar
@@ -743,6 +779,46 @@ async function siparislerimModalAc() {
             ${urunDetayi}
           </div>
 
+          ${
+            s.durum === 'reddedildi'
+            && s.red_sebebi
+              ? `
+                <div style="
+                  margin-bottom:10px;
+                  padding:9px 12px;
+                  border-radius:8px;
+                  background:#FFF1F2;
+                  border:1px solid #FECDD3;
+                  color:#9F1239;
+                  font-size:12px;
+                  font-weight:600;
+                ">
+                  📝 <b>Red sebebi:</b>
+                  ${htmlMetniKacir(s.red_sebebi)}
+                </div>
+              `
+              : ''
+          }
+          ${
+            s.siparis_notu
+              ? `
+                <div style="
+                  margin-bottom:10px;
+                  padding:9px 12px;
+                  border-radius:8px;
+                  background:#FFFBEB;
+                  border:1px solid #FDE68A;
+                  color:#92400E;
+                  font-size:12px;
+                  font-weight:600;
+                ">
+                  📝 <b>Sipariş notunuz:</b>
+                  ${htmlMetniKacir(s.siparis_notu)}
+                </div>
+              `
+              : ''
+          }
+
           <div style="
             display:flex;
             justify-content:space-between;
@@ -785,23 +861,23 @@ async function siparislerimModalAc() {
               >
                 🔁 Siparişi Tekrarla
               </button>
-              ${teslimEdildi ? `
-              <button
-                type="button"
-                onclick="yorumModaliniAc(${s.id})"
-                style="
-                  background:#ECFDF5;
-                  color:#059669;
-                  border:1px solid #A7F3D0;
-                  padding:7px 11px;
-                  border-radius:7px;
-                  font-size:11px;
-                  font-weight:800;
-                  cursor:pointer;
-                "
-              >
-                ⭐ Değerlendir
-              </button>` : ''}
+              ${s.durum === 'onaylandi' ? `
+                <button
+                  type="button"
+                  onclick="yorumModaliniAc(${s.id})"
+                  style="
+                    background:#ECFDF5;
+                    color:#059669;
+                    border:1px solid #A7F3D0;
+                    padding:7px 11px;
+                    border-radius:7px;
+                    font-size:11px;
+                    font-weight:800;
+                    cursor:pointer;
+                  "
+                >
+                  ⭐ Değerlendir
+                </button>` : ''}
             </div>
           </div>
         </div>
@@ -899,20 +975,6 @@ function favoridenSepeteEkle(urunId) {
   }
   sepetteDegistir(urunId, 1);
   document.getElementById('favorilerim-modal').classList.add('hidden');
-}
-
-async function siparisiIptalEt(id) {
-  if (confirm("Bu siparişinizi iptal etmek istediğinize emin misiniz?")) {
-    const res = await fetch(`/api/musteri/siparisler/${id}/iptal`, { method: 'POST' });
-    const veri = await res.json();
-    if (res.ok) {
-      alert(veri.mesaj);
-      siparislerimModalAc();
-      urunleriYukle('');
-    } else {
-      alert("Hata: " + veri.hata);
-    }
-  }
 }
 
 let degerlendirilecekSiparisId = null;
@@ -1581,7 +1643,7 @@ socket.on(
       modal
       && !modal.classList.contains("hidden")
     ) {
-      siparislerimModalAc();
+      siparislerimModalAc(true);
     }
   }
 );

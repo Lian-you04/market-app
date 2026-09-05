@@ -67,6 +67,9 @@
     max-width: 380px; line-height: 1.5; background: #F1F5F9; padding: 10px 14px; border-radius: 8px;
   }
 </style>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
 </head>
 <body>
 
@@ -149,6 +152,35 @@ async function loginMarketAdiniYukle() {
 }
 
 loginMarketAdiniYukle();
+
+const loginSocket = io();
+
+loginSocket.on(
+  "market_durumu_degisti",
+  (veri) => {
+    if (
+      Number(veri.market_id) !== 1
+      || !veri.ad
+    ) {
+      return;
+    }
+
+    const marketAdi =
+      String(veri.ad).trim();
+
+    const logo =
+      document.getElementById(
+        "login-market-logo"
+      );
+
+    if (logo) {
+      logo.textContent = marketAdi;
+    }
+
+    document.title =
+      `Giriş Yap — ${marketAdi}`;
+  }
+);
 
 async function girisYap(event) {
   event.preventDefault();

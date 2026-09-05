@@ -388,30 +388,27 @@ def dashboard_ozet_getir():
             Siparis.olusturma_tarihi < bitis_utc
         ).all()
 
-        tamamlanan_siparisler = [
+        onaylanan_siparisler = [
             siparis
             for siparis in siparisler
-            if siparis.durum == "teslim_edildi"
+            if siparis.durum == "onaylandi"
         ]
 
-        iptal_edilen_siparisler = [
+        reddedilen_siparisler = [
             siparis
             for siparis in siparisler
-            if siparis.durum == "iptal"
+            if siparis.durum == "reddedildi"
         ]
 
         bekleyen_siparisler = [
             siparis
             for siparis in siparisler
-            if siparis.durum not in [
-                "teslim_edildi",
-                "iptal"
-            ]
+            if siparis.durum == "bekliyor"
         ]
 
         ciro = sum(
             float(siparis.toplam_tutar)
-            for siparis in tamamlanan_siparisler
+            for siparis in onaylanan_siparisler
         )
 
         return jsonify({
@@ -425,11 +422,11 @@ def dashboard_ozet_getir():
             "siparis_basligi": siparis_basligi,
             "ciro_basligi": ciro_basligi,
             "donem_siparis": len(siparisler),
-            "tamamlanan_siparis": len(
-                tamamlanan_siparisler
+            "onaylanan_siparis": len(
+                onaylanan_siparisler
             ),
-            "iptal_edilen_siparis": len(
-                iptal_edilen_siparisler
+            "reddedilen_siparis": len(
+                reddedilen_siparisler
             ),
             "bekleyen_siparis": len(
                 bekleyen_siparisler
@@ -465,8 +462,8 @@ def dashboard_grafik_getir():
         ).date()
 
         labels = []
-        tamamlanan_veriler = []
-        iptal_veriler = []
+        onaylanan_veriler = []
+        reddedilen_veriler = []
 
         if donem == "gunluk":
             donem_baslangic_tarihi = (
@@ -495,8 +492,8 @@ def dashboard_grafik_getir():
 
             for saat in range(0, 24, 3):
                 saat_bitisi = saat + 3
-                tamamlanan_adet = 0
-                iptal_adet = 0
+                onaylanan_adet = 0
+                reddedilen_adet = 0
 
                 for siparis in siparisler:
                     siparis_utc = (
@@ -517,22 +514,22 @@ def dashboard_grafik_getir():
                     ):
                         continue
 
-                    if siparis.durum == "teslim_edildi":
-                        tamamlanan_adet += 1
+                    if siparis.durum == "onaylandi":
+                        onaylanan_adet += 1
 
-                    elif siparis.durum == "iptal":
-                        iptal_adet += 1
+                    elif siparis.durum == "reddedildi":
+                        reddedilen_adet += 1
 
                 labels.append(
                     f"{saat:02d}:00–{saat_bitisi:02d}:00"
                 )
 
-                tamamlanan_veriler.append(
-                    tamamlanan_adet
+                onaylanan_veriler.append(
+                    onaylanan_adet
                 )
 
-                iptal_veriler.append(
-                    iptal_adet
+                reddedilen_veriler.append(
+                    reddedilen_adet
                 )
 
         elif donem == "haftalik":
@@ -565,16 +562,16 @@ def dashboard_grafik_getir():
                     )
                 )
 
-                tamamlanan_adet = Siparis.query.filter(
+                onaylanan_adet = Siparis.query.filter(
                     Siparis.market_id == market_id,
-                    Siparis.durum == "teslim_edildi",
+                    Siparis.durum == "onaylandi",
                     Siparis.olusturma_tarihi >= baslangic_utc,
                     Siparis.olusturma_tarihi < bitis_utc
                 ).count()
 
-                iptal_adet = Siparis.query.filter(
+                reddedilen_adet = Siparis.query.filter(
                     Siparis.market_id == market_id,
-                    Siparis.durum == "iptal",
+                    Siparis.durum == "reddedildi",
                     Siparis.olusturma_tarihi >= baslangic_utc,
                     Siparis.olusturma_tarihi < bitis_utc
                 ).count()
@@ -583,12 +580,12 @@ def dashboard_grafik_getir():
                     tarih.strftime("%d.%m")
                 )
 
-                tamamlanan_veriler.append(
-                    tamamlanan_adet
+                onaylanan_veriler.append(
+                    onaylanan_adet
                 )
 
-                iptal_veriler.append(
-                    iptal_adet
+                reddedilen_veriler.append(
+                    reddedilen_adet
                 )
 
         elif donem == "aylik":
@@ -625,16 +622,16 @@ def dashboard_grafik_getir():
                     )
                 )
 
-                tamamlanan_adet = Siparis.query.filter(
+                onaylanan_adet = Siparis.query.filter(
                     Siparis.market_id == market_id,
-                    Siparis.durum == "teslim_edildi",
+                    Siparis.durum == "onaylandi",
                     Siparis.olusturma_tarihi >= baslangic_utc,
                     Siparis.olusturma_tarihi < bitis_utc
                 ).count()
 
-                iptal_adet = Siparis.query.filter(
+                reddedilen_adet = Siparis.query.filter(
                     Siparis.market_id == market_id,
-                    Siparis.durum == "iptal",
+                    Siparis.durum == "reddedildi",
                     Siparis.olusturma_tarihi >= baslangic_utc,
                     Siparis.olusturma_tarihi < bitis_utc
                 ).count()
@@ -643,12 +640,12 @@ def dashboard_grafik_getir():
                     f"{hafta_numarasi}. Hafta"
                 )
 
-                tamamlanan_veriler.append(
-                    tamamlanan_adet
+                onaylanan_veriler.append(
+                    onaylanan_adet
                 )
 
-                iptal_veriler.append(
-                    iptal_adet
+                reddedilen_veriler.append(
+                    reddedilen_adet
                 )
 
                 hafta_numarasi += 1
@@ -718,16 +715,16 @@ def dashboard_grafik_getir():
                     )
                 )
 
-                tamamlanan_adet = Siparis.query.filter(
+                onaylanan_adet = Siparis.query.filter(
                     Siparis.market_id == market_id,
-                    Siparis.durum == "teslim_edildi",
+                    Siparis.durum == "onaylandi",
                     Siparis.olusturma_tarihi >= baslangic_utc,
                     Siparis.olusturma_tarihi < bitis_utc
                 ).count()
 
-                iptal_adet = Siparis.query.filter(
+                reddedilen_adet = Siparis.query.filter(
                     Siparis.market_id == market_id,
-                    Siparis.durum == "iptal",
+                    Siparis.durum == "reddedildi",
                     Siparis.olusturma_tarihi >= baslangic_utc,
                     Siparis.olusturma_tarihi < bitis_utc
                 ).count()
@@ -736,12 +733,12 @@ def dashboard_grafik_getir():
                     ay_isimleri[ay - 1]
                 )
 
-                tamamlanan_veriler.append(
-                    tamamlanan_adet
+                onaylanan_veriler.append(
+                    onaylanan_adet
                 )
 
-                iptal_veriler.append(
-                    iptal_adet
+                reddedilen_veriler.append(
+                    reddedilen_adet
                 )
 
         else:
@@ -767,7 +764,7 @@ def dashboard_grafik_getir():
             )
             .filter(
                 Siparis.market_id == market_id,
-                Siparis.durum == "teslim_edildi",
+                Siparis.durum == "onaylandi",
                 Siparis.olusturma_tarihi
                 >= ciro_baslangici_utc,
                 Siparis.olusturma_tarihi
@@ -777,10 +774,10 @@ def dashboard_grafik_getir():
         )
 
         birlesik_veriler = [
-            tamamlanan + iptal
-            for tamamlanan, iptal in zip(
-                tamamlanan_veriler,
-                iptal_veriler
+            onaylanan + reddedilen
+            for onaylanan, reddedilen in zip(
+                onaylanan_veriler,
+                reddedilen_veriler
             )
         ]
 
@@ -790,20 +787,20 @@ def dashboard_grafik_getir():
 
             "veriler": birlesik_veriler,
 
-            "tamamlanan_veriler": (
-                tamamlanan_veriler
+            "onaylanan_veriler": (
+                onaylanan_veriler
             ),
 
-            "iptal_veriler": (
-                iptal_veriler
+            "reddedilen_veriler": (
+                reddedilen_veriler
             ),
 
-            "tamamlanan_toplam": sum(
-                tamamlanan_veriler
+            "onaylanan_toplam": sum(
+                onaylanan_veriler
             ),
 
-            "iptal_edilen_toplam": sum(
-                iptal_veriler
+            "reddedilen_toplam": sum(
+                reddedilen_veriler
             ),
 
             "ciro": round(
@@ -846,7 +843,7 @@ def dashboard_en_cok_satanlar_getir():
             .filter(
                 Urun.market_id == market_id,
                 Siparis.market_id == market_id,
-                Siparis.durum == "teslim_edildi"
+                Siparis.durum == "onaylandi"
             )
             .group_by(
                 Urun.id,
@@ -1547,10 +1544,8 @@ def siparisler_listele():
         izinli_durumlar = {
             "tumu",
             "bekliyor",
-            "hazirlaniyor",
-            "yolda",
-            "teslim_edildi",
-            "iptal"
+            "onaylandi",
+            "reddedildi"
         }
 
         if durum not in izinli_durumlar:
@@ -1588,19 +1583,18 @@ def siparisler_listele():
             Siparis.market_id == market_id
         )
 
+        gecmis_durumlari = [
+            "onaylandi",
+            "reddedildi"
+        ]
+
         if gorunum == "gecmis":
             siparis_sorgusu = siparis_sorgusu.filter(
-                Siparis.durum.in_([
-                    "teslim_edildi",
-                    "iptal"
-                ])
-            )
+                Siparis.durum.in_(gecmis_durumlari)
+           )
         else:
             siparis_sorgusu = siparis_sorgusu.filter(
-                Siparis.durum.notin_([
-                    "teslim_edildi",
-                    "iptal"
-                ])
+                Siparis.durum.notin_(gecmis_durumlari)
             )
 
         if durum != "tumu":
@@ -1650,6 +1644,15 @@ def siparisler_listele():
                     ISTANBUL_SAAT_DILIMI
                 )
             )
+
+            karar_zamani_istanbul = None
+
+            if siparis.karar_tarihi:
+                karar_zamani_istanbul = (
+                    siparis.karar_tarihi
+                    .replace(tzinfo=timezone.utc)
+                    .astimezone(ISTANBUL_SAAT_DILIMI)
+                )
 
             siparis_gunu = (
                 siparis_zamani_istanbul.date()
@@ -1770,6 +1773,17 @@ def siparisler_listele():
                     siparis_zamani_istanbul
                     .strftime("%H:%M")
                 ),
+                "karar_tarihi": (
+                    karar_zamani_istanbul.isoformat()
+                    if karar_zamani_istanbul
+                    else None
+                ),
+                "karar_saati": (
+                    karar_zamani_istanbul.strftime("%H:%M")
+                    if karar_zamani_istanbul
+                    else None
+                ),
+                "red_sebebi": siparis.red_sebebi,
                 "siparis_notu": (
                     siparis.siparis_notu
                 ),
@@ -1794,67 +1808,128 @@ def siparisler_listele():
 def siparis_durum_guncelle(siparis_id):
     try:
         siparis = Siparis.query.get_or_404(siparis_id)
-        market_id = siparis.market_id
-        stok_degisikligi_urun_idleri = set()    
         data = request.get_json(silent=True) or {}
+
+        if not isinstance(data, dict):
+            return jsonify({
+                "hata": "Geçersiz istek verisi."
+            }), 400
+
         yeni_durum = data.get("durum")
 
         izinli_durumlar = {
-            "teslim_edildi",
-            "iptal"
+            "onaylandi",
+            "reddedildi"
         }
 
         if yeni_durum not in izinli_durumlar:
             return jsonify({
                 "hata": (
-                    "Sipariş yalnızca teslim edildi "
-                    "veya iptal edildi olarak işaretlenebilir."
+                    "Sipariş yalnızca onaylandı "
+                    "veya reddedildi olarak işaretlenebilir."
                 )
             }), 400
 
-        if siparis.durum in ["teslim_edildi", "iptal"]:
+        if siparis.durum != "bekliyor":
             return jsonify({
                 "hata": (
-                    "Tamamlanmış siparişin durumu "
-                    "tekrar değiştirilemez."
+                    "Bu sipariş market cevabı bekleyen "
+                    "durumda değil veya daha önce karara bağlandı."
                 )
             }), 400
 
-        if yeni_durum == "iptal":
+        red_sebebi = None
+
+        if yeni_durum == "reddedildi":
+            red_sebebi = data.get("red_sebebi")
+
+            if not isinstance(red_sebebi, str):
+                return jsonify({
+                    "hata": "Red sebebi zorunludur."
+                }), 400
+
+            red_sebebi = red_sebebi.strip()
+
+            if not red_sebebi:
+                return jsonify({
+                    "hata": "Red sebebi boş bırakılamaz."
+                }), 400
+
+            if len(red_sebebi) > 500:
+                return jsonify({
+                    "hata": "Red sebebi en fazla 500 karakter olabilir."
+                }), 400
+
+        stok_degisikligi_urun_idleri = set()
+
+        # Sipariş oluşturulurken stoktan düşülen ürünleri,
+        # sipariş reddedilince tekrar stoğa ekle.
+        if yeni_durum == "reddedildi":
             for detay in siparis.detaylar:
                 if detay.urun:
-                    detay.urun.stok_adet += detay.adet
+                    mevcut_stok = detay.urun.stok_adet or 0
+                    detay.urun.stok_adet = (
+                        mevcut_stok + detay.adet
+                    )
                     detay.urun.aktif = detay.urun.stok_adet > 0
                     stok_degisikligi_urun_idleri.add(detay.urun.id)
 
+        karar_zamani_utc = datetime.utcnow()
+
         siparis.durum = yeni_durum
+        siparis.karar_tarihi = karar_zamani_utc
+        siparis.red_sebebi = red_sebebi
 
         db.session.commit()
 
+        karar_zamani_istanbul = (
+            karar_zamani_utc
+            .replace(tzinfo=timezone.utc)
+            .astimezone(ISTANBUL_SAAT_DILIMI)
+        )
+
+        karar_tarihi_iso = karar_zamani_istanbul.isoformat()
+        karar_saati = karar_zamani_istanbul.strftime("%H:%M")
+
         socketio.emit("siparis_durumu_degisti", {
             "siparis_id": siparis.id,
-            "market_id": market_id,
-            "yeni_durum": yeni_durum
+            "market_id": siparis.market_id,
+            "musteri_id": siparis.musteri_id,
+            "yeni_durum": yeni_durum,
+            "karar_tarihi": karar_tarihi_iso,
+            "karar_saati": karar_saati,
+            "red_sebebi": red_sebebi
         })
 
         for urun_id in stok_degisikligi_urun_idleri:
             socketio.emit(
                 "urun_degisikligi",
                 {
-                    "market_id": market_id,
+                    "market_id": siparis.market_id,
                     "urun_id": urun_id,
                     "islem": "stok_guncellendi"
                 }
             )
 
+        mesaj = (
+            "Sipariş onaylandı."
+            if yeni_durum == "onaylandi"
+            else "Sipariş reddedildi."
+        )
+
         return jsonify({
-            "mesaj": "Sipariş durumu güncellendi.",
-            "yeni_durum": yeni_durum
+            "mesaj": mesaj,
+            "yeni_durum": yeni_durum,
+            "karar_tarihi": karar_tarihi_iso,
+            "karar_saati": karar_saati,
+            "red_sebebi": red_sebebi
         }), 200
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({"hata": str(e)}), 500
+        return jsonify({
+            "hata": str(e)
+        }), 500
 
 
 @market_bp.route("/musteriler", methods=["GET"])
@@ -1930,6 +2005,20 @@ def musteri_siparisleri_getir(musteri_id):
                 )
             )
 
+            karar_zamani_istanbul = None
+
+            if siparis.karar_tarihi:
+                karar_zamani_utc = (
+                    siparis.karar_tarihi
+                    .replace(tzinfo=timezone.utc)
+                )
+
+                karar_zamani_istanbul = (
+                    karar_zamani_utc.astimezone(
+                        ISTANBUL_SAAT_DILIMI
+                    )
+                )
+
             kalemler = [
                 {
                     "ad": (
@@ -1952,6 +2041,13 @@ def musteri_siparisleri_getir(musteri_id):
                     "%d.%m.%Y %H:%M"
                 ),
                 "durum": siparis.durum,
+                "karar_saati": (
+                    karar_zamani_istanbul.strftime("%H:%M")
+                    if karar_zamani_istanbul
+                    else None
+                ),
+                "red_sebebi": siparis.red_sebebi,
+                "siparis_notu": siparis.siparis_notu,
                 "toplam_tutar": float(siparis.toplam_tutar),
                 "detaylar": kalemler
             })
@@ -2128,33 +2224,33 @@ def raporlari_getir():
         ciro_toplam = 0
         ciro_bugun = 0
         ciro_bu_ay = 0
-        siparis_sayisi_tamamlanan = 0
-        siparis_sayisi_iptal = 0
+        siparis_sayisi_onaylanan = 0
+        siparis_sayisi_reddedilen = 0
         
         for s in siparisler:
-            # Sadece başarıyla teslim edilenleri ciroya sayıyoruz
-            if s.durum == "teslim_edildi":
+            # Sadece başarıyla onaylanan siparişleri ciroya sayıyoruz
+            if s.durum == "onaylandi":
                 ciro_toplam += float(s.toplam_tutar)
-                siparis_sayisi_tamamlanan += 1
+                siparis_sayisi_onaylanan += 1
                 
                 if s.olusturma_tarihi >= bugun_baslangic:
                     ciro_bugun += float(s.toplam_tutar)
                 if s.olusturma_tarihi >= ay_baslangic:
                     ciro_bu_ay += float(s.toplam_tutar)
-            elif s.durum == "iptal":
-                siparis_sayisi_iptal += 1
+            elif s.durum == "reddedildi":
+                siparis_sayisi_reddedilen += 1
 
-        toplam_islem = siparis_sayisi_tamamlanan + siparis_sayisi_iptal
-        iptal_orani = (siparis_sayisi_iptal / toplam_islem * 100) if toplam_islem > 0 else 0
-        ortalama_sepet = (ciro_toplam / siparis_sayisi_tamamlanan) if siparis_sayisi_tamamlanan > 0 else 0
+        toplam_islem = siparis_sayisi_onaylanan + siparis_sayisi_reddedilen
+        reddetme_orani = (siparis_sayisi_reddedilen / toplam_islem * 100) if toplam_islem > 0 else 0
+        ortalama_sepet = (ciro_toplam / siparis_sayisi_onaylanan) if siparis_sayisi_onaylanan > 0 else 0
 
         # --- 2. KATEGORİ VE ÜRÜN BAZLI ANALİZ ---
         kategori_satis = {}
         urun_satis = {}
         
-        # Hangi ürünlerin ne kadar sattığını bulmak için teslim edilen sipariş detaylarını geziyoruz
-        teslim_edilen_idleri = [s.id for s in siparisler if s.durum == "teslim_edildi"]
-        detaylar = SiparisDetay.query.filter(SiparisDetay.siparis_id.in_(teslim_edilen_idleri)).all() if teslim_edilen_idleri else []
+        # Hangi ürünlerin ne kadar sattığını bulmak için onaylanan sipariş detaylarını geziyoruz
+        onaylanan_idleri = [s.id for s in siparisler if s.durum == "onaylandi"]
+        detaylar = SiparisDetay.query.filter(SiparisDetay.siparis_id.in_(onaylanan_idleri)).all() if onaylanan_idleri else []
 
         for d in detaylar:
             if d.urun:
@@ -2194,9 +2290,9 @@ def raporlari_getir():
                 "ortalama_sepet": ortalama_sepet
             },
             "operasyon": {
-                "tamamlanan_siparis": siparis_sayisi_tamamlanan,
-                "iptal_siparis": siparis_sayisi_iptal,
-                "iptal_orani": iptal_orani,
+                "onaylanan_siparis": siparis_sayisi_onaylanan,
+                "reddedilen_siparis": siparis_sayisi_reddedilen,
+                "reddetme_orani": reddetme_orani,
                 "toplam_musteri": musteri_sayisi,
                 "ortalama_puan": round(ortalama_puan, 1)
             },
@@ -2386,46 +2482,46 @@ def rapor_genel_bakis():
                 bitis_tarihi
             )
 
-            teslim_edilenler = [
+            onaylananlar = [
                 siparis
                 for siparis in siparisler
                 if siparis.durum
-                == "teslim_edildi"
+                == "onaylandi"
             ]
 
-            iptal_edilenler = [
+            reddedilenler = [
                 siparis
                 for siparis in siparisler
-                if siparis.durum == "iptal"
+                if siparis.durum == "reddedildi"
             ]
 
             ciro = sum(
                 float(siparis.toplam_tutar)
-                for siparis in teslim_edilenler
+                for siparis in onaylananlar
             )
 
-            tamamlanmis_siparis_sayisi = (
-                len(teslim_edilenler)
-                + len(iptal_edilenler)
+            karara_baglanan_siparis_sayisi = (
+                len(onaylananlar)
+                + len(reddedilenler)
             )
 
-            iptal_orani = (
-                len(iptal_edilenler)
-                / tamamlanmis_siparis_sayisi
+            reddetme_orani = (
+                len(reddedilenler)
+                / karara_baglanan_siparis_sayisi
                 * 100
-                if tamamlanmis_siparis_sayisi > 0
+                if karara_baglanan_siparis_sayisi > 0
                 else 0
             )
 
             ortalama_sepet = (
-                ciro / len(teslim_edilenler)
-                if teslim_edilenler
+                ciro / len(onaylananlar)
+                if onaylananlar
                 else 0
             )
 
             return {
                 "ciro": ciro,
-                "iptal_orani": iptal_orani,
+                "reddetme_orani": reddetme_orani,
                 "ortalama_sepet": (
                     ortalama_sepet
                 ),
@@ -2452,7 +2548,7 @@ def rapor_genel_bakis():
                 1
             )
 
-        def teslim_cirosu(
+        def onaylanan_cirosu(
             baslangic_tarihi,
             bitis_tarihi
         ):
@@ -2465,7 +2561,7 @@ def rapor_genel_bakis():
                 float(siparis.toplam_tutar)
                 for siparis in siparisler
                 if siparis.durum
-                == "teslim_edildi"
+                == "onaylandi"
             )
 
         def ciro_grafigi_olustur(
@@ -2504,7 +2600,7 @@ def rapor_genel_bakis():
                             <= siparis_zamani_istanbul.hour
                             < saat_bitisi
                             and siparis.durum
-                            == "teslim_edildi"
+                            == "onaylandi"
                         ):
                             saat_cirosu += float(
                                 siparis.toplam_tutar
@@ -2530,7 +2626,7 @@ def rapor_genel_bakis():
 
                     veriler.append(
                         round(
-                            teslim_cirosu(
+                            onaylanan_cirosu(
                                 tarih,
                                 tarih
                                 + timedelta(days=1)
@@ -2566,7 +2662,7 @@ def rapor_genel_bakis():
 
                     veriler.append(
                         round(
-                            teslim_cirosu(
+                            onaylanan_cirosu(
                                 hafta_baslangici,
                                 hafta_bitisi
                             ),
@@ -2627,7 +2723,7 @@ def rapor_genel_bakis():
 
                     veriler.append(
                         round(
-                            teslim_cirosu(
+                            onaylanan_cirosu(
                                 ay_baslangici,
                                 sonraki_ay_baslangici
                             ),
@@ -2707,7 +2803,7 @@ def rapor_genel_bakis():
 
             eski_sparkline.append(
                 round(
-                    teslim_cirosu(
+                    onaylanan_cirosu(
                         tarih,
                         tarih
                         + timedelta(days=1)
@@ -2729,10 +2825,8 @@ def rapor_genel_bakis():
 
         durum_sayilari = {
             "bekliyor": 0,
-            "hazirlaniyor": 0,
-            "yolda": 0,
-            "teslim_edildi": 0,
-            "iptal": 0
+            "onaylandi": 0,
+            "reddedildi": 0
         }
 
         durum_sonuclari = db.session.query(
@@ -2831,17 +2925,17 @@ def rapor_genel_bakis():
                     ]
                 )
             ),
-            "iptal_orani": round(
-                bu_ay_metrik["iptal_orani"],
+            "reddetme_orani": round(
+                bu_ay_metrik["reddetme_orani"],
                 1
             ),
-            "iptal_orani_trend": (
+            "reddetme_orani_trend": (
                 yuzde_degisim(
                     bu_ay_metrik[
-                        "iptal_orani"
+                        "reddetme_orani"
                     ],
                     gecen_ay_metrik[
-                        "iptal_orani"
+                        "reddetme_orani"
                     ]
                 )
             ),
@@ -2895,14 +2989,14 @@ def rapor_satis_analizi():
                 sonraki_tarih
             )
 
-            teslim_edilenler = Siparis.query.filter(
+            onaylananlar = Siparis.query.filter(
                 Siparis.market_id == market_id,
-                Siparis.durum == "teslim_edildi",
+                Siparis.durum == "onaylandi",
                 Siparis.olusturma_tarihi >= baslangic_utc,
                 Siparis.olusturma_tarihi < bitis_utc
             ).all()
 
-            ciro = sum(float(s.toplam_tutar) for s in teslim_edilenler)
+            ciro = sum(float(s.toplam_tutar) for s in onaylananlar)
 
             tum_siparis_sayisi = Siparis.query.filter(
                 Siparis.market_id == market_id,
@@ -2920,9 +3014,9 @@ def rapor_satis_analizi():
                     bugun_istanbul + timedelta(days=1)
                 )
 
-                teslim_edilenler = Siparis.query.filter(
+                onaylananlar = Siparis.query.filter(
                     Siparis.market_id == market_id,
-                    Siparis.durum == "teslim_edildi",
+                    Siparis.durum == "onaylandi",
                     Siparis.olusturma_tarihi >= gun_baslangic_utc,
                     Siparis.olusturma_tarihi < gun_bitis_utc
                 ).all()
@@ -2943,7 +3037,7 @@ def rapor_satis_analizi():
                     if saat <= s_istanbul.hour < saat_bitisi:
                         saat_siparis_sayisi += 1
 
-                        if s.durum == "teslim_edildi":
+                        if s.durum == "onaylandi":
                             saat_cirosu += float(s.toplam_tutar)
 
                 labels.append(f"{saat:02d}:00")
@@ -2997,14 +3091,14 @@ def rapor_satis_analizi():
                 ciro_veriler.append(ciro)
                 siparis_veriler.append(siparis_sayisi)
 
-        # Ödeme ve teslimat yöntemi dağılımı (teslim edilen siparişler üzerinden)
+        # Ödeme ve teslimat yöntemi dağılımı (onaylanan siparişler üzerinden)
         odeme_dagilimi = dict(
             db.session.query(
                 Siparis.odeme_yontemi,
                 db.func.count(Siparis.id)
             ).filter(
                 Siparis.market_id == market_id,
-                Siparis.durum == "teslim_edildi"
+                Siparis.durum == "onaylandi"
             ).group_by(Siparis.odeme_yontemi).all()
         )
 
@@ -3014,7 +3108,7 @@ def rapor_satis_analizi():
                 db.func.count(Siparis.id)
             ).filter(
                 Siparis.market_id == market_id,
-                Siparis.durum == "teslim_edildi"
+                Siparis.durum == "onaylandi"
             ).group_by(Siparis.teslimat_yontemi).all()
         )
 
@@ -3038,20 +3132,20 @@ def rapor_urun_kategori():
     try:
         market_id = request.args.get("market_id", 1, type=int)
 
-        teslim_edilen_id_sorgusu = db.session.query(Siparis.id).filter(
+        onaylanan_id_sorgusu = db.session.query(Siparis.id).filter(
             Siparis.market_id == market_id,
-            Siparis.durum == "teslim_edildi"
+            Siparis.durum == "onaylandi"
         )
 
-        teslim_edilen_idler = [
-            satir[0] for satir in teslim_edilen_id_sorgusu.all()
+        onaylanan_idler = [
+            satir[0] for satir in onaylanan_id_sorgusu.all()
         ]
 
         detaylar = (
             SiparisDetay.query
-            .filter(SiparisDetay.siparis_id.in_(teslim_edilen_idler))
+            .filter(SiparisDetay.siparis_id.in_(onaylanan_idler))
             .all()
-            if teslim_edilen_idler
+            if onaylanan_idler
             else []
         )
 
@@ -3203,7 +3297,7 @@ def rapor_musteriler():
 
         siparisler = Siparis.query.filter(
             Siparis.market_id == market_id,
-            Siparis.durum == "teslim_edildi",
+            Siparis.durum == "onaylandi",
             Siparis.olusturma_tarihi >= baslangic_utc,
             Siparis.olusturma_tarihi < bitis_utc
         ).all()
