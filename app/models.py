@@ -56,8 +56,20 @@ class Urun(db.Model):
     market_id = db.Column(db.Integer, db.ForeignKey("marketler.id"), nullable=False)
     ad = db.Column(db.String(100), nullable=False)
     aciklama = db.Column(db.Text, nullable=True)
+
     fiyat = db.Column(db.Numeric(10, 2), nullable=False)
-    stok_adet = db.Column(db.Integer, default=0)
+
+    satis_hesaplama_turu = db.Column(
+        db.String(20),
+        nullable=False,
+        default="adet",
+        server_default="adet"
+    )
+
+    stok_adet = db.Column(
+        db.Numeric(16, 6),
+        default=0
+    )
     kategori = db.Column(db.String(50), nullable=False)
     resim_url = db.Column(db.Text, nullable=True)
     aktif = db.Column(db.Boolean, default=True)
@@ -97,10 +109,32 @@ class SiparisDetay(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     siparis_id = db.Column(db.Integer, db.ForeignKey("siparisler.id"), nullable=False)
     urun_id = db.Column(db.Integer, db.ForeignKey("urunler.id"), nullable=False)
-    adet = db.Column(db.Integer, nullable=False)
+    adet = db.Column(
+        db.Numeric(16, 6),
+        nullable=False
+    )
     birim_fiyat = db.Column(db.Numeric(10, 2), nullable=False)
 
+    satis_hesaplama_turu = db.Column(
+        db.String(20),
+        nullable=False,
+        default="adet",
+        server_default="adet"
+    )
+
+    satir_toplami = db.Column(
+        db.Numeric(10, 2),
+        nullable=True
+    )
+
     urun = db.relationship("Urun")
+
+    @property
+    def satir_tutari(self):
+        if self.satir_toplami is not None:
+            return self.satir_toplami
+
+        return self.birim_fiyat * self.adet
 
 class FavoriUrun(db.Model):
     __tablename__ = "favori_urunler"

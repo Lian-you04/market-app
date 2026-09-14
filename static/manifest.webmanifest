@@ -1,0 +1,25 @@
+{
+  "name": "Nihat Market",
+  "short_name": "Nihat Market",
+  "lang": "tr",
+  "start_url": "/musteri",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#FF7B00",
+  "background_color": "#F8FAFC",
+  "description": "Nihat Market müşteri uygulaması",
+  "icons": [
+    {
+      "src": "/static/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

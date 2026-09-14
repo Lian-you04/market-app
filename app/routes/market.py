@@ -1,6 +1,7 @@
 import os
 import uuid
 import json
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from datetime import datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 
@@ -18,6 +19,78 @@ from app.models import (
 )
 from app.security import role_required
 
+def fiyat_degerini_hazirla(deger):
+    try:
+        fiyat = Decimal(str(deger))
+
+        if not fiyat.is_finite() or fiyat < 0:
+            raise ValueError(
+                "Fiyat geçerli ve negatif olmayan bir sayı olmalıdır."
+            )
+
+        fiyat = fiyat.quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+        if fiyat > Decimal("99999999.99"):
+            raise ValueError(
+                "Fiyat en fazla 99999999.99 TL olabilir."
+            )
+
+        return fiyat
+
+    except InvalidOperation as hata:
+        raise ValueError(
+            "Geçerli bir fiyat girilmelidir."
+        ) from hata
+
+
+def stok_degerini_hazirla(deger):
+    try:
+        stok = Decimal(str(deger))
+
+        if not stok.is_finite() or stok < 0:
+            raise ValueError(
+                "Stok geçerli ve negatif olmayan bir sayı olmalıdır."
+            )
+
+        stok = stok.quantize(
+            Decimal("0.000001"),
+            rounding=ROUND_HALF_UP
+        )
+
+        if stok > Decimal("9999999999.999999"):
+            raise ValueError(
+                "Stok değeri izin verilen sınırı aşıyor."
+            )
+
+        return stok
+
+    except (InvalidOperation, TypeError, ValueError) as hata:
+        raise ValueError(
+            "Geçerli bir stok değeri girilmelidir."
+        ) from hata
+
+SATIS_HESAPLAMA_TURLERI = {
+    "adet",
+    "kg",
+    "tutar"
+}
+
+
+def satis_hesaplama_turunu_hazirla(deger):
+    if deger in (None, ""):
+        return "adet"
+
+    satis_turu = str(deger).strip().lower()
+
+    if satis_turu not in SATIS_HESAPLAMA_TURLERI:
+        raise ValueError(
+            "Satış biçimi adet, kg veya tutar olmalıdır."
+        )
+
+    return satis_turu
 
 market_bp = Blueprint("market", __name__)
 
@@ -830,6 +903,7 @@ def dashboard_en_cok_satanlar_getir():
                 Urun.id,
                 Urun.ad,
                 Urun.resim_url,
+                SiparisDetay.satis_hesaplama_turu,
                 db.func.sum(SiparisDetay.adet).label("toplam_adet")
             )
             .join(
@@ -848,7 +922,8 @@ def dashboard_en_cok_satanlar_getir():
             .group_by(
                 Urun.id,
                 Urun.ad,
-                Urun.resim_url
+                Urun.resim_url,
+                SiparisDetay.satis_hesaplama_turu
             )
             .order_by(
                 db.func.sum(SiparisDetay.adet).desc(),
@@ -863,9 +938,18 @@ def dashboard_en_cok_satanlar_getir():
                 "urun_id": urun_id,
                 "ad": ad,
                 "resim_url": resim_url,
-                "toplam_adet": int(toplam_adet or 0)
+                "satis_hesaplama_turu": (
+                    satis_hesaplama_turu or "adet"
+                ),
+                "toplam_adet": float(toplam_adet or 0)
             }
-            for urun_id, ad, resim_url, toplam_adet in sonuclar
+            for (
+                urun_id,
+                ad,
+                resim_url,
+                satis_hesaplama_turu,
+                toplam_adet
+            ) in sonuclar
         ]), 200
 
     except Exception as e:
@@ -936,7 +1020,7 @@ def urun_ekle():
                 "hata": "Ürün fiyatı zorunludur."
             }), 400
 
-        fiyat = float(fiyat_degeri)
+        fiyat = fiyat_degerini_hazirla(fiyat_degeri)
 
         stok_degeri = form_verisi.get(
             "stok_adet",
@@ -946,7 +1030,7 @@ def urun_ekle():
         if stok_degeri in (None, ""):
             stok_degeri = 0
 
-        stok_adet = int(stok_degeri)
+        stok_adet = stok_degerini_hazirla(stok_degeri)
 
         if fiyat < 0:
             return jsonify({
@@ -1025,6 +1109,26 @@ def urun_ekle():
         if not kategori:
             kategori = "meyve_sebze"
 
+        satis_hesaplama_turu = (
+            satis_hesaplama_turunu_hazirla(
+                form_verisi.get(
+                    "satis_hesaplama_turu",
+                    "adet"
+                )
+            )
+        )
+
+        if (
+            satis_hesaplama_turu == "adet"
+            and stok_adet != stok_adet.to_integral_value()
+        ):
+            return jsonify({
+                "hata": (
+                    "Adet satışında stok miktarı "
+                    "tam sayı olmalıdır."
+                )
+            }), 400
+
         urun = Urun(
             market_id=market_id,
             ad=ad,
@@ -1037,6 +1141,7 @@ def urun_ekle():
             fiyat=fiyat,
             stok_adet=stok_adet,
             kategori=kategori,
+            satis_hesaplama_turu=satis_hesaplama_turu,
             resim_url=resim_yolu,
             aktif=stok_adet > 0
         )
@@ -1057,7 +1162,10 @@ def urun_ekle():
             "id": urun.id,
             "ad": urun.ad,
             "fiyat": float(urun.fiyat),
-            "stok_adet": urun.stok_adet,
+            "stok_adet": float(urun.stok_adet),
+            "satis_hesaplama_turu": (
+                urun.satis_hesaplama_turu
+            ),
             "aktif": urun.aktif,
             "resim_url": resim_yolu,
             "mesaj": "Ürün başarıyla eklendi."
@@ -1203,8 +1311,45 @@ def urun_guncelle(urun_id):
                 )
             }), 400
 
+        if "satis_hesaplama_turu" in data:
+            yeni_satis_hesaplama_turu = (
+                satis_hesaplama_turunu_hazirla(
+                    data["satis_hesaplama_turu"]
+                )
+            )
+
+            if (
+                yeni_satis_hesaplama_turu
+                != urun.satis_hesaplama_turu
+            ):
+                bekleyen_siparis_var_mi = (
+                    db.session.query(SiparisDetay.id)
+                    .join(
+                        Siparis,
+                        Siparis.id
+                        == SiparisDetay.siparis_id
+                    )
+                    .filter(
+                        SiparisDetay.urun_id == urun.id,
+                        Siparis.durum == "bekliyor"
+                    )
+                    .first()
+                )
+
+                if bekleyen_siparis_var_mi:
+                    return jsonify({
+                        "hata": (
+                            "Bu ürüne ait bekleyen sipariş "
+                            "varken satış biçimi değiştirilemez."
+                        )
+                    }), 409
+
+            urun.satis_hesaplama_turu = (
+                yeni_satis_hesaplama_turu
+            )
+
         if "fiyat" in data:
-            yeni_fiyat = float(data["fiyat"])
+            yeni_fiyat = fiyat_degerini_hazirla(data["fiyat"])
 
             if yeni_fiyat < 0:
                 return jsonify({
@@ -1214,7 +1359,9 @@ def urun_guncelle(urun_id):
             urun.fiyat = yeni_fiyat
 
         if "stok_adet" in data:
-            yeni_stok = int(data["stok_adet"])
+            yeni_stok = stok_degerini_hazirla(
+                data["stok_adet"]
+            )
 
             if yeni_stok < 0:
                 return jsonify({
@@ -1223,6 +1370,25 @@ def urun_guncelle(urun_id):
 
             urun.stok_adet = yeni_stok
             urun.aktif = yeni_stok > 0
+
+        guncel_stok = (
+            yeni_stok
+            if "stok_adet" in data
+            else urun.stok_adet
+        )
+
+        if (
+            urun.satis_hesaplama_turu == "adet"
+            and guncel_stok != (
+                guncel_stok.to_integral_value()
+            )
+        ):
+            return jsonify({
+                "hata": (
+                    "Adet satışında stok miktarı "
+                    "tam sayı olmalıdır."
+                )
+            }), 400
 
         if "aktif" in data:
             ham_aktif = data["aktif"]
@@ -1356,6 +1522,13 @@ def urun_guncelle(urun_id):
             {
                 "market_id": urun.market_id,
                 "urun_id": urun.id,
+                "stok_adet": float(urun.stok_adet),
+                "stok_durumu": (
+                    "var"
+                    if urun.stok_adet > 0
+                    else "tukendi"
+                ),
+                "aktif": urun.aktif,
                 "islem": "guncellendi"
             }
         )
@@ -1365,7 +1538,10 @@ def urun_guncelle(urun_id):
             "id": urun.id,
             "ad": urun.ad,
             "fiyat": float(urun.fiyat),
-            "stok_adet": urun.stok_adet,
+            "stok_adet": float(urun.stok_adet),
+            "satis_hesaplama_turu": (
+                urun.satis_hesaplama_turu
+            ),
             "kategori": urun.kategori,
             "resim_url": urun.resim_url,
             "aktif": urun.aktif
@@ -1501,7 +1677,10 @@ def urunler_listele():
                 "ad": urun.ad,
                 "aciklama": urun.aciklama,
                 "fiyat": float(urun.fiyat),
-                "stok_adet": urun.stok_adet,
+                "stok_adet": float(urun.stok_adet),
+                "satis_hesaplama_turu": (
+                    urun.satis_hesaplama_turu
+                ),
                 "kategori": urun.kategori,
                 "resim_url": urun.resim_url,
                 "aktif": urun.aktif
@@ -1624,9 +1803,18 @@ def siparisler_listele():
                 )
             )
 
-        siparisler = siparis_sorgusu.order_by(
-            Siparis.olusturma_tarihi.desc()
-        ).all()
+        if gorunum == "aktif":
+            # Aktif siparişlerde FIFO: en eski sipariş önce gösterilir.
+            siparisler = siparis_sorgusu.order_by(
+                Siparis.olusturma_tarihi.asc(),
+                Siparis.id.asc()
+            ).all()
+        else:
+            # Geçmiş siparişlerde mevcut davranışı koru: en yeni önce.
+            siparisler = siparis_sorgusu.order_by(
+                Siparis.olusturma_tarihi.desc(),
+                Siparis.id.desc()
+            ).all()
 
         sonuc = []
         gunluk_sira_haritalari = {}
@@ -1718,15 +1906,15 @@ def siparisler_listele():
                         if detay.urun
                         else "Silinmiş Ürün"
                     ),
-                    "adet": detay.adet,
+                    "adet": float(detay.adet),
+                    "satis_hesaplama_turu": (
+                        detay.satis_hesaplama_turu
+                    ),
                     "birim_fiyat": float(
                         detay.birim_fiyat
                     ),
-                    "satir_toplam": (
-                        float(
-                            detay.birim_fiyat
-                        )
-                        * detay.adet
+                    "satir_toplam": float(
+                        detay.satir_tutari
                     )
                 }
                 for detay in siparis.detaylar
@@ -2026,10 +2214,13 @@ def musteri_siparisleri_getir(musteri_id):
                         if detay.urun
                         else "Silinmiş Ürün"
                     ),
-                    "adet": detay.adet,
+                    "adet": float(detay.adet),
+                    "satis_hesaplama_turu": (
+                        detay.satis_hesaplama_turu
+                    ),
                     "birim_fiyat": float(detay.birim_fiyat),
-                    "satir_toplam": (
-                        float(detay.birim_fiyat) * detay.adet
+                    "satir_toplam": float(
+                        detay.satir_tutari
                     )
                 }
                 for detay in siparis.detaylar
@@ -2230,13 +2421,13 @@ def raporlari_getir():
         for s in siparisler:
             # Sadece başarıyla onaylanan siparişleri ciroya sayıyoruz
             if s.durum == "onaylandi":
-                ciro_toplam += float(s.toplam_tutar)
+                ciro_toplam += s.toplam_tutar
                 siparis_sayisi_onaylanan += 1
                 
                 if s.olusturma_tarihi >= bugun_baslangic:
-                    ciro_bugun += float(s.toplam_tutar)
+                    ciro_bugun += s.toplam_tutar
                 if s.olusturma_tarihi >= ay_baslangic:
-                    ciro_bu_ay += float(s.toplam_tutar)
+                    ciro_bu_ay += s.toplam_tutar
             elif s.durum == "reddedildi":
                 siparis_sayisi_reddedilen += 1
 
@@ -2256,14 +2447,23 @@ def raporlari_getir():
             if d.urun:
                 # Kategori cirosunu topla
                 kat = d.urun.kategori
-                kategori_satis[kat] = kategori_satis.get(kat, 0) + float(d.birim_fiyat * d.adet)
+                satir_tutari = d.satir_tutari
+                kategori_satis[kat] = kategori_satis.get(kat, 0) + satir_tutari
                 
                 # Ürün bazlı satış adetlerini ve ciroyu topla
                 uid = d.urun.id
                 if uid not in urun_satis:
-                    urun_satis[uid] = {"ad": d.urun.ad, "adet": 0, "ciro": 0}
+                    urun_satis[uid] = {
+                        "ad": d.urun.ad,
+                        "satis_hesaplama_turu": (
+                            d.satis_hesaplama_turu
+                            or "adet"
+                        ),
+                        "adet": 0,
+                        "ciro": 0
+                    }
                 urun_satis[uid]["adet"] += d.adet
-                urun_satis[uid]["ciro"] += float(d.birim_fiyat * d.adet)
+                urun_satis[uid]["ciro"] += satir_tutari
 
         # En çok satan ilk 10 ürünü büyükten küçüğe sırala
         en_cok_satanlar = sorted(urun_satis.values(), key=lambda x: x["adet"], reverse=True)[:10]
@@ -2274,7 +2474,7 @@ def raporlari_getir():
         # --- 3. OPERASYONEL METRİKLER (KRİTİK STOK UYARISI) ---
         # Stoğu 5 ve altına düşen aktif ürünler
         kritik_stok_urunleri = Urun.query.filter_by(market_id=market_id, aktif=True).filter(Urun.stok_adet <= 5).all()
-        kritik_stok = [{"id": u.id, "ad": u.ad, "stok": u.stok_adet} for u in kritik_stok_urunleri]
+        kritik_stok = [{"id": u.id, "ad": u.ad, "stok": float(u.stok_adet)} for u in kritik_stok_urunleri]
 
         # --- 4. MÜŞTERİ MEMNUNİYETİ ---
         musteri_sayisi = Musteri.query.count()
@@ -2282,6 +2482,18 @@ def raporlari_getir():
         ortalama_puan = sum(y.puan for y in yorumlar) / len(yorumlar) if yorumlar else 0
 
         # Tüm veriyi paketleyip HTML/JS'ye gönderiyoruz
+        ciro_bugun = float(ciro_bugun)
+        ciro_bu_ay = float(ciro_bu_ay)
+        ciro_toplam = float(ciro_toplam)
+        ortalama_sepet = float(ortalama_sepet)
+
+        for kategori in kategori_sirali:
+            kategori["ciro"] = float(kategori["ciro"])
+
+        for urun in en_cok_satanlar:
+            urun["ciro"] = float(urun["ciro"])
+            urun["adet"] = float(urun["adet"])
+
         return jsonify({
             "finans": {
                 "ciro_bugun": ciro_bugun,
@@ -2944,7 +3156,7 @@ def rapor_genel_bakis():
             "durum_donem": durum_donem,
             "durum_donem_basligi": (
                 f"{izinli_donemler[durum_donem]} "
-                "Teslimat / İptal Oranı"
+                "Onay / Red Oranı"
             )
         }), 200
 
@@ -3151,35 +3363,61 @@ def rapor_urun_kategori():
 
         kategori_satis = {}
         urun_satis = {}
+        satilan_urun_idleri = set()
 
         for d in detaylar:
             if not d.urun:
                 continue
 
             kat = d.urun.kategori
-            satir_toplam = float(d.birim_fiyat) * d.adet
+            satir_toplam = d.satir_tutari
 
             if kat not in kategori_satis:
-                kategori_satis[kat] = {"ciro": 0, "adet": 0}
+                kategori_satis[kat] = {
+                    "ciro": 0,
+                    "adet": 0,
+                    "kg": 0
+                }
 
             kategori_satis[kat]["ciro"] += satir_toplam
-            kategori_satis[kat]["adet"] += d.adet
+
+            satis_turu = (
+                d.satis_hesaplama_turu
+                or "adet"
+            )
+
+            if satis_turu == "adet":
+                kategori_satis[kat]["adet"] += d.adet
+            else:
+                kategori_satis[kat]["kg"] += d.adet
 
             uid = d.urun.id
+            urun_anahtari = (
+                uid,
+                satis_turu
+            )
 
-            if uid not in urun_satis:
-                urun_satis[uid] = {
+            satilan_urun_idleri.add(uid)
+
+            if urun_anahtari not in urun_satis:
+                urun_satis[urun_anahtari] = {
                     "id": uid,
                     "ad": d.urun.ad,
+                    "satis_hesaplama_turu": satis_turu,
                     "adet": 0,
                     "ciro": 0
                 }
 
-            urun_satis[uid]["adet"] += d.adet
-            urun_satis[uid]["ciro"] += satir_toplam
+            urun_satis[urun_anahtari]["adet"] += d.adet
+            urun_satis[urun_anahtari]["ciro"] += satir_toplam
 
         kategori_sirali = [
-            {"kategori": k, "ciro": v["ciro"], "adet": v["adet"]}
+            {
+                "kategori": k,
+                "ciro": float(v["ciro"]),
+                "adet": float(v["adet"]),
+                "kg": float(v["kg"])
+            }
             for k, v in sorted(
                 kategori_satis.items(),
                 key=lambda item: item[1]["ciro"],
@@ -3193,8 +3431,6 @@ def rapor_urun_kategori():
             reverse=True
         )[:10]
 
-        satilan_urun_idleri = set(urun_satis.keys())
-
         hic_satilmayanlar = Urun.query.filter(
             Urun.market_id == market_id,
             Urun.aktif == True,
@@ -3202,13 +3438,20 @@ def rapor_urun_kategori():
         ).order_by(Urun.ad.asc()).limit(10).all()
 
         hic_satilmayan_liste = [
-            {"id": u.id, "ad": u.ad, "stok": u.stok_adet}
+            {"id": u.id, "ad": u.ad, "stok": float(u.stok_adet)}
             for u in hic_satilmayanlar
         ]
 
         return jsonify({
             "kategoriler": kategori_sirali,
-            "en_cok_satanlar": en_cok_satanlar,
+            "en_cok_satanlar": [
+                {
+                    **urun,
+                    "adet": float(urun["adet"]),
+                    "ciro": float(urun["ciro"])
+                }
+                for urun in en_cok_satanlar
+            ],
             "hic_satilmayanlar": hic_satilmayan_liste
         }), 200
 
@@ -3384,10 +3627,16 @@ def rapor_stok():
         tum_urunler = Urun.query.filter_by(market_id=market_id).all()
 
         toplam_cesit = len(tum_urunler)
-        toplam_stok_adedi = sum(u.stok_adet for u in tum_urunler)
+        toplam_stok_adedi = float(sum(
+            u.stok_adet for u in tum_urunler
+        ))
         
         # Stokların toplam ciro/satış potansiyeli veya maliyet değeri (Fiyat * Stok Adedi)
-        toplam_envanter_degeri = sum(float(u.fiyat) * u.stok_adet for u in tum_urunler if u.aktif)
+        toplam_envanter_degeri = float(sum(
+            u.fiyat * u.stok_adet
+            for u in tum_urunler
+            if u.aktif
+        ))
 
         # Durumlarına göre ürünleri ayıralım
         tukenenler = []
@@ -3400,7 +3649,7 @@ def rapor_stok():
                 "ad": u.ad,
                 "kategori": u.kategori,
                 "fiyat": float(u.fiyat),
-                "stok": u.stok_adet,
+                "stok": float(u.stok_adet),
                 "aktif": u.aktif
             }
             if u.stok_adet <= 0 or not u.aktif:

@@ -1,4 +1,11 @@
 from flask import Blueprint, request, jsonify, session
+from sqlalchemy import or_
+from decimal import (
+    Decimal,
+    InvalidOperation,
+    ROUND_DOWN,
+    ROUND_HALF_UP
+)
 from datetime import timezone
 from zoneinfo import ZoneInfo
 from app import db, socketio
@@ -6,6 +13,85 @@ from app.models import Urun, Siparis, SiparisDetay, Musteri, Market, Kullanici, 
 from app.security import role_required
 
 musteri_bp = Blueprint("musteri", __name__)
+
+def siparis_miktarini_hazirla(deger):
+    try:
+        miktar = Decimal(str(deger))
+
+        if not miktar.is_finite() or miktar <= 0:
+            raise ValueError(
+                "Sipariş miktarı pozitif bir sayı olmalıdır."
+            )
+
+        return miktar.quantize(
+            Decimal("0.000001"),
+            rounding=ROUND_DOWN
+        )
+
+    except (InvalidOperation, TypeError, ValueError) as hata:
+        raise ValueError(
+            "Geçerli bir sipariş miktarı girilmelidir."
+        ) from hata
+
+def siparis_tutarini_hazirla(deger):
+    try:
+        tutar = Decimal(str(deger))
+
+        if not tutar.is_finite() or tutar <= 0:
+            raise ValueError(
+                "Sipariş tutarı pozitif bir sayı olmalıdır."
+            )
+
+        tutar = tutar.quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+        if tutar > Decimal("99999999.99"):
+            raise ValueError(
+                "Sipariş tutarı izin verilen sınırı aşıyor."
+            )
+
+        return tutar
+
+    except (InvalidOperation, TypeError, ValueError) as hata:
+        raise ValueError(
+            "Geçerli bir sipariş tutarı girilmelidir."
+        ) from hata
+
+def tutar_icin_kg_miktari_hazirla(
+    hedef_tutar,
+    kg_fiyati,
+    stok
+):
+    if kg_fiyati <= 0:
+        raise ValueError(
+            "Kilogram fiyatı sıfırdan büyük olmalıdır."
+        )
+
+    if stok < 0:
+        raise ValueError(
+            "Stok negatif olamaz."
+        )
+
+    if hedef_tutar > kg_fiyati * stok:
+        raise ValueError(
+            "İstenen tutar mevcut stok değerini aşıyor."
+        )
+
+    miktar = (
+        hedef_tutar / kg_fiyati
+    ).quantize(
+        Decimal("0.000001"),
+        rounding=ROUND_DOWN
+    )
+
+    if miktar <= 0:
+        raise ValueError(
+            "İstenen tutar geçerli bir kilogram miktarı oluşturmuyor."
+        )
+
+    return miktar
 
 ISTANBUL_SAAT_DILIMI = ZoneInfo("Europe/Istanbul")
 
@@ -21,8 +107,10 @@ def siparis_json(s):
     kalemler = [{
         "urun_id": d.urun_id,
         "ad": d.urun.ad if d.urun else "Silinmiş Ürün",
-        "adet": d.adet,
-        "birim_fiyat": float(d.birim_fiyat)
+        "adet": float(d.adet),
+        "satis_hesaplama_turu": d.satis_hesaplama_turu,
+        "birim_fiyat": float(d.birim_fiyat),
+        "satir_toplam": float(d.satir_tutari)
     } for d in s.detaylar]
 
     siparis_zamani_utc = s.olusturma_tarihi
@@ -110,62 +198,62 @@ def kategoriler_listele():
         {
             "id": "et_tavuk",
             "ad": "🥩 Et & Tavuk",
-            "resim": "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=200&q=80"
+            "resim": "/static/category-images/et-tavuk.jpg"
         },
         {
             "id": "meyve_sebze",
             "ad": "🍅 Meyve & Sebze",
-            "resim": "https://images.unsplash.com/photo-1610348725531-843dff563e2c?auto=format&fit=crop&w=200&q=80"
+            "resim": "/static/category-images/meyve-sebze.jpg"
         },
         {
             "id": "sut_kahvaltilik",
             "ad": "🧀 Süt & Kahvaltı",
-            "resim": "https://images.unsplash.com/photo-1628088062854-d1870b4553da?auto=format&fit=crop&w=200&q=80"
+            "resim": "/static/category-images/sut-kahvaltilik.jpg"
         },
         {
             "id": "aburcubur",
             "ad": "🍫 Aburcubur",
-            "resim": "https://images.unsplash.com/photo-1606312619070-d48b4c652a52?auto=format&fit=crop&w=200&q=80"
+            "resim": "/static/category-images/aburcubur.jpg"
         },
         {
             "id": "icecek",
             "ad": "🥤 İçecekler",
-            "resim": "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=200&q=80"
+            "resim": "/static/category-images/icecek.jpg"
         },
         {
             "id": "ekmek_firin",
             "ad": "🍞 Ekmek & Fırın",
-            "resim": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=200&q=80"
+            "resim": "/static/category-images/ekmek-firin.jpg"
         },
         {
             "id": "tatlilar",
             "ad": "🍰 Tatlılar",
-            "resim": "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=200&q=80"
+            "resim": "/static/category-images/tatlilar.jpg"
         },
         {
             "id": "temizlik",
             "ad": "🧼 Temizlik",
-            "resim": "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=200&q=80"
+            "resim": "/static/category-images/temizlik.jpg"
         },
         {
             "id": "kozmetik",
             "ad": "🧴 Kozmetik",
-            "resim": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=200&q=80"
+            "resim": "/static/category-images/kozmetik.jpg"
         },
         {
             "id": "dondurma",
             "ad": "🍦 Dondurma",
-            "resim": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=200&q=80"
+            "resim": "/static/category-images/dondurma.jpg"
         },
         {
             "id": "evcil_hayvan_mamasi",
             "ad": "🐾 Evcil Hayvan Maması",
-            "resim": "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?auto=format&fit=crop&w=200&q=80"
+            "resim": "/static/category-images/evcil-hayvan-mamasi.jpg"
         },
         {
             "id": "elektronik",
             "ad": "🔌 Elektronik",
-            "resim": "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=200&q=80"
+            "resim": "/static/category-images/elektronik.jpg"
         }
     ])
 
@@ -178,8 +266,10 @@ def urunleri_getir():
 
         query = Urun.query.filter(
             Urun.market_id == market_id,
-            Urun.aktif.is_(True),
-            Urun.stok_adet > 0
+            or_(
+                Urun.aktif.is_(True),
+                Urun.stok_adet <= 0
+            )
         )
 
         if kategori:
@@ -204,7 +294,10 @@ def urunleri_getir():
             "aciklama": u.aciklama,
             "fiyat": float(u.fiyat),
             "resim_url": u.resim_url,
-            "max_alinabilir_adet": u.stok_adet,
+            "satis_hesaplama_turu": (
+                u.satis_hesaplama_turu
+            ),
+            "max_alinabilir_adet": float(u.stok_adet),
             "stok_durumu": "var" if u.stok_adet > 0 else "tukendi",
             "favori": u.id in favori_ids
         } for u in urunler]), 200
@@ -402,21 +495,79 @@ def siparisi_tekrarla(siparis_id):
                 eklenemeyenler.append(urun.ad)
                 continue
 
-            eklenecek_adet = min(
-                detay.adet,
-                urun.stok_adet
+            satis_turu = (
+                urun.satis_hesaplama_turu
+                or "adet"
             )
+
+            eski_satis_turu = (
+                detay.satis_hesaplama_turu
+                or "adet"
+            )
+
+            if eski_satis_turu != satis_turu:
+                eklenemeyenler.append(
+                    f"{urun.ad}: satış biçimi değişmiş; "
+                    "yeniden seçilmelidir"
+                )
+                continue
+
+            hedef_tutar = None
+
+            if satis_turu == "tutar":
+                hedef_tutar = detay.satir_toplami
+
+                if hedef_tutar is None:
+                    hedef_tutar = (
+                        detay.birim_fiyat
+                        * detay.adet
+                    )
+
+                try:
+                    eklenecek_adet = (
+                        tutar_icin_kg_miktari_hazirla(
+                            hedef_tutar,
+                            urun.fiyat,
+                            urun.stok_adet
+                        )
+                    )
+
+                except ValueError:
+                    eklenemeyenler.append(
+                        f"{urun.ad}: güncel fiyat ve stok "
+                        "eski hedef tutarı karşılamıyor"
+                    )
+                    continue
+
+            else:
+                eklenecek_adet = min(
+                    detay.adet,
+                    urun.stok_adet
+                )
 
             sepete_eklenecekler.append({
                 "urun_id": urun.id,
                 "ad": urun.ad,
-                "adet": eklenecek_adet,
+                "adet": float(eklenecek_adet),
+                "tutar": (
+                    float(hedef_tutar)
+                    if hedef_tutar is not None
+                    else None
+                ),
                 "fiyat": float(urun.fiyat),
+                "satis_hesaplama_turu": (
+                    urun.satis_hesaplama_turu
+                ),
                 "resim_url": urun.resim_url,
-                "max_alinabilir_adet": urun.stok_adet
+                "max_alinabilir_adet": float(
+                    urun.stok_adet
+                )
             })
 
-            if eklenecek_adet < detay.adet:
+            if (
+                satis_turu != "tutar"
+                and eklenecek_adet < detay.adet
+            ):
                 eklenemeyenler.append(
                     f"{urun.ad}: yalnızca "
                     f"{eklenecek_adet} adet stokta"
@@ -491,8 +642,11 @@ def favorileri_getir():
             "aciklama": f.urun.aciklama,
             "fiyat": float(f.urun.fiyat),
             "resim_url": f.urun.resim_url,
-            "stok_adet": f.urun.stok_adet,
-            "max_alinabilir_adet": f.urun.stok_adet,
+            "satis_hesaplama_turu": (
+                f.urun.satis_hesaplama_turu
+            ),
+            "stok_adet": float(f.urun.stok_adet),
+            "max_alinabilir_adet": float(f.urun.stok_adet),
             "stok_durumu": (
                 "var"
                 if f.urun.stok_adet > 0
@@ -679,7 +833,18 @@ def siparis_olustur():
 
             try:
                 urun_id = int(kalem.get("urun_id"))
-                adet = int(kalem.get("adet"))
+
+                ham_miktar = kalem.get("adet")
+
+                if (
+                    ham_miktar in (None, "")
+                    and "tutar" in kalem
+                ):
+                    ham_miktar = kalem.get("tutar")
+
+                adet = siparis_miktarini_hazirla(
+                    ham_miktar
+                )
 
             except (TypeError, ValueError):
                 return jsonify({
@@ -703,7 +868,10 @@ def siparis_olustur():
 
         kontrol_edilmis_kalemler = []
 
-        for urun_id, toplam_adet in urun_adetleri.items():
+        satir_toplamlari = {}
+
+        for urun_id in sorted(urun_adetleri):
+            toplam_adet = urun_adetleri[urun_id]
             urun = (
                 Urun.query
                 .filter_by(id=urun_id)
@@ -723,6 +891,75 @@ def siparis_olustur():
                     )
                 }), 400
 
+            satis_turu = (
+                urun.satis_hesaplama_turu
+                or "adet"
+            )
+
+            if satis_turu == "adet":
+                if (
+                    toplam_adet
+                    != toplam_adet.to_integral_value()
+                ):
+                    return jsonify({
+                        "hata": (
+                            f"'{urun.ad}' adetle satılıyor; "
+                            "küsuratlı miktar kullanılamaz."
+                        )
+                    }), 400
+
+                toplam_adet = (
+                    toplam_adet.to_integral_value()
+                )
+
+            elif satis_turu == "kg":
+                yarim_kg_adimi = (
+                    toplam_adet / Decimal("0.5")
+                )
+
+                if (
+                    yarim_kg_adimi
+                    != yarim_kg_adimi.to_integral_value()
+                ):
+                    return jsonify({
+                        "hata": (
+                            f"'{urun.ad}' ürünü için miktar "
+                            "0,5 kg adımlarıyla seçilmelidir."
+                        )
+                    }), 400
+
+            elif satis_turu == "tutar":
+                hedef_tutar = (
+                    siparis_tutarini_hazirla(
+                        toplam_adet
+                    )
+                )
+
+                toplam_adet = (
+                    tutar_icin_kg_miktari_hazirla(
+                        hedef_tutar,
+                        urun.fiyat,
+                        urun.stok_adet
+                    )
+                )
+
+                satir_toplamlari[urun.id] = (
+                    hedef_tutar
+                )
+
+            else:
+                return jsonify({
+                    "hata": (
+                        f"'{urun.ad}' için geçersiz "
+                        "satış biçimi."
+                    )
+                }), 400
+
+            if urun.id not in satir_toplamlari:
+                satir_toplamlari[urun.id] = (
+                    urun.fiyat * toplam_adet
+                )
+
             if urun.stok_adet < toplam_adet:
                 return jsonify({
                     "hata": (
@@ -737,11 +974,11 @@ def siparis_olustur():
             )
 
         toplam = sum(
-            float(urun.fiyat) * adet
+            satir_toplamlari[urun.id]
             for urun, adet in kontrol_edilmis_kalemler
         )
 
-        minimum_tutar = float(
+        minimum_tutar = (
             market.min_siparis_tutari or 0
         )
 
@@ -775,21 +1012,25 @@ def siparis_olustur():
             odeme_yontemi=odeme_yontemi,
             teslimat_yontemi="adrese_teslim",
             siparis_notu=siparis_notu,
-            toplam_tutar=0.0
+            toplam_tutar=toplam
         )
 
         db.session.add(yeni_siparis)
         db.session.flush()
 
         for urun, adet in kontrol_edilmis_kalemler:
-            fiyat = float(urun.fiyat)
+            fiyat = urun.fiyat
 
             db.session.add(
                 SiparisDetay(
                     siparis_id=yeni_siparis.id,
                     urun_id=urun.id,
                     adet=adet,
-                    birim_fiyat=fiyat
+                    birim_fiyat=fiyat,
+                    satis_hesaplama_turu=urun.satis_hesaplama_turu,
+                    satir_toplami=(
+                        satir_toplamlari[urun.id]
+                    )
                 )
             )
 
@@ -803,6 +1044,18 @@ def siparis_olustur():
         yeni_siparis.toplam_tutar = toplam
 
         db.session.commit()
+
+        for urun, adet in kontrol_edilmis_kalemler:
+            socketio.emit("urun_degisikligi", {
+                "market_id": market_id,
+                "urun_id": urun.id,
+                "stok_adet": float(urun.stok_adet),
+                "stok_durumu": (
+                    "var"
+                    if urun.stok_adet > 0
+                    else "tukendi"
+                )
+            })
 
         socketio.emit("yeni_siparis_geldi", {
             "market_id": market_id,

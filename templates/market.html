@@ -2441,7 +2441,10 @@ html.siparis-gecmis-ilk-yukleme
 
     <button
       class="btn btn-primary"
-      onclick="document.getElementById('urun-ekle-form').classList.toggle('hidden')"
+      onclick="
+        document.getElementById('urun-ekle-form').classList.toggle('hidden');
+        satisTuruBirimEtiketleriniGuncelle();
+      "
     >
       + Yeni Ürün Ekle
     </button>
@@ -2529,7 +2532,7 @@ html.siparis-gecmis-ilk-yukleme
       id="u-stok"
       type="number"
       min="0"
-      step="1"
+      step="0.000001"
       placeholder="0"
       style="
         width: 100%;
@@ -2540,7 +2543,43 @@ html.siparis-gecmis-ilk-yukleme
     >
   </div>
 
-  <div>
+  <div style="grid-column: 3 / span 2; grid-row: 2;">
+    <label
+      for="u-satis-hesaplama-turu"
+      style="
+        display: block;
+        margin-bottom: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-dark);
+      "
+    >
+      Satış biçimi
+    </label>
+
+    <select
+      id="u-satis-hesaplama-turu"
+      onchange="satisTuruBirimEtiketleriniGuncelle()"
+      style="
+        width: 100%;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+      "
+    >
+      <option value="adet">
+        Adet — TL/adet
+      </option>
+      <option value="kg">
+        Kg — TL/kg
+      </option>
+      <option value="tutar">
+        Tutar — TL/gr
+      </option>
+    </select>
+  </div>
+
+  <div style="grid-column: 1 / span 2; grid-row: 2;">
     <label
       for="u-kategori"
       style="
@@ -2671,7 +2710,7 @@ html.siparis-gecmis-ilk-yukleme
               <th>Ürün Görseli & Bilgileri</th>
               <th>Kategori</th>
               <th>Fiyat</th>
-              <th>Stok Adedi</th>
+              <th>Stok Miktarı</th>
               <th>Durum</th>
               <th>İşlem</th>
             </tr>
@@ -4104,9 +4143,24 @@ async function dashboardEnCokSatanlariYukle() {
 
       const adet = document.createElement('div');
 
-      adet.textContent = `${
-        Number(urun.toplam_adet) || 0
-      } adet`;
+      const satisTuru = (
+        urun.satis_hesaplama_turu || 'adet'
+      );
+
+      const birim = (
+        satisTuru === 'adet'
+          ? 'adet'
+          : 'kg'
+      );
+
+      adet.textContent = Number(
+        urun.toplam_adet || 0
+      ).toLocaleString(
+        'tr-TR',
+        {
+          maximumFractionDigits: 6
+        }
+      ) + ` ${birim}`;
 
       adet.style.fontSize = '14px';
       adet.style.fontWeight = '800';
@@ -5473,11 +5527,41 @@ const res = await fetch(
         )
       : "#";
 
-    const kalemler = s.detaylar.map(
-      d => `
+const kalemler = s.detaylar.map(
+  d => {
+    const satisTuru = (
+      d.satis_hesaplama_turu || 'adet'
+    );
+
+    const detayMiktari = Number(
+      d.adet
+    ).toLocaleString(
+      "tr-TR",
+      {
+        maximumFractionDigits: 6
+      }
+    );
+
+    const miktarYazisi =
+      satisTuru === 'kg'
+        ? `${detayMiktari} kg`
+        : satisTuru === 'tutar'
+          ? `${
+              Number(
+                d.satir_toplam
+              ).toLocaleString(
+                "tr-TR",
+                {
+                  minimumFractionDigits: 2
+                }
+              )
+            } TL (${detayMiktari} kg)`
+          : `${detayMiktari} adet`;
+
+    return `
         <div class="item-row">
           <span>
-            <b>${d.adet} adet</b> × ${d.ad}
+            <b>${miktarYazisi}</b> × ${d.ad}
           </span>
 
           <div style="
@@ -5497,8 +5581,9 @@ const res = await fetch(
             </span>
           </div>
         </div>
-      `
-    ).join("");
+      `;
+  }
+).join("");
 
     return `
       <div class="order-card">
@@ -6565,6 +6650,19 @@ aciklamaInput.value = (
     urun.kategori
   );
 
+  const satisTuruSelect = document.getElementById(
+    'urun-modal-satis-hesaplama-turu'
+  );
+
+  if (satisTuruSelect) {
+    satisTuruSelect.value = (
+      urun.satis_hesaplama_turu
+      || 'adet'
+    );
+  }
+
+  satisTuruModalBirimEtiketleriniGuncelle();
+
   document.getElementById(
     'urun-guncelle-modal'
   ).classList.remove('hidden');
@@ -6911,6 +7009,32 @@ function urunGuncelleModalKapat() {
   ).classList.add('hidden');
 }
 
+function satisTuruModalBirimEtiketleriniGuncelle() {
+  const satisTuru = document.getElementById(
+    'urun-modal-satis-hesaplama-turu'
+  ).value;
+
+  const fiyatEtiketi = document.querySelector(
+    'label[for="urun-modal-fiyat"]'
+  );
+
+  const stokEtiketi = document.querySelector(
+    'label[for="urun-modal-stok"]'
+  );
+
+  if (!fiyatEtiketi || !stokEtiketi) {
+    return;
+  }
+
+  if (satisTuru === 'adet') {
+    fiyatEtiketi.textContent = 'Fiyat (TL/adet)';
+    stokEtiketi.textContent = 'Stok (adet)';
+  } else {
+    fiyatEtiketi.textContent = 'Fiyat (TL/kg)';
+    stokEtiketi.textContent = 'Stok (kg)';
+  }
+}
+
 async function urunModalKaydet() {
   if (!urunModalId) {
     return;
@@ -6923,6 +7047,12 @@ async function urunModalKaydet() {
   const kategori = document.getElementById(
     'urun-modal-kategori'
   ).value;
+
+    const satisHesaplamaTuru = (
+    document.getElementById(
+      'urun-modal-satis-hesaplama-turu'
+    ).value
+  );
 
   const fiyatMetni = document.getElementById(
     'urun-modal-fiyat'
@@ -6955,20 +7085,34 @@ async function urunModalKaydet() {
 
   if (
     stokMetni === ''
-    || !Number.isInteger(stokAdet)
+    || !Number.isFinite(stokAdet)
     || stokAdet < 0
   ) {
     alert(
-      'Stok adedi 0 veya daha büyük '
-      + 'bir tam sayı olmalıdır.'
+      'Stok 0 veya daha büyük '
+      + 'geçerli bir sayı olmalıdır.'
     );
     return;
   }
+
+  if (
+  satisHesaplamaTuru === 'adet'
+  && !Number.isInteger(stokAdet)
+) {
+  alert(
+    'Adet satışında stok tam sayı olmalıdır.'
+  );
+  return;
+}
 
   const formVerisi = new FormData();
 
   formVerisi.append('ad', ad);
   formVerisi.append('kategori', kategori);
+  formVerisi.append(
+    'satis_hesaplama_turu',
+    satisHesaplamaTuru
+  );
   formVerisi.append('fiyat', fiyat);
   formVerisi.append('stok_adet', stokAdet);
   formVerisi.append('aciklama', aciklama);
@@ -7103,6 +7247,18 @@ function urunDetayKartAc(id) {
 
   urunDetayId = Number(id);
 
+    const satisTuru = (
+    urun.satis_hesaplama_turu || 'adet'
+  );
+
+  const fiyatBirimi = satisTuru === 'adet'
+    ? 'TL/adet'
+    : 'TL/kg';
+
+  const stokBirimi = satisTuru === 'adet'
+    ? 'adet'
+    : 'kg';
+
   urunDetayGorselleri = (
     urun.resim_url || ''
   )
@@ -7135,13 +7291,13 @@ function urunDetayKartAc(id) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       }
-    ) + ' TL'
+    ) + ' ' + fiyatBirimi
   );
 
   document.getElementById(
     'urun-detay-stok'
   ).textContent = (
-    `${Number(urun.stok_adet)} adet`
+    `${Number(urun.stok_adet)} ${stokBirimi}`
   );
 
   const stokVar = (
@@ -7463,6 +7619,10 @@ async function urunleriYukle() {
   {
     ad: u.ad,
     kategori: u.kategori,
+    satis_hesaplama_turu: (
+      u.satis_hesaplama_turu
+      || 'adet'
+    ),
     fiyat: Number(u.fiyat),
     stok_adet: u.aktif
   ? Number(u.stok_adet)
@@ -7577,6 +7737,18 @@ if (urunAramaInput) {
       || 'Kategori yok'
     );
 
+    const satisTuru = (
+      u.satis_hesaplama_turu || 'adet'
+    );
+
+    const fiyatBirimi = satisTuru === 'adet'
+      ? 'TL/adet'
+      : 'TL/kg';
+
+    const stokBirimi = satisTuru === 'adet'
+      ? 'adet'
+      : 'kg';
+
     const gorunenStokAdedi = (
       u.aktif
       && Number(u.stok_adet) > 0
@@ -7665,14 +7837,19 @@ if (urunAramaInput) {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2
             }
-          )} TL
+          )} ${fiyatBirimi}
         </td>
 
         <td style="
           font-weight: 700;
           text-align: center;
         ">
-          ${gorunenStokAdedi}
+          ${gorunenStokAdedi.toLocaleString(
+           'tr-TR',
+           {
+             maximumFractionDigits: 6
+           }
+          )} ${stokBirimi}
         </td>
 
         <td>
@@ -8474,16 +8651,58 @@ async function musteriSiparisleriGor(musteriId) {
                 )
               : (s.durum || '-');
 
-      const kalemler = (s.detaylar || []).map((d) => `
-        <div class="item-row">
-          <span><b>${d.adet} adet</b> × ${htmlMetniKacir(d.ad)}</span>
-          <span style="font-weight: 700;">
-            ${Number(d.satir_toplam).toLocaleString('tr-TR', {
+      const kalemler = (s.detaylar || []).map((d) => {
+        const satisTuru = (
+          d.satis_hesaplama_turu || 'adet'
+        );
+
+        const miktar = Number(
+          d.adet
+        ).toLocaleString(
+          'tr-TR',
+          {
+            maximumFractionDigits: 6
+          }
+        );
+
+        let miktarYazisi;
+
+        if (satisTuru === 'kg') {
+          miktarYazisi = `${miktar} kg`;
+        } else if (satisTuru === 'tutar') {
+          const satirTutari = Number(
+            d.satir_toplam || 0
+          ).toLocaleString(
+            'tr-TR',
+            {
               minimumFractionDigits: 2
-            })} TL
-          </span>
-        </div>
-      `).join('');
+            }
+          );
+
+          miktarYazisi = (
+            `${satirTutari} TL (${miktar} kg)`
+          );
+        } else {
+          miktarYazisi = `${miktar} adet`;
+        }
+
+        return `
+          <div class="item-row">
+            <span>
+              <b>${miktarYazisi}</b> ×
+              ${htmlMetniKacir(d.ad)}
+            </span>
+            <span style="font-weight: 700;">
+              ${Number(d.satir_toplam).toLocaleString(
+                'tr-TR',
+                {
+                  minimumFractionDigits: 2
+                }
+              )} TL
+            </span>
+          </div>
+        `;
+      }).join('');
 
       return `
         <div class="musteri-siparis-karti">
@@ -8723,11 +8942,71 @@ function yeniUrunGorselSecimMetniGuncelle() {
   }
 }
 
+function satisTuruBirimEtiketleriniGuncelle() {
+  const satisTuru = document.getElementById(
+    'u-satis-hesaplama-turu'
+  ).value;
+
+  const fiyatEtiketi = document.querySelector(
+    'label[for="u-fiyat"]'
+  );
+
+  const stokEtiketi = document.querySelector(
+    'label[for="u-stok"]'
+  );
+
+  if (!fiyatEtiketi || !stokEtiketi) {
+    return;
+  }
+
+  if (satisTuru === 'adet') {
+    fiyatEtiketi.textContent = 'Fiyat (TL/adet)';
+    stokEtiketi.textContent = 'Başlangıç stoğu (adet)';
+  } else {
+    fiyatEtiketi.textContent = 'Fiyat (TL/kg)';
+    stokEtiketi.textContent = 'Başlangıç stoğu (kg)';
+  }
+}
+
 async function yeniUrunKaydet() {
+  const satisTuru = document.getElementById(
+    'u-satis-hesaplama-turu'
+  ).value;
+
+  const stok = Number(
+    document.getElementById('u-stok').value
+  );
+
+  if (
+    !Number.isFinite(stok)
+    || stok < 0
+  ) {
+    alert(
+      'Stok 0 veya daha büyük geçerli bir sayı olmalıdır.'
+    );
+    return;
+  }
+
+  if (
+    satisTuru === 'adet'
+    && !Number.isInteger(stok)
+  ) {
+    alert(
+      'Adet satışında stok tam sayı olmalıdır.'
+    );
+    return;
+  }
+
   const fd = new FormData();
   fd.append('ad', document.getElementById('u-ad').value);
   fd.append('fiyat', document.getElementById('u-fiyat').value);
   fd.append('stok_adet', document.getElementById('u-stok').value || 0);
+    fd.append(
+    'satis_hesaplama_turu',
+    document.getElementById(
+      'u-satis-hesaplama-turu'
+    ).value
+  );
   fd.append('kategori', document.getElementById('u-kategori').value);
   fd.append('aciklama', document.getElementById('u-aciklama').value);
   
@@ -10268,17 +10547,79 @@ socket.on(
         "
       >
 
-      <select
-        id="urun-modal-kategori"
-        style="
-          width: 100%;
-          padding: 10px;
-          border: 1px solid var(--border);
-          border-radius: 7px;
-          background: #FFFFFF;
-        "
-      ></select>
+      <div style="
+        display:grid;
+        grid-template-columns:repeat(
+          2,
+          minmax(0, 1fr)
+        );
+        gap:12px;
+      ">
+        <div>
+          <label
+            for="urun-modal-kategori"
+            style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+              color:var(--text-dark);
+            "
+          >
+            Kategori
+          </label>
 
+          <select
+            id="urun-modal-kategori"
+            style="
+              width:100%;
+              padding:10px;
+              border:1px solid var(--border);
+              border-radius:7px;
+              background:#FFFFFF;
+            "
+          ></select>
+        </div>
+
+        <div>
+          <label
+            for="urun-modal-satis-hesaplama-turu"
+            style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+              color:var(--text-dark);
+            "
+          >
+            Satış biçimi
+          </label>
+
+          <select
+            id="urun-modal-satis-hesaplama-turu"
+            onchange="satisTuruModalBirimEtiketleriniGuncelle()"
+            style="
+              width:100%;
+              padding:10px;
+              border:1px solid var(--border);
+              border-radius:7px;
+              background:#FFFFFF;
+            "
+          >
+            <option value="adet">
+              Adet — TL/adet
+            </option>
+
+            <option value="kg">
+              Kg — TL/kg
+            </option>
+
+            <option value="tutar">
+              Tutar — TL/gr
+            </option>
+          </select>
+        </div>
+      </div>
       <div>
   <label style="
     display: block;
@@ -10409,7 +10750,7 @@ socket.on(
       id="urun-modal-stok"
       type="number"
       min="0"
-      step="1"
+      step="0.000001"
       placeholder="0"
       style="
         width: 100%;

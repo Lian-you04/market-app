@@ -4,7 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Yeni Hesap Kaydı — Nihat Market</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=optional"
+  rel="stylesheet"
+>
 <style>
   :root {
     --migros-orange: #FF7B00;
@@ -121,12 +126,206 @@
     font-weight: 700;
   }
 
-  @media (max-width: 560px) {
-    .register-card { padding: 24px; }
-    .form-grid { grid-template-columns: 1fr; }
-    .phone-row { grid-template-columns: 105px 1fr; }
+  @media (max-width: 600px) {
+  body {
+    min-height: 100vh;
+    min-height: 100svh;
+    justify-content: flex-start;
+    padding: 24px 14px 28px;
+    overflow-x: hidden;
   }
+
+  .brand-header {
+    margin-bottom: 18px;
+  }
+
+  .brand-logo {
+    font-size: 25px;
+  }
+
+  .brand-subtitle {
+    max-width: 310px;
+    margin: 6px auto 0;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .register-card {
+    width: 100%;
+    max-width: 100%;
+    padding: 22px 18px;
+    border-radius: 16px;
+  }
+
+  .form-title {
+    font-size: 20px;
+  }
+
+  .form-desc {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+
+  .form-control {
+    min-height: 48px;
+    padding: 13px 12px;
+    font-size: 16px;
+  }
+
+  .phone-row {
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  textarea.form-control {
+    min-height: 96px;
+  }
+
+  .btn-submit {
+    min-height: 50px;
+    padding: 15px 12px;
+    font-size: 15px;
+    margin-top: 6px;
+  }
+
+  .security-badge {
+    font-size: 10px;
+    line-height: 1.45;
+  }
+
+  .footer-links {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1199px),
+       (min-width: 601px) and (pointer: coarse) {
+  body {
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: 42px 32px;
+  }
+
+  .brand-header {
+    margin-bottom: 28px;
+  }
+
+  .brand-logo {
+    font-size: 36px;
+  }
+
+  .brand-subtitle {
+    font-size: 16px;
+  }
+
+  .register-card {
+    width: 100%;
+    max-width: 760px;
+    padding: 46px 52px;
+    border-radius: 22px;
+  }
+
+  .form-title {
+    font-size: 28px;
+  }
+
+  .form-desc {
+    font-size: 16px;
+    margin-bottom: 30px;
+  }
+
+  .form-grid {
+    gap: 16px 18px;
+  }
+
+  .form-group {
+    margin-bottom: 0;
+  }
+
+  .form-group label {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .form-control {
+    min-height: 54px;
+    padding: 16px 17px;
+    font-size: 17px;
+    border-radius: 12px;
+  }
+
+  .phone-row {
+    grid-template-columns: 140px 1fr;
+    gap: 12px;
+  }
+
+  textarea.form-control {
+    min-height: 110px;
+  }
+
+  .btn-submit {
+    min-height: 58px;
+    padding: 18px;
+    font-size: 18px;
+  }
+
+  .security-badge {
+    font-size: 13px;
+    padding: 14px 18px;
+  }
+
+  .footer-links {
+    font-size: 15px;
+  }
+}
 </style>
+
+<link rel="manifest" href="{{ url_for('pwa_manifest') }}">
+
+<link
+  rel="icon"
+  type="image/svg+xml"
+  href="{{ url_for('static', filename='icons/icon.svg') }}"
+>
+
+<link
+  rel="apple-touch-icon"
+  href="{{ url_for('static', filename='icons/icon.svg') }}"
+>
+
+<meta
+  name="theme-color"
+  content="#FF7B00"
+>
+
+<meta
+  name="mobile-web-app-capable"
+  content="yes"
+>
+<meta
+  name="apple-mobile-web-app-capable"
+  content="yes"
+>
+<meta
+  name="apple-mobile-web-app-status-bar-style"
+  content="default"
+>
+
 </head>
 <body>
 
@@ -141,7 +340,7 @@
 
   <div id="bildirim-kutu" class="alert-box"></div>
 
-  <form id="register-form" onsubmit="kayitOl(event)">
+  <form id="register-form" onsubmit="kayitOl(event)" autocomplete="off">
     <div class="form-grid">
       <div class="form-group">
         <label for="ad">Ad</label>
@@ -294,5 +493,21 @@ async function kayitOl(event) {
   }
 }
 </script>
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register(
+        "/service-worker.js"
+      ).catch((hata) => {
+        console.error(
+          "Service worker kaydedilemedi:",
+          hata
+        );
+      });
+    });
+  }
+</script>
+
 </body>
 </html>

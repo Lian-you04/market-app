@@ -1,9 +1,14 @@
 import os
 import secrets
 
-from flask import Flask, render_template
+from flask import (
+    Flask,
+    jsonify,
+    render_template,
+    send_from_directory
+)
 from flask_sqlalchemy import SQLAlchemy
-from flask_socketio import SocketIO 
+from flask_socketio import SocketIO
 
 
 db = SQLAlchemy()
@@ -34,7 +39,8 @@ def create_app():
     db_name = os.environ.get("DB_NAME", "market_siparis")
 
     app.config["SQLALCHEMY_DATABASE_URI"] = (
-        f"mysql+pymysql://{db_user}:{db_pass}@{db_host}/{db_name}"
+        f"mysql+pymysql://{db_user}:{db_pass}@"
+        f"{db_host}/{db_name}"
     )
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -58,9 +64,20 @@ def create_app():
     from app.routes.market import market_bp
     from app.routes.musteri import musteri_bp
 
-    app.register_blueprint(auth_bp, url_prefix="/api/auth")
-    app.register_blueprint(musteri_bp, url_prefix="/api/musteri")
-    app.register_blueprint(market_bp, url_prefix="/api/market")
+    app.register_blueprint(
+        auth_bp,
+        url_prefix="/api/auth"
+    )
+
+    app.register_blueprint(
+        musteri_bp,
+        url_prefix="/api/musteri"
+    )
+
+    app.register_blueprint(
+        market_bp,
+        url_prefix="/api/market"
+    )
 
     @app.after_request
     def disable_cache(response):
@@ -74,6 +91,61 @@ def create_app():
     @app.route("/health")
     def health():
         return {"status": "ok"}
+
+    @app.route("/service-worker.js")
+    def service_worker():
+        return send_from_directory(
+            app.static_folder,
+            "service-worker.js",
+            mimetype="application/javascript"
+        )
+
+    @app.route("/manifest.webmanifest")
+    def pwa_manifest():
+        from app.models import Market
+
+        market = db.session.get(Market, 1)
+
+        market_adi = (
+            str(market.ad).strip()
+            if market and market.ad
+            else "Market"
+        )
+
+        response = jsonify({
+            "name": market_adi,
+            "short_name": market_adi,
+            "id": "/musteri",
+            "lang": "tr",
+            "start_url": "/musteri",
+            "scope": "/",
+            "display": "standalone",
+            "theme_color": "#FF7B00",
+            "background_color": "#F8FAFC",
+            "description": (
+                f"{market_adi} müşteri uygulaması"
+            ),
+            "icons": [
+                {
+                    "src": "/static/icons/icon-192.png",
+                    "sizes": "192x192",
+                    "type": "image/png",
+                    "purpose": "any"
+                },
+                {
+                    "src": "/static/icons/icon-512.png",
+                    "sizes": "512x512",
+                    "type": "image/png",
+                    "purpose": "maskable"
+                }
+            ]
+        })
+
+        response.headers["Content-Type"] = (
+            "application/manifest+json"
+        )
+
+        return response
 
     @app.route("/login")
     def login():
