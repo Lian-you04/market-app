@@ -10215,6 +10215,75 @@ async function raporlariCanliGuncelle() {
   });
 }
 
+function istanbulRaporTarihiAl() {
+  const parcalar = new Intl.DateTimeFormat(
+    'tr-TR',
+    {
+      timeZone: 'Europe/Istanbul',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }
+  ).formatToParts(new Date());
+
+  const yil = parcalar.find(
+    (parca) => parca.type === 'year'
+  ).value;
+
+  const ay = parcalar.find(
+    (parca) => parca.type === 'month'
+  ).value;
+
+  const gun = parcalar.find(
+    (parca) => parca.type === 'day'
+  ).value;
+
+  return `${yil}-${ay}-${gun}`;
+}
+
+let sonKontrolEdilenRaporGunu =
+  istanbulRaporTarihiAl();
+
+function raporGunDegisiminiKontrolEt() {
+  const bugun = istanbulRaporTarihiAl();
+
+  if (bugun === sonKontrolEdilenRaporGunu) {
+    return;
+  }
+
+  const aktifSekme =
+    document.documentElement.getAttribute(
+      'data-market-aktif-sekme'
+    );
+
+  if (aktifSekme !== 'raporlar') {
+    return;
+  }
+
+  sonKontrolEdilenRaporGunu = bugun;
+
+  raporlariCanliGuncelle().catch((hata) => {
+    console.error(
+      'Yeni gün raporu yenilenemedi:',
+      hata
+    );
+  });
+}
+
+setInterval(
+  raporGunDegisiminiKontrolEt,
+  30000
+);
+
+document.addEventListener(
+  'visibilitychange',
+  () => {
+    if (!document.hidden) {
+      raporGunDegisiminiKontrolEt();
+    }
+  }
+);
+
 setInterval(
   saatGuncelle,
   1000
